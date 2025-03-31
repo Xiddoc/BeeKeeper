@@ -1,0 +1,17 @@
+[project]
+name = "beekeeper"
+version = "0.1.0"
+description = "Manage the Bee-sy with ease."
+readme = "README.md"
+authors = [
+    { name = "Xiddoc", email = "xiddoc@xiddoc.pc" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+beekeeper = "beekeeper:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
