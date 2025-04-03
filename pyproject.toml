@@ -7,7 +7,9 @@ authors = [
     { name = "Xiddoc", email = "xiddoc@xiddoc.pc" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.11.1",
+]
 
 [project.scripts]
 beekeeper = "beekeeper:main"
