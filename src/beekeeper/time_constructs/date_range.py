@@ -14,4 +14,3 @@ class DateRange(BaseModel):
         For example, a start and end date which are the same day will result in 1.
         """
         return (self.end_date - self.start_date).days + 1
-

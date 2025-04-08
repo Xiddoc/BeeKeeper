@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
@@ -10,7 +11,7 @@ class MixedInputAdapter(InputAdapter):
     entity_adapter: EntityInputAdapter
     allocation_adapter: AllocationInputAdapter
 
-    def get_entities(self):
+    def get_entities(self) -> Iterable[EntityInputAdapter]:
         return self.entity_adapter.get_entities()
 
     def get_allocations(self):

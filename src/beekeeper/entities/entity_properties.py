@@ -11,4 +11,3 @@ class Rank(AbstractEnum):
 
 class Location(AbstractEnum):
     pass
-
