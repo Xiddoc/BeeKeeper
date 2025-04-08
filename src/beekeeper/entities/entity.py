@@ -1,7 +1,12 @@
-from beekeeper.entities.entity_properties import Rank
+from collections.abc import Iterable
+from dataclasses import dataclass
+
+from beekeeper.entities.entity_properties import Exemption, Rank
+from beekeeper.inavailabilities.inavailability import Inavailability
 
 
+@dataclass
 class Entity:
-    inavailabilities: list
-    exemptions: list
+    inavailabilities: Iterable[Inavailability]
+    exemptions: Iterable[Exemption]
     rank: Rank
