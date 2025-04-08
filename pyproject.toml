@@ -17,8 +17,8 @@ dev = [
     "ruff>=0.11.3",
 ]
 
-[project.scripts]
-beekeeper = "beekeeper:main"
+#[project.scripts]
+#beekeeper = "beekeeper:main"
 
 [build-system]
 requires = ["setuptools>=61"]
