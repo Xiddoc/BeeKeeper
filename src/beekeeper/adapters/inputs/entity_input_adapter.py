@@ -5,7 +5,6 @@ from beekeeper.entities.entity import Entity
 
 
 class EntityInputAdapter(ABC):
-
     @abstractmethod
     def get_entities(self) -> Iterable[Entity]:
         pass
