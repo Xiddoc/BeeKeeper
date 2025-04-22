@@ -23,6 +23,6 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.6.14
+    rev: 0.6.16
     hooks:
       - id: uv-lock
