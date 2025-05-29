@@ -12,7 +12,9 @@ AllocationType = TypeVar("AllocationType", bound=AllocationRequest)
 
 class BaseAlgorithm(Generic[EntityType, AllocationType]):
     @abstractmethod
-    def run(self, allocations: Iterable[AllocationType], rules: StatefulRule) -> State:
+    def run(
+        self, allocations: Iterable[AllocationType], entities: Iterable[EntityType], rules: Iterable[StatefulRule]
+    ) -> State:
         """
         The entry point to your sorting and allocating algorithm.
         Here you will receive a list of allocations you need to assign.
@@ -21,6 +23,7 @@ class BaseAlgorithm(Generic[EntityType, AllocationType]):
 
         Args:
             allocations: The list of tasks you need to assign.
+            entities: The work entities ("employees") you have to complete the allocations.
             rules: The rules that define how to assign these tasks.
 
         Returns:
