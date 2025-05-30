@@ -18,6 +18,10 @@ dev = [
     "ruff>=0.11.6",
 ]
 
+examples = [
+    "faker>=37.3.0",
+]
+
 #[project.scripts]
 #beekeeper = "beekeeper:main"
 
