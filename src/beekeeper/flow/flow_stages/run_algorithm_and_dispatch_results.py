@@ -2,11 +2,11 @@ from collections.abc import Iterable
 
 from beekeeper import OutputAdapter
 from beekeeper.algorithm.base_algorithm import BaseAlgorithm
-from beekeeper.flow.beekeeper_flow_state import BeekeeperFlowState
-from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeekeeperFlowStage
+from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
+from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
 
 
-class RunAlgorithmAndDispatchResults(BaseBeekeeperFlowStage):
+class RunAlgorithmAndDispatchResults(BaseBeeKeeperFlowStage):
     """
     Runs the core algorithm which will be doing the allocation sorting.
     After the algorithm completes, it dispatches the results to the output adapters.
@@ -16,7 +16,7 @@ class RunAlgorithmAndDispatchResults(BaseBeekeeperFlowStage):
         self._algorithm = algorithm
         self._output_adapters = output_adapters
 
-    def run_stage(self, state: BeekeeperFlowState) -> BeekeeperFlowState:
+    def run_stage(self, state: BeeKeeperFlowState) -> BeeKeeperFlowState:
         output_state = self._algorithm.run(
             allocations=state.allocations, entities=state.entities, rules=state.stateful_rules
         )

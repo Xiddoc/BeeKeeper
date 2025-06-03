@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 from beekeeper import InputAdapter, OutputAdapter
 from beekeeper.algorithm.base_algorithm import BaseAlgorithm
-from beekeeper.flow.beekeeper_flow_state import BeekeeperFlowState
+from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.assign_possible_entities_to_allocations import AssignPossibleEntitiesToAllocations
 from beekeeper.flow.flow_stages.run_algorithm_and_dispatch_results import RunAlgorithmAndDispatchResults
 from beekeeper.flow.flow_stages.run_preliminary_rules import RunPreliminaryRules
@@ -38,7 +38,7 @@ class BeeKeeper:
         ]
 
     def execute(self) -> None:
-        state = BeekeeperFlowState(
+        state = BeeKeeperFlowState(
             entities=self._input_adapter.get_entities(),
             allocations=self._input_adapter.get_allocations(),
             preliminary_rules=[rule for rule in self._rules if isinstance(rule, PreliminaryRule)],

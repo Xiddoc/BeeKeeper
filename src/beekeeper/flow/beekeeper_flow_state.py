@@ -7,7 +7,7 @@ from beekeeper.rules.preliminary_rule import PreliminaryRule
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
-class BeekeeperFlowState(BaseModel):
+class BeeKeeperFlowState(BaseModel):
     entities: Iterable[Entity]
     allocations: Iterable[AllocationRequest]
     preliminary_rules: Iterable[PreliminaryRule]
