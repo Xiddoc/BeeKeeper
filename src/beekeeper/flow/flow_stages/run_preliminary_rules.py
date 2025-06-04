@@ -10,4 +10,8 @@ class RunPreliminaryRules(BaseBeeKeeperFlowStage):
     """
 
     def run_stage(self, state: BeeKeeperFlowState) -> BeeKeeperFlowState:
-        raise NotImplementedError
+        for entity in state.entities:
+            for allocation in state.allocations:
+                for rule in state.preliminary_rules:
+                    if rule.is_compatible(entity, allocation):
+                        pass  # TODO: complete this logic
