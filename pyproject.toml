@@ -8,15 +8,15 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "pydantic>=2.11.4",
-    "setuptools>=61",
+    "pydantic>=2.11.5",
+    "setuptools>=80",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=1.15.0",
+    "mypy>=1.16.0",
     "pre-commit>=4.2.0",
-    "ruff>=0.11.10",
+    "ruff>=0.11.12",
 ]
 
 examples = [

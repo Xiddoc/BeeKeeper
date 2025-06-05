@@ -2,10 +2,10 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from beekeeper import Inavailability
 from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.entities.entity import Entity
 from beekeeper.entities.entity_properties import Exemption, Location, Rank
+from beekeeper.inavailabilities.inavailability import Inavailability
 from beekeeper.time_constructs.date_range import DateRange
 
 

@@ -9,8 +9,8 @@ ALLOCATION_INPUT_FILE = Path("examples") / "mcdonalds" / "allocations.json"
 
 
 def main() -> None:
-    allocation_input_adapter = JsonAllocationInputAdapter[McDonaldsAllocationRequest](
-        ALLOCATION_INPUT_FILE, McDonaldsAllocationRequest
+    allocation_input_adapter = JsonAllocationInputAdapter.create(
+        file=ALLOCATION_INPUT_FILE, allocation_type=McDonaldsAllocationRequest
     )
     print(allocation_input_adapter.get_allocations())
     entity_adapter = McWorkerEntityInputAdapter()
