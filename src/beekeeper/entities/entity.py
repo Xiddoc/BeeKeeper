@@ -1,12 +1,12 @@
 from collections.abc import Iterable
-from dataclasses import dataclass
+
+from pydantic import BaseModel
 
 from beekeeper.entities.entity_properties import Exemption, Rank
 from beekeeper.inavailabilities.inavailability import Inavailability
 
 
-@dataclass
-class Entity:
+class Entity(BaseModel):
     inavailabilities: Iterable[Inavailability]
     exemptions: Iterable[Exemption]
     rank: Rank
