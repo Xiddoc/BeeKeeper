@@ -7,7 +7,7 @@ from beekeeper.algorithm.algorithm_state import State
 from beekeeper.rules.stateful_rule import StatefulRule
 
 EntityType = TypeVar("EntityType", bound=Entity)
-AllocationType = TypeVar("AllocationType", bound=AllocationRequest)
+AllocationType = TypeVar("AllocationType", bound=AllocationRequest)  # TODO: Fix this
 
 
 class BaseAlgorithm(Generic[EntityType, AllocationType]):

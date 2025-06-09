@@ -2,20 +2,18 @@ from collections.abc import Iterable
 from datetime import datetime
 
 from faker import Faker
+from mcdonalds.entities.mcdonalds_employee import McWorker
 
-from beekeeper import Entity, EntityInputAdapter, Inavailability
-from examples.mcdonalds.mcpositions import McJobPositions
-from examples.mcdonalds.mcworker import McWorker
+from beekeeper import EntityInputAdapter, Inavailability
 
 fake = Faker()
 
 
 class McWorkerEntityInputAdapter(EntityInputAdapter):
-    def get_entities(self) -> Iterable[Entity]:
+    def get_entities(self) -> Iterable[McWorker]:
         return [
             McWorker(
                 name=fake.full_name(),
-                rank=McJobPositions.CASHIER,
                 inavailabilities=[
                     Inavailability(
                         start_date=datetime.fromisoformat("2025-01-10"),
@@ -23,12 +21,10 @@ class McWorkerEntityInputAdapter(EntityInputAdapter):
                         reason="Job interview at Burger King.",
                     )
                 ],
-                exemptions=[],
             ),
-            McWorker(name=fake.full_name(), rank=McJobPositions.CASHIER, inavailabilities=[], exemptions=[]),
+            McWorker(name=fake.full_name(), inavailabilities=[]),
             McWorker(
                 name=fake.full_name(),
-                rank=McJobPositions.COOK,
                 inavailabilities=[
                     Inavailability(
                         start_date=datetime.fromisoformat("2025-01-10"),
@@ -36,11 +32,9 @@ class McWorkerEntityInputAdapter(EntityInputAdapter):
                         reason="Travelling with family.",
                     )
                 ],
-                exemptions=[],
             ),
             McWorker(
                 name=fake.full_name(),
-                rank=McJobPositions.COOK,
                 inavailabilities=[
                     Inavailability(
                         start_date=datetime.fromisoformat("2025-01-14"),
@@ -48,11 +42,9 @@ class McWorkerEntityInputAdapter(EntityInputAdapter):
                         reason="Travelling to Burger King.",
                     )
                 ],
-                exemptions=[],
             ),
             McWorker(
                 name=fake.full_name(),
-                rank=McJobPositions.COOK,
                 inavailabilities=[
                     Inavailability(
                         start_date=datetime.fromisoformat("2025-01-10"),
@@ -65,7 +57,6 @@ class McWorkerEntityInputAdapter(EntityInputAdapter):
                         reason="Another long weekend.",
                     ),
                 ],
-                exemptions=[],
             ),
-            McWorker(name=fake.full_name(), rank=McJobPositions.MANAGER, inavailabilities=[], exemptions=[]),
+            McWorker(name=fake.full_name(), inavailabilities=[]),
         ]

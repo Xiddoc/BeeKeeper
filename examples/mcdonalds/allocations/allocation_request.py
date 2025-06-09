@@ -1,9 +1,8 @@
-from beekeeper import AllocationRequest, Entity
-from examples.mcdonalds.allocations.allocation_type import McDonaldsAllocationType
-from examples.mcdonalds.entities.entity_properties import McDonaldsExemption, McDonaldsLocation, McDonaldsRank
+from mcdonalds.allocations.allocation_type import McDonaldsAllocationType
+from mcdonalds.entities.mcdonalds_employee import McWorker
+
+from beekeeper import AllocationRequest
 
 
-class McDonaldsAllocationRequest(
-    AllocationRequest[McDonaldsAllocationType, McDonaldsRank, McDonaldsExemption, McDonaldsLocation, Entity]
-):
+class McDonaldsAllocationRequest(AllocationRequest[McDonaldsAllocationType, McWorker]):
     pass

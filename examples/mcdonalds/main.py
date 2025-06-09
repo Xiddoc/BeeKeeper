@@ -1,11 +1,11 @@
 from argparse import ArgumentParser
 
+from mcdonalds.adapters.json_allocation_input_adapter import JsonAllocationInputAdapter
+from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest
+from mcdonalds.entities.mcworkers_input import McWorkerEntityInputAdapter
 from pydantic import BaseModel, FilePath
 
 from beekeeper import BeeKeeper, InputAdapter, MixedInputAdapter
-from examples.mcdonalds.adapters.json import JsonAllocationInputAdapter
-from examples.mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest
-from examples.mcdonalds.mcworkers_input import McWorkerEntityInputAdapter
 
 
 class McDonaldsBeekeeperInputs(BaseModel):

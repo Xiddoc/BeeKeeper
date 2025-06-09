@@ -1,13 +1,12 @@
 import json
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Generic, Self, TypeVar
+from typing import Generic, Self
 
 from pydantic import BaseModel, ConfigDict
 
-from beekeeper import AllocationInputAdapter, AllocationRequest
-
-TAllocationRequest = TypeVar("TAllocationRequest", bound=AllocationRequest)
+from beekeeper import AllocationInputAdapter
+from beekeeper.allocations.allocation_request import TAllocationRequest
 
 
 class AllocationRequests(BaseModel, Generic[TAllocationRequest]):
