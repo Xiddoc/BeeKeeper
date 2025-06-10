@@ -148,7 +148,7 @@ BeeKeeper's strength lies in its adaptability. You can customize:
 
 * **Allocations (`AllocationRequest`):**
     * Define types of tasks/shifts using `AllocationType`.
-    * Specify requirements like `allowed_ranks`, `prohibited_exemptions`, `date_range`, and `location`.
+    * Specify requirements like `date_range` and your own custom attributes.
 
 * **Input/Output Adapters (`EntityInputAdapter`, `AllocationInputAdapter`, `OutputAdapter`):**
     * Implement `get_entities()` and `get_allocations()` in your input adapters to load data from anywhere.
