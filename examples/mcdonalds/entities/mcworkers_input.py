@@ -5,7 +5,7 @@ from faker import Faker
 from mcdonalds.entities.entity_properties import McDonaldsInavailability, McJobPosition
 from mcdonalds.entities.mcdonalds_employee import McWorker
 
-from beekeeper import Entity, EntityInputAdapter
+from beekeeper import EntityInputAdapter
 
 fake = Faker()
 
