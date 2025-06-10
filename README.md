@@ -27,10 +27,9 @@ Inspired by the challenge of assigning work in a "Busy" (🐝) environment, BeeK
     * **Input Adapters:** Easily pipe in data about your Entities (workers) and Allocation Requests (tasks) from any source (e.g., CSV files, databases, external APIs like "Busy").
     * **Output Adapters:** Dispatch the allocation results to any destination (e.g., update a webpage, save to a file, send notifications).
 * **🧠 Algorithm Agnostic:** Plug in your own custom allocation algorithms or use pre-built ones (coming soon!).
-* **🗓️ Inavailability & Exemptions:** Easily manage worker unavailability (vacations, appointments) and exemptions (tasks a worker cannot perform).
-* **🥇 Rank System:** Assign ranks to workers and specify allowed ranks for tasks.
-* **📍 Location Aware:** (Conceptual) Define locations for tasks and entities if needed.
+* **🗓️ Inavailability Support:** Easily manage worker unavailability (vacations, appointments).
 * **⏱️ Date & Time Handling:** Clear `DateRange` objects for defining task durations and unavailability periods.
+* **📈 Highly Extendible:** Need something specific that isn't shown above? No worries, you can extend the Entities and add your own custom attributes and logic.
 
 ---
 
@@ -146,8 +145,6 @@ BeeKeeper's strength lies in its adaptability. You can customize:
 * **Entities (`Entity`):**
     * Define your own worker types by subclassing `Entity`.
     * Add custom attributes relevant to your domain.
-    * Specify `Rank`, `Location`, and `Exemption` enums tailored to your needs.
-    * Example: `McWorker`, `McJobPositions`.
 
 * **Allocations (`AllocationRequest`):**
     * Define types of tasks/shifts using `AllocationType`.
@@ -175,7 +172,7 @@ BeeKeeper's strength lies in its adaptability. You can customize:
         * `inputs/`: `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`.
         * `outputs/`: `OutputAdapter`.
     * `allocations/`: `AllocationRequest`, `PlannedAllocation`, `AllocationType`.
-    * `entities/`: `Entity`, `Rank`, `Location`, `Exemption`.
+    * `entities/`: `Entity`.
     * `algorithm/`: `BaseAlgorithm`, `State` (represents current assignments).
     * `rules/`: `BaseRule`, `PreliminaryRule`, `StatefulRule`.
     * `flow/`: Stages of the BeeKeeper execution process (`AssignPossibleEntitiesToAllocations`, `RunPreliminaryRules`, etc.).
