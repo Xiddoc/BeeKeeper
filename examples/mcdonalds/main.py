@@ -24,13 +24,12 @@ def _get_beekeeper_inputs_from_cli_args() -> McDonaldsBeekeeperInputs:
 
 
 def _create_input_adapter(beekeeper_cli_args: McDonaldsBeekeeperInputs) -> InputAdapter:
-    allocation_input_adapter = JsonAllocationInputAdapter.create(
-        file=beekeeper_cli_args.allocations_input_file, allocation_type=McDonaldsAllocationRequest
+    return MixedInputAdapter(
+        entity_adapter=McWorkerEntityInputAdapter(),
+        allocation_adapter=JsonAllocationInputAdapter(
+            file=beekeeper_cli_args.allocations_input_file, allocation_type=McDonaldsAllocationRequest
+        ),
     )
-
-    entity_adapter = McWorkerEntityInputAdapter()
-
-    return MixedInputAdapter(entity_adapter=entity_adapter, allocation_adapter=allocation_input_adapter)
 
 
 def main() -> None:
