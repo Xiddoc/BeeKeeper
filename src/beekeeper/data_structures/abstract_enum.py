@@ -2,9 +2,9 @@ from abc import ABCMeta
 from enum import Enum, EnumMeta
 
 
-class AbstractEnumMeta(EnumMeta, ABCMeta):
+class _AbstractEnumMeta(EnumMeta, ABCMeta):
     pass
 
 
-class AbstractEnum(Enum, metaclass=AbstractEnumMeta):
+class AbstractEnum(Enum, metaclass=_AbstractEnumMeta):
     pass

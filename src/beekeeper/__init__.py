@@ -9,7 +9,6 @@ from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
-from beekeeper.entities.entity_properties import Exemption, Location, Rank
 from beekeeper.flow.beekeeper import BeeKeeper
 from beekeeper.inavailabilities.inavailability import Inavailability
 from beekeeper.time_constructs.date_range import DateRange
@@ -22,12 +21,9 @@ __all__ = [
     "DateRange",
     "Entity",
     "EntityInputAdapter",
-    "Exemption",
     "Inavailability",
     "InputAdapter",
-    "Location",
     "MixedInputAdapter",
     "OutputAdapter",
     "PlannedAllocation",
-    "Rank",
 ]

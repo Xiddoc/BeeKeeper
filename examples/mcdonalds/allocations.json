@@ -1,0 +1,20 @@
+[
+  {
+    "allocation_type": "CLEANING",
+    "date_range": {
+      "start_date": "2025-06-01T00:00:00",
+      "end_date": "2025-06-03T00:00:00"
+    },
+    "allowed_ranks": ["WORKER", "MANAGER"],
+    "requested_entity": null
+  },
+  {
+    "allocation_type": "SERVING_FOOD",
+    "date_range": {
+      "start_date": "2025-06-10T00:00:00",
+      "end_date": "2025-06-10T00:00:00"
+    },
+    "allowed_ranks": ["WORKER"],
+    "requested_entity": null
+  }
+]

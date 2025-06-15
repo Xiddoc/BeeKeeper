@@ -1,19 +1,17 @@
 from abc import abstractmethod
 from collections.abc import Iterable
-from typing import Generic, TypeVar
+from typing import Generic
 
-from beekeeper import AllocationRequest, Entity
 from beekeeper.algorithm.algorithm_state import State
+from beekeeper.allocations.allocation_type import TAllocationType
+from beekeeper.entities.entity import TEntity
 from beekeeper.rules.stateful_rule import StatefulRule
 
-EntityType = TypeVar("EntityType", bound=Entity)
-AllocationType = TypeVar("AllocationType", bound=AllocationRequest)
 
-
-class BaseAlgorithm(Generic[EntityType, AllocationType]):
+class BaseAlgorithm(Generic[TEntity, TAllocationType]):
     @abstractmethod
     def run(
-        self, allocations: Iterable[AllocationType], entities: Iterable[EntityType], rules: Iterable[StatefulRule]
+        self, allocations: Iterable[TAllocationType], entities: Iterable[TEntity], rules: Iterable[StatefulRule]
     ) -> State:
         """
         The entry point to your sorting and allocating algorithm.

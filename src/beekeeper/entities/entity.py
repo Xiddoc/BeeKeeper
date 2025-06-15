@@ -1,12 +1,13 @@
 from collections.abc import Iterable
+from typing import TypeVar
 
 from pydantic import BaseModel
 
-from beekeeper.entities.entity_properties import Exemption, Rank
 from beekeeper.inavailabilities.inavailability import Inavailability
 
 
-class Entity(BaseModel):
+class Entity[TInavailability: Inavailability](BaseModel):
     inavailabilities: Iterable[Inavailability]
-    exemptions: Iterable[Exemption]
-    rank: Rank
+
+
+TEntity = TypeVar("TEntity", bound=Entity)

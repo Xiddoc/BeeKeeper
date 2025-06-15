@@ -1,0 +1,18 @@
+from enum import auto
+
+from beekeeper import Inavailability
+from beekeeper.data_structures.abstract_enum import AbstractEnum
+
+
+class Rank(AbstractEnum):
+    pass
+
+
+class McJobPosition(Rank):
+    CASHIER = auto()
+    COOK = auto()
+    MANAGER = auto()
+
+
+class McDonaldsInavailability(Inavailability):
+    is_paid_leave: bool
