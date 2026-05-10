@@ -39,6 +39,7 @@ from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocati
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
 from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm  # noqa: E402
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
 WARN_THRESHOLD_SECONDS = 0.5
@@ -49,6 +50,7 @@ FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
 ALGORITHMS: dict[str, type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]] = {
     "greedy": GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
     "backtracking": BacktrackingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
+    "load_balancing": LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
 }
 
 
