@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import auto
 
 from beekeeper import Inavailability
 from beekeeper.data_structures.abstract_enum import AbstractEnum
@@ -10,9 +9,9 @@ class Rank(AbstractEnum):
 
 
 class McJobPosition(Rank):
-    CASHIER = auto()
-    COOK = auto()
-    MANAGER = auto()
+    CASHIER = "CASHIER"
+    COOK = "COOK"
+    MANAGER = "MANAGER"
 
 
 class McDonaldsInavailability(Inavailability[datetime]):

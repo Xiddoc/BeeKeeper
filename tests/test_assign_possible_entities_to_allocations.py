@@ -17,7 +17,7 @@ class _Task(AllocationType):
 
 
 class _Worker(Entity[Inavailability]):
-    pass
+    name: str = ""
 
 
 class _Request(AllocationRequest[_Task, _Worker]):
@@ -80,8 +80,8 @@ def test_partial_overlap_does_not_exclude_entity() -> None:
 
 
 def test_requested_entities_restricts_candidates() -> None:
-    chosen = _Worker(inavailabilities=[])
-    other = _Worker(inavailabilities=[])
+    chosen = _Worker(name="chosen", inavailabilities=[])
+    other = _Worker(name="other", inavailabilities=[])
     request = _request(
         datetime(2025, 1, 1, tzinfo=UTC),
         datetime(2025, 1, 2, tzinfo=UTC),

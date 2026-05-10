@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Alice",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Bob",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-01T00:00:00",
+        "end_date": "2025-06-05T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Carol",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Dave",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-15T00:00:00",
+        "end_date": "2025-06-15T00:00:00",
+        "reason": "wedding",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Eve",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  }
+]
