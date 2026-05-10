@@ -35,10 +35,15 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
         return state
 ```
 
-## The bundled greedy reference
+## Bundled implementations
 
-Live at `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm`. Picks the highest-scored compatible candidates per allocation in input order, fills `required_count`, skips allocations that can't be filled.
+Four reference implementations live under `beekeeper.algorithm.implementations.*`. Pick the one closest to what your domain needs and copy or wrap; or write a fresh implementation against the same `BaseAlgorithm` contract.
 
-It's a baseline — no backtracking, no global optimization. For nontrivial scheduling, write your own that exploits domain structure.
+| Module | Class | Use when |
+| --- | --- | --- |
+| `greedy` | `GreedyAssignmentAlgorithm` | Baseline. Picks the highest-scored compatible candidates in input order. No backtracking, no global optimization. |
+| `backtracking` | `BacktrackingAssignmentAlgorithm` | Stateful rules + constrained candidate pools. Tries alternative orderings when greedy gets stuck; falls back to greedy when no complete solution exists. Has a configurable top-K cap and iteration budget. |
+| `load_balancing` | `LoadBalancingAssignmentAlgorithm` | You want work spread across the entity pool, not concentrated on a few high-scorers. Score is divided by `(1 + load)` so previously-assigned entities are scored down. Deterministic. |
+| `or_tools` | `OrToolsAssignmentAlgorithm` | Globally optimal under the modeled constraints. Heaviest dep (~50 MB); install via `pip install 'beekeeper[ortools]'`. Stateful rules are *not* encoded into the CP-SAT formulation — use backtracking if you need them. |
 
 See [The Algorithm Contract](../concepts/algorithm-contract.md) for what your `run(...)` is allowed to assume and required to return.

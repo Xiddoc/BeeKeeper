@@ -60,3 +60,12 @@ Now runs end-to-end: `python -m mcdonalds.main mcdonalds/workers.json mcdonalds/
 A full mkdocs-material site under `docs/`, built locally via `uv run mkdocs serve` and deployed to GitHub Pages on push to `master` via `.github/workflows/docs.yml`.
 
 **One-time setup**: enable Pages on the repo under *Settings → Pages → Build and deployment → Source: GitHub Actions*. Until that's done, the docs workflow will fail at the deploy step (the build step will still pass).
+
+### Algorithm implementations
+
+The reference algorithms move under a new `beekeeper.algorithm.implementations.*` subpackage to make room for additional implementations and to keep the top-level `beekeeper.algorithm.` namespace for the abstract bases.
+
+* `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm` — baseline (was previously at `beekeeper.algorithm.greedy`).
+* `beekeeper.algorithm.implementations.backtracking.BacktrackingAssignmentAlgorithm` — depth-first search that finds complete solutions where greedy gets stuck. Falls back to greedy when no complete solution exists.
+* `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm` — greedy with a per-entity load penalty so work disperses across the pool.
+* `beekeeper.algorithm.implementations.or_tools.OrToolsAssignmentAlgorithm` — Google OR-Tools CP-SAT-backed global optimizer. Optional dep: `pip install 'beekeeper[ortools]'`.

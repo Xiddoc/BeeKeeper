@@ -44,4 +44,6 @@ A `State[TEntity, TAllocReq]` carrying every successful assignment. Use `state.a
 
 ## A reference implementation
 
-[`GreedyAssignmentAlgorithm`](../how-to/write-an-algorithm.md#the-bundled-greedy-reference) is a 30-line reference: for each allocation, sort candidates by descending score, pick the top compatible ones until `required_count` is met. It's not optimal — it doesn't backtrack, doesn't optimize globally, doesn't care about anything beyond "fill the count." But it lets every example in this docs site have a runnable algorithm without writing one from scratch, and it's a fine starting point to copy and adapt.
+[`GreedyAssignmentAlgorithm`](../how-to/write-an-algorithm.md#bundled-implementations) is a 30-line reference: for each allocation, sort candidates by descending score, pick the top compatible ones until `required_count` is met. It's not optimal — it doesn't backtrack, doesn't optimize globally, doesn't care about anything beyond "fill the count." But it lets every example in this docs site have a runnable algorithm without writing one from scratch, and it's a fine starting point to copy and adapt.
+
+For nontrivial scheduling, the same `BaseAlgorithm` contract is implemented by `BacktrackingAssignmentAlgorithm`, `LoadBalancingAssignmentAlgorithm`, and `OrToolsAssignmentAlgorithm` — see the [bundled implementations table](../how-to/write-an-algorithm.md#bundled-implementations).
