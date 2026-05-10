@@ -39,3 +39,6 @@ jobs:
 
       - name: Pytest
         run: uv run pytest
+
+      - name: MkDocs (build --strict)
+        run: uv run mkdocs build --strict

@@ -1,216 +1,78 @@
+# 🐝 BeeKeeper
 
-# 🐝 BeeKeeper: Smart Allocation Framework
-
-<p align="center">
-  <img src="https://via.placeholder.com/150?text=BeeKeeper+Logo" alt="BeeKeeper Logo Placeholder" width="150"/>
-</p>
+> Manage the Bee-sy with ease.
 
 <p align="center">
-  <img src="https://img.shields.io/pypi/v/beekeeper?style=for-the-badge&logo=pypi&color=blue" alt="PyPI version">
-  <img src="https://img.shields.io/pypi/pyversions/beekeeper?style=for-the-badge&logo=python&color=blue" alt="Python versions">
-  <img src="https://img.shields.io/github/license/Xiddoc/beekeeper?style=for-the-badge&color=green" alt="GitHub license">
-  <img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=tests" alt="Build Status">
-  <img src="https://img.shields.io/readthedocs/beekeeper?style=for-the-badge&logo=readthedoc&color=blueviolet" alt="Documentation Status">
+  <img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI">
+  <img src="https://img.shields.io/badge/python-3.13+-blue?style=for-the-badge&logo=python" alt="Python 3.13+">
+  <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-green?style=for-the-badge" alt="License: GPL-3.0-or-later">
 </p>
 
-**BeeKeeper** is a powerful and flexible Python framework designed to simplify the complex process of allocating tasks, shifts, or assignments to available workers (we call them **Entities**! 🧑‍💼👩‍🍳). It takes the headache out of manual scheduling by allowing you to define your own rules, integrate various data sources, and use custom algorithms to find the perfect match for every task.
+BeeKeeper is a **Python 3.13+ framework** for assigning entities (workers, vehicles, anything assignable) to allocation requests over date ranges, subject to a rules pipeline and an algorithm you supply. PEP 695 generics flow through every layer — input adapters, rules, algorithm, output adapters — so domain types like `BeeKeeper[McWorker, McRequest]` give you static type-checking and IDE autocomplete end-to-end.
 
-Inspired by the challenge of assigning work in a "Busy" (🐝) environment, BeeKeeper helps managers efficiently distribute tasks while considering numerous constraints like employee availability, skills, rank, and specific job requirements.
+## Install
 
----
-
-## ✨ Core Features
-
-* **🧩 Modular Design:** BeeKeeper is built as a **framework**. Mix and match components to fit your exact needs!
-* **🔄 Customizable Rules Engine:** Define your own **Preliminary Rules** (static checks) and **Stateful Rules** (dynamic checks based on current assignments) to ensure allocations meet all criteria.
-* **🔌 Flexible Data Integration:**
-    * **Input Adapters:** Easily pipe in data about your Entities (workers) and Allocation Requests (tasks) from any source (e.g., CSV files, databases, external APIs like "Busy").
-    * **Output Adapters:** Dispatch the allocation results to any destination (e.g., update a webpage, save to a file, send notifications).
-* **🧠 Algorithm Agnostic:** Plug in your own custom allocation algorithms or use pre-built ones (coming soon!).
-* **🗓️ Inavailability Support:** Easily manage worker unavailability (vacations, appointments).
-* **⏱️ Date & Time Handling:** Clear `DateRange` objects for defining task durations and unavailability periods.
-* **📈 Highly Extendible:** Need something specific that isn't shown above? No worries, you can extend the Entities and add your own custom attributes and logic.
-
----
-
-## ⚙️ How It Works: The BeeKeeper Flow
-
-BeeKeeper processes allocations in a clear, staged pipeline:
-
-1.  **📥 Data Ingestion:**
-    * `InputAdapter` (e.g., `MixedInputAdapter`) fetches `Entity` data (workers, their ranks, unavailability) and `AllocationRequest` data (tasks, required dates, allowed ranks) from your sources.
-    * Example: `McWorkerEntityInputAdapter` loads McDonald's worker data.
-
-2.  **🚦 Preliminary Checks & Filtering:**
-    * **(Conceptual Stage) `AssignPossibleEntitiesToAllocations`**: Filters entities that *could* potentially do an allocation.
-    * `RunPreliminaryRules`: Applies basic, static rules to quickly eliminate incompatible entity-allocation pairs.
-        * *e.g., Is the worker's rank appropriate for the task? Does the worker have an exemption preventing this task?*
-
-3.  **🧠 Core Algorithm Execution:**
-    * `RunAlgorithmAndDispatchResults`: The chosen `BaseAlgorithm` implementation takes the filtered allocations and entities.
-    * It intelligently assigns entities to allocations, respecting all defined `StatefulRule`s.
-        * *e.g., Has the worker already worked too many hours this week? Is this shift too close to their last one?*
-    * The result is a `State` object containing all `PlannedAllocation`s.
-
-4.  **📤 Results Dispatch:**
-    * The final `State` (list of assignments) is passed to your configured `OutputAdapter`(s).
-    * This could mean updating a database, writing to a UI, generating a report, etc.
-
-The entire process is orchestrated by the `BeeKeeper` main class.
-
----
-
-## 🚀 Getting Started
-
-### Installation
-
-TODO: We should upload to PyPI once we have a working release :)
-```bash
-pip install beekeeper
-```
-
-For now, you might install directly from GitHub:
 ```bash
 git clone https://github.com/Xiddoc/Beekeeper.git
-cd beekeeper
-pip install uv # If you don't already have uv
+cd Beekeeper
 uv sync
 ```
 
-### Quick Usage Example
-
-Here's a conceptual overview of how you might set up and run BeeKeeper:
+## 30-line quickstart
 
 ```python
 from beekeeper import BeeKeeper, MixedInputAdapter
-from your_project.your_entity_adapter import YourEntityAdapter
-from your_project.your_allocation_adapter import YourAllocationAdapter
-from your_project.your_custom_algorithm import YourCustomAlgorithm
-from your_project.your_rules import YourCustomRuleSet
-from your_project.your_output_adapter import YourOutputAdapter
+from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
+from beekeeper.algorithm.greedy import GreedyAssignmentAlgorithm
+from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
-# TODO: Improve this example once we have a more concrete API
+from my_app.adapters import ExcelEntityAdapter, ExcelAllocationAdapter
+from my_app.rules import MustHaveLicenseRule
+from my_app.entities import MyWorker
+from my_app.allocations import MyRequest
 
-def main() -> None:
-    # 1. Setup Input Adapters
-    entity_adapter = YourEntityAdapter()
-    allocation_adapter = YourAllocationAdapter() # You'll need to create this
-    input_adapter = MixedInputAdapter(
-        entity_adapter=entity_adapter,
-        allocation_adapter=allocation_adapter # Or provide None if no allocations initially
-    )
-
-    # 2. Choose/Create an Algorithm
-    my_algorithm = YourCustomAlgorithm()
-
-    # 3. Define Your Rules
-    my_rules = YourCustomRuleSet() # This would be a list of rule instances
-
-    # 4. Setup Output Adapter(s)
-    my_output_adapters = [YourOutputAdapter()]
-
-    # 5. Initialize BeeKeeper
-    beekeeper_instance = BeeKeeper(
-        algorithm=my_algorithm,
-        rules=my_rules,
-        input_adapter=input_adapter,
-        output_adapters=my_output_adapters,
-    )
-
-    # 6. Buzz along and execute! 🐝
-    beekeeper_instance.execute()
-
-if __name__ == "__main__":
-    main()
+bk = BeeKeeper[MyWorker, MyRequest](
+    input_adapter=MixedInputAdapter(
+        entity_adapter=ExcelEntityAdapter("staff.xlsx"),
+        allocation_adapter=ExcelAllocationAdapter("requests.xlsx"),
+    ),
+    algorithm=GreedyAssignmentAlgorithm[MyWorker, MyRequest](),
+    preliminary_rules=[
+        MustHaveLicenseRule(),
+        AvailabilityRule[MyWorker, MyRequest](),
+        RequestedEntityRule[MyWorker, MyRequest](),
+    ],
+    output_adapters=[ConsoleOutputAdapter[MyWorker, MyRequest]()],
+)
+bk.execute()
 ```
 
----
+A complete worked example lives at [`examples/mcdonalds/`](examples/mcdonalds), and runs end-to-end with `python -m mcdonalds.main mcdonalds/workers.json mcdonalds/allocations.json`.
 
-## 🍔 Included Example: McDonald's Workers
+## Documentation
 
-A skeleton integration lives under [`examples/mcdonalds/`](examples/mcdonalds) showing where Excel-backed `EntityInputAdapter` and `AllocationInputAdapter` implementations slot in. The adapters are stubs returning empty iterables — flesh them out (or replace them) to build a real example.
+Full docs at **[xiddoc.github.io/Beekeeper](https://xiddoc.github.io/Beekeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
 
----
-
-## 🔧 Customization: Make BeeKeeper Your Own!
-
-BeeKeeper's strength lies in its adaptability. You can customize:
-
-* **Entities (`Entity`):**
-    * Define your own worker types by subclassing `Entity`.
-    * Add custom attributes relevant to your domain.
-
-* **Allocations (`AllocationRequest`):**
-    * Define types of tasks/shifts using `AllocationType`.
-    * Specify requirements like `date_range` and your own custom attributes.
-
-* **Input/Output Adapters (`EntityInputAdapter`, `AllocationInputAdapter`, `OutputAdapter`):**
-    * Implement `get_entities()` and `get_allocations()` in your input adapters to load data from anywhere.
-    * Implement `handle_output()` in your output adapter to send results wherever they need to go.
-    * Use `MixedInputAdapter` to combine separate entity and allocation sources easily.
-
-* **Rules (`PreliminaryRule`, `StatefulRule`):**
-    * Create `PreliminaryRule` subclasses to implement `is_compatible(entity, allocation)` for static checks.
-    * Create `StatefulRule` subclasses to implement `is_compatible(entity, allocation, state)` for dynamic, context-aware checks.
-
-* **Algorithms (`BaseAlgorithm`):**
-    * Subclass `BaseAlgorithm` and implement the `run()` method with your unique allocation logic. This is where the core matching happens!
-
----
-
-## 🏗️ Project Structure Highlights
-
-* **`src/beekeeper/`**: Core library code.
-    * `flow/beekeeper.py`: Main `BeeKeeper` class orchestrating the flow.
-    * `adapters/`: For input and output data handling.
-        * `inputs/`: `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`.
-        * `outputs/`: `OutputAdapter`.
-    * `allocations/`: `AllocationRequest`, `PlannedAllocation`, `AllocationType`.
-    * `entities/`: `Entity`.
-    * `algorithm/`: `BaseAlgorithm`, `State` (represents current assignments).
-    * `rules/`: `BaseRule`, `PreliminaryRule`, `StatefulRule`.
-    * `flow/`: Stages of the BeeKeeper execution process (`AssignPossibleEntitiesToAllocations`, `RunPreliminaryRules`, etc.).
-    * `inavailabilities/`: `Inavailability` class.
-    * `time_constructs/`: `DateRange`.
-* **`examples/`**: Practical examples of how to use BeeKeeper.
-    * `mcdonalds/`: A concrete example with `McWorker` entities.
-
----
-
-## 🛠️ Development
+Or build locally:
 
 ```bash
-uv sync                         # install + create venv from uv.lock
-uv run ruff check               # lint
-uv run ruff format              # format
-uv run mypy src                 # type-check (strict; examples/ excluded)
-uv run pytest                   # run tests
-uv run pre-commit install       # one-time: enable git hooks
+uv run mkdocs serve
 ```
 
-Lint, format check, mypy, and the test suite all run in CI on every push and pull request — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+## Development
 
----
+```bash
+uv sync --all-groups            # install dev deps
+uv run ruff check               # lint
+uv run ruff format              # format
+uv run mypy src                 # type-check
+uv run pytest                   # tests
+uv run mkdocs build --strict    # docs
+uv run pre-commit install       # one-time
+```
 
-## 🤝 Contributing
+CI runs all of these on every push and pull request.
 
-Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements, please feel free to:
+## License
 
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/your-feature-name`).
-3.  Make your changes.
-4.  Write tests for your changes.
-5.  Ensure all tests pass.
-6.  Submit a pull request.
-
-Please adhere to the project's coding standards and provide a clear description of your changes. 😊
-
----
-
-## 📜 License
-
-This project is licensed under the **GNU General Public License v3.0 or later** — see the [LICENSE](LICENSE) file for details.
-
----
-
-Happy Allocating! 🐝
+[GPL-3.0-or-later](LICENSE).

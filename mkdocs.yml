@@ -1,0 +1,101 @@
+site_name: BeeKeeper
+site_description: Manage the Bee-sy with ease — a Python framework for assigning entities to allocation requests.
+site_url: https://xiddoc.github.io/Beekeeper/
+repo_url: https://github.com/Xiddoc/Beekeeper
+repo_name: Xiddoc/Beekeeper
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.tabs
+    - navigation.sections
+    - navigation.instant
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Concepts:
+      - concepts/overview.md
+      - concepts/pipeline.md
+      - concepts/type-system.md
+      - concepts/rules.md
+      - concepts/algorithm-contract.md
+  - How-to:
+      - how-to/define-an-entity.md
+      - how-to/define-an-allocation.md
+      - how-to/write-a-preliminary-rule.md
+      - how-to/write-a-stateful-rule.md
+      - how-to/write-a-soft-rule.md
+      - how-to/write-an-algorithm.md
+      - how-to/write-an-input-adapter.md
+      - how-to/write-an-output-adapter.md
+      - how-to/use-the-json-adapters.md
+      - how-to/customize-the-pipeline.md
+  - Examples:
+      - examples/mcdonalds.md
+  - Explanations:
+      - explanations/daterange-semantics.md
+      - explanations/soft-rules-aggregation.md
+  - Reference: reference.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_root_full_path: false
+            show_source: false
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            heading_level: 3
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Xiddoc/Beekeeper
