@@ -22,7 +22,7 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
                                         Don't mind me...
     """
 
-    def __init__(  # noqa: PLR0913 — BeeKeeper is the framework wiring point; many kwargs are intentional
+    def __init__(
         self,
         *,
         input_adapter: InputAdapter[TEntity, TAllocationRequest],

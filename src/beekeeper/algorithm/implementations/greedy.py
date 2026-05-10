@@ -32,10 +32,11 @@ class GreedyAssignmentAlgorithm[TEntity: Entity[Any], TAllocationRequest: Alloca
     def run(
         self,
         allocations: Iterable[TAllocationRequest],
-        entities: Iterable[TEntity],  # noqa: ARG002 — algorithms may use the full entity list, but greedy doesn't
+        entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
     ) -> State[TEntity, TAllocationRequest]:
+        del entities  # greedy works only off the pre-pruned candidate map; no need for the full list
         rules_list = list(rules)
         state: State[TEntity, TAllocationRequest] = State()
 

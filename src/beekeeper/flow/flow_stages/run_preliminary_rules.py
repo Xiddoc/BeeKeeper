@@ -1,13 +1,10 @@
 import math
-from dataclasses import replace
 from typing import Any
 
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
-from beekeeper.flow.candidate import (
-    Candidate,  # noqa: TC001 — runtime use is via dataclasses.replace, but the type alias is needed for the local annotation
-)
+from beekeeper.flow.candidate import Candidate
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
 
 
@@ -48,7 +45,7 @@ class RunPreliminaryRules[TEntity: Entity[Any], TAllocationRequest: AllocationRe
                 verdicts = [rule.evaluate(candidate.entity, allocation) for rule in rules]
                 if all(v.compatible for v in verdicts):
                     aggregate_score = self._geometric_mean([v.score for v in verdicts])
-                    surviving.append(replace(candidate, score=aggregate_score))
+                    surviving.append(Candidate(entity=candidate.entity, score=aggregate_score))
 
             state.candidate_map[alloc_key] = surviving
         return state

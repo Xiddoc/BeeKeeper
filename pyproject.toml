@@ -114,6 +114,12 @@ ignore = ["D", "COM812", "S311", "T201", "PLR2004", "UP007", "INP001", "S105", "
 fixable = ["ALL"]
 unfixable = []
 
+[tool.ruff.lint.pylint]
+# BeeKeeper.__init__ has 6 keyword-only arguments by design — it's the framework's
+# wiring point. The PLR0913 default of 5 is too tight for that role. Bump rather
+# than scatter `# noqa: PLR0913` across the wiring code.
+max-args = 8
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "ANN", "ARG", "PT011", "SLF001"]
 "examples/**/*.py" = ["ANN", "ARG", "D"]
