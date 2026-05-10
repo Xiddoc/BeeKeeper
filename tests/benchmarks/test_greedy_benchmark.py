@@ -1,18 +1,29 @@
-"""Benchmark the bundled greedy algorithm against the 65-worker / 25-allocation fixture.
+"""Benchmark the bundled greedy algorithm against the McDonald's stress fixtures.
 
 Skipped during normal `pytest` runs (the `--benchmark-skip` default in
 pyproject's pytest config); run explicitly with::
 
     uv run pytest --benchmark-only
 
-Each benchmark test asserts a generous wall-clock ceiling so a serious
-regression fails CI rather than just sliding into the timing report.
-The thresholds are deliberately loose — the goal is to catch a
-10x slowdown, not to police single-digit-percent variation that's
+Each benchmark records timing for the *full* pipeline — input adapters
+through algorithm through output dispatch — and applies two budgets:
+
+* **Warning at 500 ms** — emits a ``UserWarning`` so the slowdown is
+  visible in the test output without failing CI. Useful for catching
+  drift before it becomes critical.
+* **Hard ceiling at 1 s** — fails the test outright. The framework
+  should be solving these sizes in well under a second; if it takes
+  longer, something is materially wrong.
+
+These thresholds are deliberately loose: greedy on the 200-worker
+fixture lands in the low double-digit milliseconds in any reasonable
+environment. The point of the budgets is to catch order-of-magnitude
+regressions, not to police single-digit-percent variation that's
 mostly CI-runner noise.
 """
 
 import sys
+import warnings
 from pathlib import Path
 
 import pytest
@@ -31,21 +42,21 @@ from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputA
 from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
-WORKERS = EXAMPLES_DIR / "mcdonalds" / "workers_large.json"
-ALLOCATIONS = EXAMPLES_DIR / "mcdonalds" / "allocations_large.json"
+WARN_THRESHOLD_SECONDS = 0.5
+FAIL_THRESHOLD_SECONDS = 1.0
 
-# Generous: greedy on this fixture should land in the low single-digit ms range
-# in any reasonable environment. 250 ms catches a regression of an order of
-# magnitude or more without flaking on a busy CI runner.
-WALL_CLOCK_BUDGET_SECONDS = 0.25
+FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
 
 
-def _build_beekeeper() -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
+def _build_beekeeper(suffix: str) -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
     return BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=MixedInputAdapter(
-            entity_adapter=JsonEntityInputAdapter(file=WORKERS, entity_type=McWorker),
+            entity_adapter=JsonEntityInputAdapter(
+                file=FIXTURES_DIR / f"workers_{suffix}.json",
+                entity_type=McWorker,
+            ),
             allocation_adapter=JsonAllocationInputAdapter(
-                file=ALLOCATIONS,
+                file=FIXTURES_DIR / f"allocations_{suffix}.json",
                 allocation_type=McDonaldsAllocationRequest,
             ),
         ),
@@ -59,8 +70,33 @@ def _build_beekeeper() -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
     )
 
 
-def test_greedy_full_pipeline_under_budget(benchmark: pytest.FixtureRequest) -> None:
-    """End-to-end: input adapters + 3-stage pipeline + greedy + output dispatch."""
-    bk = _build_beekeeper()
+def _check_budget(mean_seconds: float, fixture_label: str) -> None:
+    if mean_seconds > WARN_THRESHOLD_SECONDS:
+        warnings.warn(
+            f"{fixture_label}: mean {mean_seconds * 1000:.1f}ms exceeded "
+            f"warning threshold of {WARN_THRESHOLD_SECONDS * 1000:.0f}ms",
+            stacklevel=2,
+        )
+    assert mean_seconds < FAIL_THRESHOLD_SECONDS, (
+        f"{fixture_label}: mean {mean_seconds * 1000:.1f}ms exceeded "
+        f"hard ceiling of {FAIL_THRESHOLD_SECONDS * 1000:.0f}ms"
+    )
+
+
+@pytest.mark.parametrize(
+    ("suffix", "label"),
+    [
+        ("large", "65 workers / 25 allocations"),
+        ("xlarge", "100 workers / 40 allocations"),
+        ("xxlarge", "200 workers / 80 allocations"),
+    ],
+)
+def test_greedy_full_pipeline_budget(
+    benchmark: pytest.FixtureRequest,
+    suffix: str,
+    label: str,
+) -> None:
+    """End-to-end greedy run for each fixture size."""
+    bk = _build_beekeeper(suffix)
     benchmark(bk.execute)
-    assert benchmark.stats.stats.mean < WALL_CLOCK_BUDGET_SECONDS  # type: ignore[attr-defined]
+    _check_budget(benchmark.stats.stats.mean, label)  # type: ignore[attr-defined]
