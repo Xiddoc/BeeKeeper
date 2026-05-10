@@ -21,6 +21,7 @@ class RunPreliminaryRules[TEntity: Entity[Any], TAllocationRequest: AllocationRe
         for entity in state.entities:
             for allocation in state.allocations:
                 for rule in state.preliminary_rules:
-                    if rule.is_compatible(entity, allocation):
-                        pass  # TODO: complete this logic in step 12 once candidate_map exists
+                    verdict = rule.evaluate(entity, allocation)
+                    if not verdict.compatible:
+                        pass  # TODO: prune the candidate; full logic lands in step 12
         return state
