@@ -24,3 +24,8 @@ class State[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any
 
     def get_allocations_done_by(self, entity: TEntity) -> list[PlannedAllocation[TAllocationRequest, TEntity]]:
         return [allocation for allocation in self._allocations if entity in allocation.assigned_entities]
+
+    @property
+    def planned_allocations(self) -> list[PlannedAllocation[TAllocationRequest, TEntity]]:
+        """All planned allocations recorded in this state, in the order they were added."""
+        return list(self._allocations)
