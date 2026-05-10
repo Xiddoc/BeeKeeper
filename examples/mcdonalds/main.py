@@ -9,7 +9,7 @@ from beekeeper import BeeKeeper, MixedInputAdapter
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
 

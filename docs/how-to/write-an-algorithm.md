@@ -37,7 +37,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
 
 ## The bundled greedy reference
 
-Live at `beekeeper.algorithm.greedy.GreedyAssignmentAlgorithm`. Picks the highest-scored compatible candidates per allocation in input order, fills `required_count`, skips allocations that can't be filled.
+Live at `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm`. Picks the highest-scored compatible candidates per allocation in input order, fills `required_count`, skips allocations that can't be filled.
 
 It's a baseline — no backtracking, no global optimization. For nontrivial scheduling, write your own that exploits domain structure.
 

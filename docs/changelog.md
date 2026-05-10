@@ -49,7 +49,7 @@ Switched from inheritance to **composition**: `PlannedAllocation` now has `reque
 
 ### Built-ins
 
-New: `AvailabilityRule`, `RequestedEntityRule`, `GreedyAssignmentAlgorithm`, `ConsoleOutputAdapter`. Available under `beekeeper.rules.builtins`, `beekeeper.algorithm.greedy`, `beekeeper.adapters.outputs.console`.
+New: `AvailabilityRule`, `RequestedEntityRule`, `GreedyAssignmentAlgorithm`, `ConsoleOutputAdapter`. Available under `beekeeper.rules.builtins`, `beekeeper.algorithm.implementations.greedy`, `beekeeper.adapters.outputs.console`.
 
 ### McDonald's example
 

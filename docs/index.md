@@ -21,7 +21,7 @@ There is no published PyPI release yet — clone the repo and depend on it via p
 ```python
 from beekeeper import BeeKeeper, MixedInputAdapter
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
 from my_app.adapters import ExcelEntityAdapter, ExcelAllocationAdapter

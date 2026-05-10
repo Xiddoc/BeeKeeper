@@ -42,7 +42,7 @@ Auto-generated from the source. Click any class to see its full signature, gener
 
 ::: beekeeper.algorithm.base_algorithm
 ::: beekeeper.algorithm.algorithm_state
-::: beekeeper.algorithm.greedy
+::: beekeeper.algorithm.implementations.greedy
 
 ## Flow
 

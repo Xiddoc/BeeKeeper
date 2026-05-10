@@ -10,7 +10,7 @@ from beekeeper import (
 )
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
