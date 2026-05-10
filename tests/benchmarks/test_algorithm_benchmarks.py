@@ -1,4 +1,4 @@
-"""Benchmark the bundled greedy algorithm against the McDonald's stress fixtures.
+"""Benchmarks for the bundled algorithm implementations against the McDonald's fixtures.
 
 Skipped during normal `pytest` runs (the `--benchmark-skip` default in
 pyproject's pytest config); run explicitly with::
@@ -6,20 +6,18 @@ pyproject's pytest config); run explicitly with::
     uv run pytest --benchmark-only
 
 Each benchmark records timing for the *full* pipeline — input adapters
-through algorithm through output dispatch — and applies two budgets:
+through algorithm through output dispatch — across all bundled
+algorithms and all three fixture sizes. Two budgets apply:
 
 * **Warning at 500 ms** — emits a ``UserWarning`` so the slowdown is
-  visible in the test output without failing CI. Useful for catching
-  drift before it becomes critical.
+  visible in the test output without failing CI.
 * **Hard ceiling at 1 s** — fails the test outright. The framework
-  should be solving these sizes in well under a second; if it takes
-  longer, something is materially wrong.
+  should be solving these sizes in well under a second.
 
-These thresholds are deliberately loose: greedy on the 200-worker
-fixture lands in the low double-digit milliseconds in any reasonable
-environment. The point of the budgets is to catch order-of-magnitude
-regressions, not to police single-digit-percent variation that's
-mostly CI-runner noise.
+The thresholds are deliberately loose; greedy on the 200-worker fixture
+lands in the low double-digit milliseconds. The budgets catch
+order-of-magnitude regressions, not single-digit-percent variation
+that's mostly CI-runner noise.
 """
 
 import sys
@@ -36,9 +34,10 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import BeeKeeper, MixedInputAdapter  # noqa: E402
+from beekeeper import BaseAlgorithm, BeeKeeper, MixedInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
+from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
 from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
@@ -47,8 +46,15 @@ FAIL_THRESHOLD_SECONDS = 1.0
 
 FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
 
+ALGORITHMS: dict[str, type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]] = {
+    "greedy": GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
+    "backtracking": BacktrackingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
+}
 
-def _build_beekeeper(suffix: str) -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
+
+def _build_beekeeper(
+    suffix: str, algorithm_factory: type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]
+) -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
     return BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=MixedInputAdapter(
             entity_adapter=JsonEntityInputAdapter(
@@ -60,7 +66,7 @@ def _build_beekeeper(suffix: str) -> BeeKeeper[McWorker, McDonaldsAllocationRequ
                 allocation_type=McDonaldsAllocationRequest,
             ),
         ),
-        algorithm=GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
+        algorithm=algorithm_factory(),
         preliminary_rules=[
             McRankRule(),
             AvailabilityRule[McWorker, McDonaldsAllocationRequest](),
@@ -70,33 +76,35 @@ def _build_beekeeper(suffix: str) -> BeeKeeper[McWorker, McDonaldsAllocationRequ
     )
 
 
-def _check_budget(mean_seconds: float, fixture_label: str) -> None:
+def _check_budget(mean_seconds: float, label: str) -> None:
     if mean_seconds > WARN_THRESHOLD_SECONDS:
         warnings.warn(
-            f"{fixture_label}: mean {mean_seconds * 1000:.1f}ms exceeded "
+            f"{label}: mean {mean_seconds * 1000:.1f}ms exceeded "
             f"warning threshold of {WARN_THRESHOLD_SECONDS * 1000:.0f}ms",
             stacklevel=2,
         )
     assert mean_seconds < FAIL_THRESHOLD_SECONDS, (
-        f"{fixture_label}: mean {mean_seconds * 1000:.1f}ms exceeded "
-        f"hard ceiling of {FAIL_THRESHOLD_SECONDS * 1000:.0f}ms"
+        f"{label}: mean {mean_seconds * 1000:.1f}ms exceeded hard ceiling of {FAIL_THRESHOLD_SECONDS * 1000:.0f}ms"
     )
 
 
+@pytest.mark.parametrize("algorithm_name", list(ALGORITHMS.keys()))
 @pytest.mark.parametrize(
-    ("suffix", "label"),
+    ("suffix", "size_label"),
     [
-        ("large", "65 workers / 25 allocations"),
-        ("xlarge", "100 workers / 40 allocations"),
-        ("xxlarge", "200 workers / 80 allocations"),
+        ("large", "65w/25a"),
+        ("xlarge", "100w/40a"),
+        ("xxlarge", "200w/80a"),
     ],
 )
-def test_greedy_full_pipeline_budget(
+def test_full_pipeline_budget(
     benchmark: pytest.FixtureRequest,
+    algorithm_name: str,
     suffix: str,
-    label: str,
+    size_label: str,
 ) -> None:
-    """End-to-end greedy run for each fixture size."""
-    bk = _build_beekeeper(suffix)
+    """End-to-end run for each algorithm × fixture size."""
+    factory = ALGORITHMS[algorithm_name]
+    bk = _build_beekeeper(suffix, factory)
     benchmark(bk.execute)
-    _check_budget(benchmark.stats.stats.mean, label)  # type: ignore[attr-defined]
+    _check_budget(benchmark.stats.stats.mean, f"{algorithm_name} on {size_label}")  # type: ignore[attr-defined]
