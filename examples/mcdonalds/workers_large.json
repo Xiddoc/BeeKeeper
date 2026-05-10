@@ -1,0 +1,727 @@
+[
+  {
+    "name": "Allison Hill",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-26T00:00:00",
+        "end_date": "2025-07-27T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-07-11T00:00:00",
+        "end_date": "2025-07-18T00:00:00",
+        "reason": "family wedding",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Noah Rhodes",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Angie Henderson",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-15T00:00:00",
+        "end_date": "2025-07-21T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Daniel Wagner",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-05T00:00:00",
+        "end_date": "2025-07-11T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Cristian Santos",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Connie Lawrence",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-11T00:00:00",
+        "end_date": "2025-07-17T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-06-21T00:00:00",
+        "end_date": "2025-06-28T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-15T00:00:00",
+        "end_date": "2025-06-22T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Abigail Shaffer",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-05T00:00:00",
+        "end_date": "2025-06-07T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Gina Moore",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Gabrielle Davis",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-26T00:00:00",
+        "end_date": "2025-07-02T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Ryan Munoz",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Monica Herrera",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-05T00:00:00",
+        "end_date": "2025-07-08T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Jamie Arnold",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-26T00:00:00",
+        "end_date": "2025-06-29T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-09T00:00:00",
+        "end_date": "2025-06-14T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Lisa Hensley",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Michele Williams",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Dylan Miller",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-21T00:00:00",
+        "end_date": "2025-07-27T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Brian Ramirez",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Holly Wood",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-30T00:00:00",
+        "end_date": "2025-07-05T00:00:00",
+        "reason": "family wedding",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Derek Zuniga",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-01T00:00:00",
+        "end_date": "2025-06-07T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-07-27T00:00:00",
+        "end_date": "2025-08-01T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Lisa Jackson",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-08T00:00:00",
+        "end_date": "2025-06-11T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Carla Gray",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Margaret Hawkins DDS",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-17T00:00:00",
+        "end_date": "2025-07-20T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Patty Perez",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-07T00:00:00",
+        "end_date": "2025-06-14T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Ethan Adams",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-09T00:00:00",
+        "end_date": "2025-07-11T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Tommy Walter",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Matthew Foster",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-30T00:00:00",
+        "end_date": "2025-08-04T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-02T00:00:00",
+        "end_date": "2025-07-03T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-27T00:00:00",
+        "end_date": "2025-08-03T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Judy Baker",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Justin Baker",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-31T00:00:00",
+        "end_date": "2025-08-01T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-23T00:00:00",
+        "end_date": "2025-07-24T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Stephanie Ross",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Zachary Hicks",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-31T00:00:00",
+        "end_date": "2025-08-05T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Anthony Rodriguez",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-28T00:00:00",
+        "end_date": "2025-06-30T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-15T00:00:00",
+        "end_date": "2025-07-17T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Rebecca Henderson",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-12T00:00:00",
+        "end_date": "2025-07-15T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-29T00:00:00",
+        "end_date": "2025-06-30T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-06-22T00:00:00",
+        "end_date": "2025-06-23T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "James Ferrell",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-01T00:00:00",
+        "end_date": "2025-06-02T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Tricia Valencia",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Nathan Maldonado",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-26T00:00:00",
+        "end_date": "2025-07-29T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-18T00:00:00",
+        "end_date": "2025-06-24T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Debra Davidson",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Jeffrey Chavez",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-07T00:00:00",
+        "end_date": "2025-07-12T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-07-01T00:00:00",
+        "end_date": "2025-07-08T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Sherri Baker",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Cassandra Gaines",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-28T00:00:00",
+        "end_date": "2025-07-02T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Elizabeth Fowler",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Brittany Farmer",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-12T00:00:00",
+        "end_date": "2025-07-13T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Paula Moreno",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Fred Smith",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-16T00:00:00",
+        "end_date": "2025-06-18T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-09T00:00:00",
+        "end_date": "2025-06-13T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Sherry Decker",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Anthony Humphrey",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-29T00:00:00",
+        "end_date": "2025-07-06T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-06-07T00:00:00",
+        "end_date": "2025-06-08T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Angelica Tucker",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-06T00:00:00",
+        "end_date": "2025-06-13T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-06-27T00:00:00",
+        "end_date": "2025-07-01T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Philip Cannon",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-04T00:00:00",
+        "end_date": "2025-06-06T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "John Pierce",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Shane Henderson",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-21T00:00:00",
+        "end_date": "2025-07-25T00:00:00",
+        "reason": "family wedding",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-17T00:00:00",
+        "end_date": "2025-07-24T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Joshua Blair",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-13T00:00:00",
+        "end_date": "2025-06-16T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Eric Carney",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-05T00:00:00",
+        "end_date": "2025-07-06T00:00:00",
+        "reason": "jury duty",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Jessica Holmes",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Danny Morgan",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-29T00:00:00",
+        "end_date": "2025-08-05T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Crystal Robinson",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-06T00:00:00",
+        "end_date": "2025-06-13T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-06-05T00:00:00",
+        "end_date": "2025-06-11T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": true
+      },
+      {
+        "start_date": "2025-06-08T00:00:00",
+        "end_date": "2025-06-13T00:00:00",
+        "reason": "doctor's appointment",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Mark Perez",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Shannon Jones",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Michael Lewis",
+    "rank": "COOK",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-07T00:00:00",
+        "end_date": "2025-07-12T00:00:00",
+        "reason": "family wedding",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Timothy Duncan",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Richard Aguirre",
+    "rank": "MANAGER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-16T00:00:00",
+        "end_date": "2025-06-19T00:00:00",
+        "reason": "school event",
+        "is_paid_leave": true
+      }
+    ]
+  },
+  {
+    "name": "Brent Jordan",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-30T00:00:00",
+        "end_date": "2025-07-03T00:00:00",
+        "reason": "religious holiday",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "John Daniel",
+    "rank": "MANAGER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Victoria Garcia",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-07T00:00:00",
+        "end_date": "2025-07-08T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Gerald Hensley",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-06-09T00:00:00",
+        "end_date": "2025-06-12T00:00:00",
+        "reason": "vacation",
+        "is_paid_leave": false
+      }
+    ]
+  },
+  {
+    "name": "Connor West",
+    "rank": "COOK",
+    "inavailabilities": []
+  },
+  {
+    "name": "Donald Wright",
+    "rank": "CASHIER",
+    "inavailabilities": []
+  },
+  {
+    "name": "Jessica Callahan",
+    "rank": "CASHIER",
+    "inavailabilities": [
+      {
+        "start_date": "2025-07-16T00:00:00",
+        "end_date": "2025-07-19T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": false
+      },
+      {
+        "start_date": "2025-07-22T00:00:00",
+        "end_date": "2025-07-28T00:00:00",
+        "reason": "moving day",
+        "is_paid_leave": true
+      }
+    ]
+  }
+]
