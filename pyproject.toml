@@ -3,8 +3,21 @@ name = "beekeeper"
 version = "0.1.0"
 description = "Manage the Bee-sy with ease."
 readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 authors = [
     { name = "Xiddoc", email = "xiddoc@xiddoc.pc" }
+]
+keywords = ["scheduling", "allocation", "constraints", "rostering", "assignment"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 requires-python = ">=3.13"
 dependencies = [
@@ -12,10 +25,16 @@ dependencies = [
     "setuptools>=80",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Xiddoc/Beekeeper"
+Repository = "https://github.com/Xiddoc/Beekeeper"
+Issues = "https://github.com/Xiddoc/Beekeeper/issues"
+
 [dependency-groups]
 dev = [
     "mypy>=1.16.0",
     "pre-commit>=4.2.0",
+    "pytest>=8.0",
     "ruff>=0.11.12",
 ]
 
@@ -27,8 +46,15 @@ examples = [
 #beekeeper = "beekeeper:main"
 
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+beekeeper = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
 
 [tool.mypy]
 strict = true
@@ -70,7 +96,6 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    ".venv",
 ]
 
 # Same as Black.
@@ -84,6 +109,10 @@ select = ["ALL"]
 ignore = ["D", "COM812", "S311", "T201", "PLR2004", "UP007", "INP001", "S105", "EM102", "TRY003", "EM101", "TD003", "FIX002", "TD002"]
 fixable = ["ALL"]
 unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "ANN", "PT011", "SLF001"]
+"examples/**/*.py" = ["ANN", "ARG", "D"]
 
 [tool.ruff.format]
 preview = true
