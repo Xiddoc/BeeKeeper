@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import auto
 
 from beekeeper import Inavailability
@@ -14,5 +15,5 @@ class McJobPosition(Rank):
     MANAGER = auto()
 
 
-class McDonaldsInavailability(Inavailability):
+class McDonaldsInavailability(Inavailability[datetime]):
     is_paid_leave: bool
