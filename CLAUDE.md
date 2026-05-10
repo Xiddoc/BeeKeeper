@@ -4,60 +4,94 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Beekeeper ("Manage the Bee-sy with ease.") is a Python 3.13 library for assigning entities (people/resources) to allocation requests over date ranges, given constraints like rank, location, exemptions, and inavailabilities. It is packaged as a library; there is no CLI entry point yet (the `[project.scripts]` block in `pyproject.toml` is commented out).
+Beekeeper ("Manage the Bee-sy with ease.") is a Python 3.13 library for assigning **entities** (workers/resources) to **allocation requests** over date ranges, subject to a pluggable **rules** pipeline and a user-supplied **algorithm**. It is packaged as a library; there is no CLI entry point yet (the `[project.scripts]` block in `pyproject.toml` is commented out).
 
-Dependencies are managed with **uv** (`uv.lock` is committed). Runtime dep is `pydantic>=2.11.1`; dev deps are `mypy` and `ruff`.
+Dependencies are managed with **uv** (`uv.lock` is committed). Runtime dep is `pydantic>=2.11.5`. Dev tools: `mypy`, `ruff`, `pytest`, `pre-commit`. The `examples` dependency group adds `faker`.
 
 ## Common commands
 
 ```bash
-uv sync                       # install/refresh the venv from uv.lock
-uv run mypy src               # strict type-check (examples/ is excluded)
-uv run ruff check             # lint
-uv run ruff format            # format
+uv sync                         # install/refresh the venv from uv.lock
+uv sync --all-groups            # also install dev + examples groups
+uv run ruff check               # lint
+uv run ruff format              # format
+uv run mypy src                 # strict type-check (examples/ excluded)
+uv run pytest                   # run tests
+uv run pytest tests/test_date_range.py::test_daterange_days_counts_full_span   # single test
+uv run pre-commit install       # one-time: enable git hooks
+uv run pre-commit run --all-files
 ```
 
-There is **no test suite** in this repo yet — no `tests/` directory and no test runner configured.
+CI (`.github/workflows/ci.yml`) runs ruff (lint + format check), mypy, and pytest on every push to `master` and every PR.
 
 ## Tooling configuration to be aware of
 
 - **mypy** runs in `strict` mode with the `pydantic.mypy` plugin and `disallow_untyped_defs`. `examples/` is excluded; the rest of the codebase must type-check cleanly.
-- **ruff** uses `select = ["ALL"]` (every rule) with a small ignore list in `pyproject.toml`. New code is expected to satisfy the full rule set out of the box. Line length is 120; target is `py313`.
-- Python `3.13` is required (`.python-version`, `requires-python = ">=3.13"`). Modern syntax like PEP 604 unions is fine; `UP007` (forced `X | Y`) is intentionally ignored, so `Optional[T]` is also accepted.
+- **ruff** uses `select = ["ALL"]` (every rule) with a curated ignore list in `pyproject.toml`. Per-file relaxations live in `[tool.ruff.lint.per-file-ignores]` — `tests/**` skips `S101`/`ANN`/`PT011`/`SLF001`, `examples/**` skips `ANN`/`ARG`/`D`. New code in `src/` is expected to satisfy the full rule set.
+- **pre-commit** wires up ruff (lint + format), mypy, the standard pre-commit-hooks bundle, and `astral-sh/uv-pre-commit` (which keeps `uv.lock` in sync).
+- Python `3.13` is required and used (`.python-version`, `requires-python = ">=3.13"`). The codebase uses **PEP 695 type-parameter syntax** (e.g. `class Entity[TInavailability: Inavailability](BaseModel)`); `UP007` is ignored so `Optional[T]` is still accepted alongside `X | None`.
+- Distribution is marked `Typing :: Typed` — `src/beekeeper/py.typed` (PEP 561) is shipped via `[tool.setuptools.package-data]`.
 
 ## Architecture
 
-The library is built around an **adapter pattern**: callers integrate Beekeeper by implementing input/output adapters for their data source, then (eventually) running an allocation flow.
+Beekeeper is a **framework**: callers bring data (via input adapters), constraints (rules), and an assignment strategy (algorithm). The library wires the orchestration.
 
 ### Public surface
 
-`beekeeper/__init__.py` re-exports the entire public API. Anything not in that `__all__` is internal. Key exports:
+`src/beekeeper/__init__.py` re-exports the public API. Anything not in `__all__` is internal. Key exports today:
 
+- Orchestrator: `BeeKeeper`
 - Adapters: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`, `OutputAdapter`
-- Domain models: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Inavailability`, `DateRange`
-- Domain enums (abstract — see below): `AllocationType`, `Rank`, `Location`, `Exemption`
+- Domain models: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Inavailability`, `DateRange`, `AllocationType`
+
+### Pydantic vs. plain classes — the convention
+
+Use **pydantic `BaseModel`** for **data**: things that get validated, serialized, deserialized, or crossed across IO boundaries — `Entity`, `AllocationRequest`, `PlannedAllocation`, `Inavailability`, `DateRange`. Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: things that hold dependencies or in-memory state, and whose fields can legitimately be ABCs — `MixedInputAdapter`, `BeeKeeperFlowState`, the flow-stage classes, `BeeKeeper` itself.
+
+Why: pydantic introspects every field type to build a JSON-schema-style validator. ABC-typed fields fail that introspection unless you set `arbitrary_types_allowed=True`, which silently disables validation for those fields anyway — defeating pydantic's purpose. Dataclasses don't do runtime field-type introspection, so they accept ABC-typed fields without ceremony and still inherit cleanly from ABC bases. Keeping the data/service split sidesteps the conflict entirely.
+
+### Internal imports
+
+Inside `src/beekeeper/`, prefer **submodule imports** (`from beekeeper.entities.entity import Entity`) over **top-level package imports** (`from beekeeper import Entity`). The latter creates circular-init hazards: when a submodule imported partway through `beekeeper/__init__.py` reaches back into the still-loading top-level `beekeeper`, names declared further down in `__init__.py` aren't bound yet and the import explodes. Top-level imports are for end users, not for internal wiring.
 
 ### Adapter layer (`src/beekeeper/adapters/`)
 
-- `EntityInputAdapter.get_entities() -> Iterable[Entity]`
-- `AllocationInputAdapter.get_allocations() -> Iterable[AllocationRequest]`
-- `InputAdapter` is the **multiple-inheritance union** of the two — implement it when one source provides both. Use `MixedInputAdapter` (a dataclass that composes two separate adapters) when entities and allocations come from different sources.
-- `OutputAdapter.handle_output()` is the (currently unparameterized) sink for results.
+- `EntityInputAdapter.get_entities() -> Iterable[Entity]` and `AllocationInputAdapter.get_allocations() -> Iterable[AllocationRequest]` — both are ABCs.
+- `InputAdapter` is the multiple-inheritance union of the two; implement directly when one source provides both kinds of data.
+- `MixedInputAdapter` composes two separate adapters into one (see import-time caveat above).
+- `OutputAdapter.handle_output()` is the result sink (currently unparameterized).
 
-A worked example lives under `examples/mcdonalds/` showing concrete adapters (`ExcelEntityInputAdapter`, `ExcelAllocationInputAdapter`). Examples are intentionally excluded from mypy.
+A skeleton integration lives under `examples/mcdonalds/` (Excel-backed adapters, currently returning empty iterables). `examples/` is excluded from mypy.
 
-### Domain model (`src/beekeeper/entities/`, `allocations/`, `inavailabilities/`, `time_constructs/`)
+### Domain model
 
-- `Entity` (dataclass): a resource with `inavailabilities`, `exemptions`, and a `rank`.
-- `AllocationRequest` (dataclass): a slot to fill — has `allocation_type`, `date_range`, `location`, `allowed_ranks`, `prohibited_exemptions`, and an optional pre-`requested_entity`.
-- `PlannedAllocation` extends `AllocationRequest` with `assigned_entity` — represents the result of a successful allocation.
+- `Entity[TInavailability: Inavailability]` — pydantic `BaseModel`. Currently exposes only `inavailabilities`. Generic on the inavailability type via PEP 695 syntax. A module-level `TEntity = TypeVar("TEntity", bound=Entity)` is exported for downstream generics.
+- `AllocationRequest` — pydantic `BaseModel`, `Generic[TAllocationType, TEntity]`. Fields: `allocation_type`, `date_range`, `requested_entity`. A `TAllocationRequest` TypeVar is exported alongside.
+- `PlannedAllocation` extends `AllocationRequest` with the assigned `Entity`.
 - `Inavailability` is a `DateRange` subclass (a period an entity is unavailable).
-- `DateRange` is a **pydantic `BaseModel`** with `start_date`, `end_date`, and a `days` property that counts inclusively (same-day range = 1 day).
+- `DateRange` is a pydantic `BaseModel` with `start_date`, `end_date`, and a `days` property that counts **inclusively** — same-day range = 1 day.
+- `AllocationType` is an empty `AbstractEnum` subclass; consumers extend it with their domain's vocabulary.
 
 ### `AbstractEnum` pattern (`src/beekeeper/data_structures/abstract_enum.py`)
 
-`Rank`, `Location`, `Exemption`, and `AllocationType` are all empty subclasses of `AbstractEnum` (an `Enum` whose metaclass also mixes in `ABCMeta`). They are **deliberately empty** — consuming applications subclass them and supply their own concrete members for that domain. Do not add concrete enum members to the library itself; they belong in caller code or in `examples/`.
+`AbstractEnum` is an `Enum` whose metaclass also mixes in `ABCMeta`, letting subclasses act as both enum *and* abstract base. Today only `AllocationType` uses it, and it ships with no concrete members — applications subclass it (e.g. `class Shift(AllocationType): MORNING = ...`).
 
-### Flow layer (`src/beekeeper/flow/`)
+### Rules (`src/beekeeper/rules/`)
 
-Currently a placeholder package with only `__init__.py`. The allocation/orchestration logic that consumes adapters and produces `PlannedAllocation`s has not been implemented yet — expect this to be the next major area of work.
+- `BaseRule` — empty marker base.
+- `PreliminaryRule.is_compatible(entity, allocation) -> bool` — static, stateless compatibility checks (e.g. exemptions, qualifications). Run before the algorithm.
+- `StatefulRule.is_compatible(entity, allocation, state) -> bool` — context-aware checks against the in-progress assignment `State` (e.g. consecutive-shift limits, cumulative hour caps). Consulted by the algorithm during assignment.
+
+### Algorithm (`src/beekeeper/algorithm/`)
+
+- `BaseAlgorithm[TEntity, TAllocationType]` — abstract. Implement `run(allocations, entities, rules) -> State` with your assignment strategy. The `State` type lives in `algorithm_state.py`.
+
+### Flow (`src/beekeeper/flow/`)
+
+`BeeKeeper` (in `flow/beekeeper.py`) is the orchestrator. It pulls data through the input adapter into a `BeeKeeperFlowState` and runs three pipeline stages in order:
+
+1. `AssignPossibleEntitiesToAllocations` — narrow each allocation to candidate entities.
+2. `RunPreliminaryRules` — drop pairs that fail any `PreliminaryRule`.
+3. `RunAlgorithmAndDispatchResults` — invoke the configured `BaseAlgorithm`, then push results through the output adapters.
+
+Several flow stages are currently scaffolded (e.g. `assign_possible_entities_to_allocations.py`'s `run_stage` body is empty / a `pass`), and `mypy` reports ~20 type errors in this area today — expect this to be the active development frontier.

@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/pypi/v/beekeeper?style=for-the-badge&logo=pypi&color=blue" alt="PyPI version">
   <img src="https://img.shields.io/pypi/pyversions/beekeeper?style=for-the-badge&logo=python&color=blue" alt="Python versions">
   <img src="https://img.shields.io/github/license/Xiddoc/beekeeper?style=for-the-badge&color=green" alt="GitHub license">
-  <img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/beekeeper/main.yml?branch=main&style=for-the-badge&logo=githubactions&label=tests" alt="Build Status">
+  <img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=tests" alt="Build Status">
   <img src="https://img.shields.io/readthedocs/beekeeper?style=for-the-badge&logo=readthedoc&color=blueviolet" alt="Documentation Status">
 </p>
 
@@ -71,7 +71,7 @@ pip install beekeeper
 
 For now, you might install directly from GitHub:
 ```bash
-git clone [https://github.com/Xiddoc/beekeeper.git](https://github.com/Xiddoc/beekeeper.git)
+git clone https://github.com/Xiddoc/Beekeeper.git
 cd beekeeper
 pip install uv # If you don't already have uv
 uv sync
@@ -128,13 +128,7 @@ if __name__ == "__main__":
 
 ## 🍔 Included Example: McDonald's Workers
 
-The project includes a simple example in `examples.mcdonalds`:
-
-* **`McWorker`**: A custom `Entity` representing a McDonald's worker.
-* **`McJobPositions`**: A `Rank` enum for positions like `CASHIER`, `COOK`, `MANAGER`.
-* **`McWorkerEntityInputAdapter`**: An example `EntityInputAdapter` that provides a predefined list of `McWorker` entities with names, ranks, and some example `Inavailability` periods.
-
-This example helps illustrate how to define your own entities and input sources.
+A skeleton integration lives under [`examples/mcdonalds/`](examples/mcdonalds) showing where Excel-backed `EntityInputAdapter` and `AllocationInputAdapter` implementations slot in. The adapters are stubs returning empty iterables — flesh them out (or replace them) to build a real example.
 
 ---
 
@@ -166,8 +160,8 @@ BeeKeeper's strength lies in its adaptability. You can customize:
 
 ## 🏗️ Project Structure Highlights
 
-* **`beekeeper/`**: Core library code.
-    * `beekeeper.py`: Main `BeeKeeper` class orchestrating the flow.
+* **`src/beekeeper/`**: Core library code.
+    * `flow/beekeeper.py`: Main `BeeKeeper` class orchestrating the flow.
     * `adapters/`: For input and output data handling.
         * `inputs/`: `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`.
         * `outputs/`: `OutputAdapter`.
@@ -180,6 +174,21 @@ BeeKeeper's strength lies in its adaptability. You can customize:
     * `time_constructs/`: `DateRange`.
 * **`examples/`**: Practical examples of how to use BeeKeeper.
     * `mcdonalds/`: A concrete example with `McWorker` entities.
+
+---
+
+## 🛠️ Development
+
+```bash
+uv sync                         # install + create venv from uv.lock
+uv run ruff check               # lint
+uv run ruff format              # format
+uv run mypy src                 # type-check (strict; examples/ excluded)
+uv run pytest                   # run tests
+uv run pre-commit install       # one-time: enable git hooks
+```
+
+Lint, format check, mypy, and the test suite all run in CI on every push and pull request — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ---
 
@@ -200,7 +209,7 @@ Please adhere to the project's coding standards and provide a clear description 
 
 ## 📜 License
 
-This project is licensed under the **[PRIVATE FOR NOW - TBD]** License - see the `LICENSE` file for details.
+This project is licensed under the **GNU General Public License v3.0 or later** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
