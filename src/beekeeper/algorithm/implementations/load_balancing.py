@@ -39,12 +39,8 @@ class LoadBalancingAssignmentAlgorithm[
     are preferred over equally-scored entities who already have several. No
     randomness; the algorithm is fully deterministic for a given input.
 
-    The load counter is maintained in a side dict keyed by ``id(entity)``
-    rather than asking the State on every score evaluation; the State's
-    ``get_allocations_done_by`` is O(n) per call, and on large fixtures
-    that turns the per-allocation candidate sort into O(c·a) which dominates
-    the runtime. The dict makes load lookup O(1) and keeps the algorithm
-    in the same complexity class as greedy.
+    Load is read from ``state.get_allocations_done_by`` (now O(k) thanks to
+    the State's per-entity index); no side bookkeeping is needed.
     """
 
     def run(
@@ -57,13 +53,12 @@ class LoadBalancingAssignmentAlgorithm[
         del entities
         rules_list = list(rules)
         state: State[TEntity, TAllocationRequest] = State()
-        load: dict[int, int] = {}
 
         for allocation in allocations:
             alloc_candidates = candidates.get(id(allocation), [])
             ranked = sorted(
                 alloc_candidates,
-                key=lambda c: c.score / (1 + load.get(id(c.entity), 0)),
+                key=lambda c: c.score / (1 + len(state.get_allocations_done_by(c.entity))),
                 reverse=True,
             )
             chosen: list[TEntity] = []
@@ -75,8 +70,6 @@ class LoadBalancingAssignmentAlgorithm[
                     chosen.append(candidate.entity)
 
             if len(chosen) == allocation.required_count:
-                for entity in chosen:
-                    load[id(entity)] = load.get(id(entity), 0) + 1
                 state.add_allocation(PlannedAllocation(request=allocation, assigned_entities=tuple(chosen)))
 
         return state
