@@ -1,14 +1,13 @@
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Generic
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from beekeeper import EntityInputAdapter
-from beekeeper.entities.entity import TEntity
+from beekeeper.entities.entity import Entity
 
 
-class JsonEntityInputAdapter(EntityInputAdapter, BaseModel, Generic[TEntity]):
+class JsonEntityInputAdapter[TEntity: Entity](EntityInputAdapter[TEntity], BaseModel):
     file: Path
     entity_type: type[TEntity]
 

@@ -5,9 +5,9 @@ from beekeeper.entities.entity import Entity
 from beekeeper.rules.base_rule import BaseRule
 
 
-class PreliminaryRule(BaseRule, ABC):
+class PreliminaryRule[TEntity: Entity, TAllocationRequest: AllocationRequest](BaseRule, ABC):
     @abstractmethod
-    def is_compatible(self, entity: Entity, allocation: AllocationRequest) -> bool:
+    def is_compatible(self, entity: TEntity, allocation: TAllocationRequest) -> bool:
         """
         Check if this entity can possibly perform this allocation at all.
         This is a preliminary run meant to check impossibilities between entities

@@ -1,16 +1,11 @@
-from typing import Generic, Optional, TypeVar
-
 from pydantic import BaseModel
 
-from beekeeper.allocations.allocation_type import TAllocationType
-from beekeeper.entities.entity import TEntity
+from beekeeper.allocations.allocation_type import AllocationType
+from beekeeper.entities.entity import Entity
 from beekeeper.time_constructs.date_range import DateRange
 
 
-class AllocationRequest(BaseModel, Generic[TAllocationType, TEntity]):
+class AllocationRequest[TAllocationType: AllocationType, TEntity: Entity](BaseModel):
     allocation_type: TAllocationType
     date_range: DateRange
-    requested_entity: Optional[TEntity] = None
-
-
-TAllocationRequest = TypeVar("TAllocationRequest", bound=AllocationRequest)
+    requested_entity: TEntity | None = None

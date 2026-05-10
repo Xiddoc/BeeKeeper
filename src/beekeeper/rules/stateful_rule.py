@@ -6,9 +6,9 @@ from beekeeper.entities.entity import Entity
 from beekeeper.rules.base_rule import BaseRule
 
 
-class StatefulRule(BaseRule, ABC):
+class StatefulRule[TEntity: Entity, TPlannedAllocation: PlannedAllocation](BaseRule, ABC):
     @abstractmethod
-    def is_compatible(self, entity: Entity, allocation: PlannedAllocation, state: State) -> bool:
+    def is_compatible(self, entity: TEntity, allocation: TPlannedAllocation, state: State) -> bool:
         """
         Check if this entity can possibly perform this allocation with due
         regard to the current state of the timetable. This is a more comprehensive

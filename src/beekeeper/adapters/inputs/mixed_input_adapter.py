@@ -9,12 +9,14 @@ from beekeeper.entities.entity import Entity
 
 
 @dataclass
-class MixedInputAdapter(InputAdapter):
-    entity_adapter: EntityInputAdapter
-    allocation_adapter: AllocationInputAdapter
+class MixedInputAdapter[TEntity: Entity, TAllocationRequest: AllocationRequest](
+    InputAdapter[TEntity, TAllocationRequest],
+):
+    entity_adapter: EntityInputAdapter[TEntity]
+    allocation_adapter: AllocationInputAdapter[TAllocationRequest]
 
-    def get_entities(self) -> Iterable[Entity]:
+    def get_entities(self) -> Iterable[TEntity]:
         return self.entity_adapter.get_entities()
 
-    def get_allocations(self) -> Iterable[AllocationRequest]:
+    def get_allocations(self) -> Iterable[TAllocationRequest]:
         return self.allocation_adapter.get_allocations()

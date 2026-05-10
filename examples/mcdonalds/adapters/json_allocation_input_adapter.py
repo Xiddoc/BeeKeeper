@@ -1,14 +1,15 @@
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Generic
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from beekeeper import AllocationInputAdapter
-from beekeeper.allocations.allocation_request import TAllocationRequest
+from beekeeper.allocations.allocation_request import AllocationRequest
 
 
-class JsonAllocationInputAdapter(AllocationInputAdapter, BaseModel, Generic[TAllocationRequest]):
+class JsonAllocationInputAdapter[TAllocationRequest: AllocationRequest](
+    AllocationInputAdapter[TAllocationRequest], BaseModel
+):
     file: Path
     allocation_type: type[TAllocationRequest]
 
