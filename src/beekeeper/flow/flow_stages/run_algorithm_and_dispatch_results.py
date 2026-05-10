@@ -29,7 +29,10 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
         self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]
     ) -> BeeKeeperFlowState[TEntity, TAllocationRequest]:
         output_state = self._algorithm.run(
-            allocations=state.allocations, entities=state.entities, rules=state.stateful_rules
+            allocations=state.allocations,
+            entities=state.entities,
+            candidates=state.candidate_map,
+            rules=state.stateful_rules,
         )
 
         for output_adapter in self._output_adapters:

@@ -111,7 +111,7 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "ANN", "PT011", "SLF001"]
+"tests/**/*.py" = ["S101", "ANN", "ARG", "PT011", "SLF001"]
 "examples/**/*.py" = ["ANN", "ARG", "D"]
 
 [tool.ruff.format]

@@ -1,10 +1,11 @@
 from abc import abstractmethod
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import Any
 
 from beekeeper.algorithm.algorithm_state import State
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
+from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
@@ -14,20 +15,27 @@ class BaseAlgorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[
         self,
         allocations: Iterable[TAllocationRequest],
         entities: Iterable[TEntity],
+        candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
     ) -> State[TEntity, TAllocationRequest]:
-        """
-        The entry point to your sorting and allocating algorithm.
-        Here you will receive a list of allocations you need to assign.
-        You also receive a list of rules that you must abide to.
-        Good luck :)
+        """The entry point to your sorting and allocating algorithm.
+
+        You receive the full list of allocations to assign, the full list of
+        entities, the per-allocation candidate map (already pruned by
+        preliminary rules and decorated with aggregate scores), and the
+        stateful rules you must consult during assignment.
 
         Args:
             allocations: The list of tasks you need to assign.
             entities: The work entities ("employees") you have to complete the allocations.
-            rules: The rules that define how to assign these tasks.
+            candidates: For each allocation (keyed by ``id(allocation)``), the
+                viable entities and their preliminary-rule scores. Candidates
+                with ``compatible=False`` from any preliminary rule have
+                already been pruned; what's left passed every binary check.
+            rules: The stateful rules that must hold given the in-progress
+                State — consult them before adding a PlannedAllocation.
 
         Returns:
-            The final state of the algorithm, where all the allocations have been assigned.
-
+            The final state of the algorithm, where the chosen allocations
+            have been assigned via ``State.add_allocation``.
         """
