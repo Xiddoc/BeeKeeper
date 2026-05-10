@@ -66,6 +66,25 @@ A full mkdocs-material site under `docs/`, built locally via `uv run mkdocs serv
 The reference algorithms move under a new `beekeeper.algorithm.implementations.*` subpackage to make room for additional implementations and to keep the top-level `beekeeper.algorithm.` namespace for the abstract bases.
 
 * `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm` — baseline (was previously at `beekeeper.algorithm.greedy`).
-* `beekeeper.algorithm.implementations.backtracking.BacktrackingAssignmentAlgorithm` — depth-first search that finds complete solutions where greedy gets stuck. Falls back to greedy when no complete solution exists.
+* `beekeeper.algorithm.implementations.backtracking.BacktrackingAssignmentAlgorithm` — depth-first search that finds complete solutions where greedy gets stuck.
 * `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm` — greedy with a per-entity load penalty so work disperses across the pool.
-* `beekeeper.algorithm.implementations.or_tools.OrToolsAssignmentAlgorithm` — Google OR-Tools CP-SAT-backed global optimizer. Optional dep: `pip install 'beekeeper[ortools]'`.
+* `beekeeper.algorithm.implementations.or_tools.OrToolsAssignmentAlgorithm` — Google OR-Tools CP-SAT-backed global optimizer. Optional dep: `pip install 'beekeeper[ortools]'` or `uv sync --extra ortools`.
+
+### State indexing (perf, internal)
+
+`State` now maintains a per-entity index alongside the flat allocation list, making `get_allocations_done_by(entity)` O(k) instead of O(n). Stateful rules and load-balancing both benefit; `LoadBalancingAssignmentAlgorithm` dropped its workaround side-dict.
+
+### Algorithm chain (breaking)
+
+`BeeKeeper(algorithm=...)` now accepts either a single algorithm or a sequence to try in order. When an algorithm raises `IncompleteSolutionError`, the next one in the sequence runs from scratch.
+
+```python
+BeeKeeper[McWorker, McRequest](
+    algorithm=[BacktrackingAssignmentAlgorithm(), GreedyAssignmentAlgorithm()],
+    ...
+)
+```
+
+`BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` raise `IncompleteSolutionError` instead of silently falling back / silently returning empty. Greedy and load-balancing never raise. Putting one of them last in the chain guarantees a result.
+
+The previously-bundled hardcoded backtracking → greedy fallback is removed in favor of the explicit chain.

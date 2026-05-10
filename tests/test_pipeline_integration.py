@@ -285,7 +285,7 @@ class TestPluggablePipeline:
                 custom_stage,
                 RunPreliminaryRules[_Worker, _Request](),
                 RunAlgorithmAndDispatchResults(
-                    algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+                    algorithms=[GreedyAssignmentAlgorithm[_Worker, _Request]()],
                     output_adapters=[sink],
                 ),
             ],
@@ -302,6 +302,97 @@ class TestPluggablePipeline:
             BeeKeeper[_Worker, _Request](
                 input_adapter=_adapter([], []),
                 # no algorithm, no stages
+            )
+
+
+# --------------------------- algorithm chain --------------------------------
+
+
+class _AlwaysFails(GreedyAssignmentAlgorithm[_Worker, _Request]):
+    """Test double: a marker algorithm that always reports failure."""
+
+    def run(self, allocations, entities, candidates, rules):  # type: ignore[no-untyped-def]
+        from beekeeper.algorithm.errors import IncompleteSolutionError
+
+        raise IncompleteSolutionError("test double — always fails")
+
+
+class TestAlgorithmChain:
+    def test_single_algorithm_works_unchanged(self) -> None:
+        """Passing a bare algorithm (not a list) is the common path."""
+        worker = _Worker(name="W", inavailabilities=[])
+        request = _request(1, 2)
+        sink = _CapturingOutput()
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [request]),
+            algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+            output_adapters=[sink],
+        ).execute()
+
+        assert sink.captured is not None
+        assert len(sink.captured.planned_allocations) == 1
+
+    def test_chain_falls_through_failed_algorithms(self) -> None:
+        """An always-failing algorithm at the head; greedy after it; greedy wins."""
+        worker = _Worker(name="W", inavailabilities=[])
+        request = _request(1, 2)
+        sink = _CapturingOutput()
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [request]),
+            algorithm=[
+                _AlwaysFails(),
+                GreedyAssignmentAlgorithm[_Worker, _Request](),
+            ],
+            output_adapters=[sink],
+        ).execute()
+
+        assert sink.captured is not None
+        assert len(sink.captured.planned_allocations) == 1
+
+    def test_chain_stops_at_first_success(self) -> None:
+        """Greedy at the head succeeds; the trailing entries never run."""
+
+        class _ShouldNeverRun(_AlwaysFails):
+            def run(self, *args, **kwargs):  # type: ignore[no-untyped-def, override]
+                raise AssertionError("trailing algorithm ran when it shouldn't have")
+
+        worker = _Worker(name="W", inavailabilities=[])
+        request = _request(1, 2)
+        sink = _CapturingOutput()
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [request]),
+            algorithm=[
+                GreedyAssignmentAlgorithm[_Worker, _Request](),
+                _ShouldNeverRun(),
+            ],
+            output_adapters=[sink],
+        ).execute()
+
+        assert sink.captured is not None
+        assert len(sink.captured.planned_allocations) == 1
+
+    def test_all_algorithms_failing_propagates_last_error(self) -> None:
+        """Every algorithm raises → the last error reaches the caller."""
+        import pytest
+
+        from beekeeper.algorithm.errors import IncompleteSolutionError
+
+        with pytest.raises(IncompleteSolutionError):
+            BeeKeeper[_Worker, _Request](
+                input_adapter=_adapter([_Worker(name="W", inavailabilities=[])], [_request(1, 2)]),
+                algorithm=[_AlwaysFails(), _AlwaysFails()],
+            ).execute()
+
+    def test_empty_chain_rejected(self) -> None:
+        import pytest
+
+        with pytest.raises(ValueError, match="must not be empty"):
+            BeeKeeper[_Worker, _Request](
+                input_adapter=_adapter([], []),
+                algorithm=[],
             )
 
 

@@ -17,6 +17,7 @@ from typing import Any
 
 from beekeeper.algorithm.algorithm_state import State
 from beekeeper.algorithm.base_algorithm import BaseAlgorithm
+from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
@@ -139,10 +140,12 @@ class OrToolsAssignmentAlgorithm[
         solver.parameters.max_time_in_seconds = self._solver_time_limit_seconds
         status = solver.solve(model)
 
-        state: State[TEntity, TAllocationRequest] = State()
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-            return state
+            status_name = solver.status_name(status)
+            msg = f"OR-Tools CP-SAT solver returned status {status_name}; no assignment was produced."
+            raise IncompleteSolutionError(msg)
 
+        state: State[TEntity, TAllocationRequest] = State()
         for i, alloc in enumerate(allocations_list):
             assigned: tuple[TEntity, ...] = tuple(
                 entities_list[j] for j in range(len(entities_list)) if (i, j) in x and solver.value(x[(i, j)]) == 1

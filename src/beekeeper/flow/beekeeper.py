@@ -26,7 +26,9 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         self,
         *,
         input_adapter: InputAdapter[TEntity, TAllocationRequest],
-        algorithm: BaseAlgorithm[TEntity, TAllocationRequest] | None = None,
+        algorithm: (
+            BaseAlgorithm[TEntity, TAllocationRequest] | Sequence[BaseAlgorithm[TEntity, TAllocationRequest]] | None
+        ) = None,
         preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
         stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
         output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]] = (),
@@ -36,16 +38,37 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
             if algorithm is None:
                 msg = "algorithm is required when stages are not supplied (the default pipeline needs one)"
                 raise ValueError(msg)
+
+            algorithms_chain = self._normalize_algorithm_chain(algorithm)
             stages = [
                 AssignPossibleEntitiesToAllocations(),
                 RunPreliminaryRules(),
-                RunAlgorithmAndDispatchResults(algorithm=algorithm, output_adapters=output_adapters),
+                RunAlgorithmAndDispatchResults(algorithms=algorithms_chain, output_adapters=output_adapters),
             ]
 
         self._preliminary_rules = preliminary_rules
         self._stateful_rules = stateful_rules
         self._input_adapter = input_adapter
         self._stages: Sequence[BaseBeeKeeperFlowStage[TEntity, TAllocationRequest]] = stages
+
+    @staticmethod
+    def _normalize_algorithm_chain(
+        algorithm: (BaseAlgorithm[TEntity, TAllocationRequest] | Sequence[BaseAlgorithm[TEntity, TAllocationRequest]]),
+    ) -> list[BaseAlgorithm[TEntity, TAllocationRequest]]:
+        """Accept either a single algorithm or a sequence; always return a list.
+
+        A user who passes one algorithm gets a one-element chain. A user who
+        passes a sequence (list, tuple, etc.) gets that chain. An empty
+        sequence raises — the framework needs at least one algorithm to
+        produce a schedule.
+        """
+        if isinstance(algorithm, BaseAlgorithm):
+            return [algorithm]
+        chain = list(algorithm)
+        if not chain:
+            msg = "algorithm sequence must not be empty"
+            raise ValueError(msg)
+        return chain
 
     def execute(self) -> None:
         state: BeeKeeperFlowState[TEntity, TAllocationRequest] = BeeKeeperFlowState(

@@ -1,6 +1,8 @@
 from datetime import UTC, datetime
 from enum import auto
 
+import pytest
+
 from beekeeper import (
     AllocationRequest,
     AllocationType,
@@ -10,6 +12,7 @@ from beekeeper import (
     Inavailability,
     State,
 )
+from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm
 from beekeeper.flow.candidate import Candidate
 
@@ -122,12 +125,12 @@ class TestBacktrackingWithOverlappingAllocations:
         assert second_planned.assigned_entities == (worker_b,)
 
 
-class TestBacktrackingFallsBackToGreedy:
-    def test_no_complete_solution_falls_back_to_greedy(self) -> None:
-        """When no complete solution exists, the result is what greedy would have returned."""
+class TestBacktrackingRaisesOnIncomplete:
+    def test_no_complete_solution_raises_incomplete_solution_error(self) -> None:
+        """Backtracking signals failure with an exception so an algorithm chain can fall back."""
         worker = _Worker(name="solo", inavailabilities=[])
         # Two overlapping allocations, only one worker, no-double-booking rule.
-        # No complete solution; greedy fills the first one.
+        # No complete solution exists.
         alloc_a = _request(1, 2)
         alloc_b = _request(1, 2)
 
@@ -136,16 +139,13 @@ class TestBacktrackingFallsBackToGreedy:
             id(alloc_b): [Candidate(entity=worker)],
         }
 
-        result = BacktrackingAssignmentAlgorithm[_Worker, _Request]().run(
-            allocations=[alloc_a, alloc_b],
-            entities=[worker],
-            candidates=candidates,
-            rules=[_NoDoubleBooking()],
-        )
-
-        # Greedy fallback: fills whichever comes first.
-        assert len(result.planned_allocations) == 1
-        assert result.planned_allocations[0].request is alloc_a
+        with pytest.raises(IncompleteSolutionError):
+            BacktrackingAssignmentAlgorithm[_Worker, _Request]().run(
+                allocations=[alloc_a, alloc_b],
+                entities=[worker],
+                candidates=candidates,
+                rules=[_NoDoubleBooking()],
+            )
 
 
 class TestBacktrackingTopKCap:

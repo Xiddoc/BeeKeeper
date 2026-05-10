@@ -35,6 +35,23 @@ A `State[TEntity, TAllocReq]` carrying every successful assignment. Use `state.a
 - **Honor `required_count`.** If an allocation needs N entities, assign exactly N or skip the allocation entirely. Don't half-fill.
 - **Consult stateful rules.** Before adding a `PlannedAllocation`, every stateful rule must evaluate `compatible=True`. The framework does not double-check.
 
+## Failing explicitly
+
+If your algorithm can't produce a result it considers complete (a constraint solver returns `INFEASIBLE`; a backtracking search exhausts without filling every allocation), `raise IncompleteSolutionError` rather than returning a partial. The framework's flow stage walks through an algorithm chain (passed via `BeeKeeper(algorithm=[primary, fallback, ...])`); if your algorithm raises, the next algorithm in the chain runs from scratch.
+
+```python
+from beekeeper import IncompleteSolutionError
+
+# Inside your run(...) method:
+if not solution_complete:
+    raise IncompleteSolutionError(
+        "MyAlgorithm couldn't satisfy the stateful rules with the given candidates",
+        partial_state=state,  # optional — for caller inspection
+    )
+```
+
+Greedy and load-balancing never raise; they return whatever schedule they could fill. Either makes a good chain terminator: `algorithm=[backtracking, greedy]` tries the smarter algorithm first and falls back to greedy on failure.
+
 ## What you may do (but don't have to)
 
 - **Use the score.** `Candidate.score` is the geometric mean of the soft rules' verdicts. Highest-scored is the algorithm's hint of "best candidate." A simple greedy picks the top-scored. A constraint solver might use it as a heuristic.

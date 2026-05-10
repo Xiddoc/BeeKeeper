@@ -4,7 +4,7 @@ from typing import Any
 
 from beekeeper.algorithm.algorithm_state import State
 from beekeeper.algorithm.base_algorithm import BaseAlgorithm
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
@@ -47,11 +47,11 @@ class BacktrackingAssignmentAlgorithm[
     * **Iteration cap.** A hard ``max_iterations`` budget on recursive calls
       so even pathological inputs don't run forever.
 
-    If backtracking can't find a complete solution within the budget, the
-    algorithm falls back to ``GreedyAssignmentAlgorithm`` so the caller still
-    gets the best partial assignment that greedy can produce. Switching from
-    greedy to backtracking is strictly an improvement: greedy's behavior when
-    no full solution exists, and a strictly better one when it does.
+    If the search exhausts without finding a complete assignment for the
+    feasible set, raises ``IncompleteSolutionError``. Wire this algorithm
+    in front of a guaranteed-completion algorithm (greedy or load-balancing)
+    via ``BeeKeeper(algorithm=[BacktrackingAssignmentAlgorithm(),
+    GreedyAssignmentAlgorithm()])`` to fall back automatically.
     """
 
     def __init__(
@@ -69,6 +69,7 @@ class BacktrackingAssignmentAlgorithm[
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
     ) -> State[TEntity, TAllocationRequest]:
+        del entities  # backtracking works only off the pre-pruned candidate map
         rules_list = list(rules)
         allocations_list = list(allocations)
         ranked = self._rank_candidates(allocations_list, candidates)
@@ -80,15 +81,11 @@ class BacktrackingAssignmentAlgorithm[
         if self._search(feasible, 0, ranked, rules_list, state, budget):
             return state
 
-        # Backtracking didn't find a complete assignment for the feasible set
-        # (stateful rules made it infeasible) or the iteration budget ran out.
-        # Fall back to greedy so the caller still gets the best partial.
-        return GreedyAssignmentAlgorithm[TEntity, TAllocationRequest]().run(
-            allocations=allocations_list,
-            entities=entities,
-            candidates=candidates,
-            rules=rules_list,
+        msg = (
+            "BacktrackingAssignmentAlgorithm could not find a complete assignment "
+            f"for {len(feasible)} feasible allocations within the iteration budget."
         )
+        raise IncompleteSolutionError(msg, partial_state=state)
 
     def _rank_candidates(
         self,

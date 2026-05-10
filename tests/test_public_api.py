@@ -23,6 +23,7 @@ EXPECTED_EXPORTS = frozenset(
         "HardPreliminaryRule",
         "HardStatefulRule",
         "Inavailability",
+        "IncompleteSolutionError",
         "InputAdapter",
         "JsonAllocationInputAdapter",
         "JsonEntityInputAdapter",
