@@ -53,6 +53,14 @@ ALGORITHMS: dict[str, type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]]
     "load_balancing": LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
 }
 
+# OR-Tools is an optional dep; include it in the benchmark grid only if available.
+try:
+    from beekeeper.algorithm.implementations.or_tools import OrToolsAssignmentAlgorithm
+
+    ALGORITHMS["or_tools"] = OrToolsAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest]
+except ImportError:
+    pass
+
 
 def _build_beekeeper(
     suffix: str, algorithm_factory: type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]

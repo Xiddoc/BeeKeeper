@@ -25,6 +25,11 @@ dependencies = [
     "setuptools>=80",
 ]
 
+[project.optional-dependencies]
+# Pulled in only when a domain wants the OR-Tools-backed algorithm.
+# Install via: pip install 'beekeeper[ortools]' or uv add 'beekeeper[ortools]'
+ortools = ["ortools>=9.10"]
+
 [project.urls]
 Homepage = "https://github.com/Xiddoc/Beekeeper"
 Documentation = "https://xiddoc.github.io/Beekeeper/"
@@ -37,6 +42,10 @@ dev = [
     "mkdocs-material>=9.5.0",
     "mkdocstrings[python]>=0.26.0",
     "mypy>=1.16.0",
+    # The OR-Tools-backed algorithm is optional for users (see
+    # [project.optional-dependencies].ortools) but installed in dev so CI
+    # exercises it.
+    "ortools>=9.10",
     "pre-commit>=4.2.0",
     "pytest>=8.0",
     "pytest-benchmark>=4.0",
