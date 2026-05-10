@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.rules.base_rule import BaseRule
 
 
-class PreliminaryRule[TEntity: Entity, TAllocationRequest: AllocationRequest](BaseRule, ABC):
+class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](BaseRule, ABC):
     @abstractmethod
     def is_compatible(self, entity: TEntity, allocation: TAllocationRequest) -> bool:
         """

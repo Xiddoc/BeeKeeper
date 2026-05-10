@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Any
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
@@ -9,7 +10,7 @@ from beekeeper.entities.entity import Entity
 
 
 @dataclass
-class MixedInputAdapter[TEntity: Entity, TAllocationRequest: AllocationRequest](
+class MixedInputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
     InputAdapter[TEntity, TAllocationRequest],
 ):
     entity_adapter: EntityInputAdapter[TEntity]
