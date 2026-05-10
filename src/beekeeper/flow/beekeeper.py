@@ -49,8 +49,8 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
 
     def execute(self) -> None:
         state: BeeKeeperFlowState[TEntity, TAllocationRequest] = BeeKeeperFlowState(
-            entities=self._input_adapter.get_entities(),
-            allocations=self._input_adapter.get_allocations(),
+            entities=list(self._input_adapter.get_entities()),
+            allocations=list(self._input_adapter.get_allocations()),
             preliminary_rules=self._preliminary_rules,
             stateful_rules=self._stateful_rules,
         )
