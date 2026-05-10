@@ -3,9 +3,10 @@
 > Manage the Bee-sy with ease.
 
 <p align="center">
-  <img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI">
+  <a href="https://github.com/Xiddoc/Beekeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.13+-blue?style=for-the-badge&logo=python" alt="Python 3.13+">
-  <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-green?style=for-the-badge" alt="License: GPL-3.0-or-later">
+  <a href="https://xiddoc.github.io/Beekeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3.0-green?style=for-the-badge" alt="License: GPL3.0"></a>
 </p>
 
 BeeKeeper is a **Python 3.13+ framework** for assigning entities (workers, vehicles, anything assignable) to allocation requests over date ranges, subject to a rules pipeline and an algorithm you supply. PEP 695 generics flow through every layer — input adapters, rules, algorithm, output adapters — so domain types like `BeeKeeper[McWorker, McRequest]` give you static type-checking and IDE autocomplete end-to-end.
