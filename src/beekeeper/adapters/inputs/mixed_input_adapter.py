@@ -1,6 +1,5 @@
 from collections.abc import Iterable
-
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
@@ -9,7 +8,8 @@ from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 
 
-class MixedInputAdapter(BaseModel, InputAdapter):
+@dataclass
+class MixedInputAdapter(InputAdapter):
     entity_adapter: EntityInputAdapter
     allocation_adapter: AllocationInputAdapter
 

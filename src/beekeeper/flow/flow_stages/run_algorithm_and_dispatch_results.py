@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from beekeeper import OutputAdapter
+from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.base_algorithm import BaseAlgorithm
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage

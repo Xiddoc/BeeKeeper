@@ -1,13 +1,14 @@
 from collections.abc import Iterable
+from dataclasses import dataclass
 
-from pydantic import BaseModel
-
-from beekeeper import AllocationRequest, Entity
+from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.entities.entity import Entity
 from beekeeper.rules.preliminary_rule import PreliminaryRule
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
-class BeeKeeperFlowState(BaseModel):
+@dataclass
+class BeeKeeperFlowState:
     entities: Iterable[Entity]
     allocations: Iterable[AllocationRequest]
     preliminary_rules: Iterable[PreliminaryRule]

@@ -1,4 +1,5 @@
-from beekeeper import Entity, PlannedAllocation
+from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.entities.entity import Entity
 
 
 class State:
