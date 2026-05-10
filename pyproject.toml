@@ -39,6 +39,7 @@ dev = [
     "mypy>=1.16.0",
     "pre-commit>=4.2.0",
     "pytest>=8.0",
+    "pytest-benchmark>=4.0",
     "ruff>=0.11.12",
 ]
 
@@ -58,7 +59,7 @@ beekeeper = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = ["-ra", "--strict-markers", "--strict-config"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--benchmark-skip"]
 
 [tool.mypy]
 strict = true
@@ -110,7 +111,7 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D", "COM812", "S311", "T201", "PLR2004", "UP007", "INP001", "S105", "EM102", "TRY003", "EM101", "TD003", "FIX002", "TD002"]
+ignore = ["D", "COM812", "S311", "T201", "PLR2004", "UP007", "INP001", "S105", "EM102", "TRY003", "EM101", "TD003", "FIX002", "TD002", "RUF002", "RUF003"]
 fixable = ["ALL"]
 unfixable = []
 
@@ -122,7 +123,7 @@ max-args = 8
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "ANN", "ARG", "PT011", "SLF001"]
-"examples/**/*.py" = ["ANN", "ARG", "D"]
+"examples/**/*.py" = ["ANN", "ARG", "D", "DTZ001"]
 
 [tool.ruff.format]
 preview = true

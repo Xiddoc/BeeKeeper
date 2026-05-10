@@ -40,5 +40,8 @@ jobs:
       - name: Pytest
         run: uv run pytest
 
+      - name: Pytest (benchmarks)
+        run: uv run pytest --benchmark-only --benchmark-columns=min,mean,stddev,max,outliers
+
       - name: MkDocs (build --strict)
         run: uv run mkdocs build --strict

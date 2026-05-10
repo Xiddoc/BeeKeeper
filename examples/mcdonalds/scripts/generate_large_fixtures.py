@@ -120,7 +120,7 @@ def _generate_allocations(rng: random.Random) -> list[dict[str, object]]:
 def main() -> None:
     fake = Faker()
     Faker.seed(SEED)
-    rng = random.Random(SEED)  # noqa: S311 — fixtures, not crypto
+    rng = random.Random(SEED)
 
     fixtures_dir = Path(__file__).resolve().parent.parent
 
