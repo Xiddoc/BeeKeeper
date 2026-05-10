@@ -3,10 +3,9 @@ from typing import Any
 
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
-from beekeeper.rules.base_rule import BaseRule
 
 
-class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](BaseRule, ABC):
+class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](ABC):
     @abstractmethod
     def is_compatible(self, entity: TEntity, allocation: TAllocationRequest) -> bool:
         """
