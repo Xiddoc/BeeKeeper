@@ -121,9 +121,8 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 | Module | Class | Behavior |
 | --- | --- | --- |
-| `greedy` | `GreedyAssignmentAlgorithm` | Highest-scored compatible candidates per allocation, in input order. Never raises. |
+| `load_balancing` | `LoadBalancingAssignmentAlgorithm` | Default reference. Highest-scored compatible candidates per allocation, weighted by `score / (1 + load)` so entities with prior assignments are scored down and work disperses across the pool. Never raises. |
 | `backtracking` | `BacktrackingAssignmentAlgorithm` | Depth-first search over top-K candidates per allocation. Feasibility filter + iteration cap (default 1M). Raises `IncompleteSolutionError` on failure. |
-| `load_balancing` | `LoadBalancingAssignmentAlgorithm` | Greedy with `score / (1 + load)`; entities with prior assignments are scored down. Never raises. |
 | `or_tools` | `OrToolsAssignmentAlgorithm` | CP-SAT solver via Google OR-Tools. Time-cap'd (default 500 ms). Optional dep — installing the `ortools` extra is required. Raises `IncompleteSolutionError` on `INFEASIBLE` / `MODEL_INVALID`. |
 
 #### The algorithm chain
@@ -134,13 +133,13 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 BeeKeeper[McWorker, McRequest](
     algorithm=[
         BacktrackingAssignmentAlgorithm(),
-        GreedyAssignmentAlgorithm(),  # always succeeds, ends the chain
+        LoadBalancingAssignmentAlgorithm(),  # always succeeds, ends the chain
     ],
     ...
 )
 ```
 
-Putting greedy or load-balancing last guarantees the chain produces a result.
+Putting load-balancing last guarantees the chain produces a result (it never raises).
 
 ### Flow (`src/beekeeper/flow/`)
 
@@ -170,16 +169,17 @@ The pipeline is pluggable: pass `stages=[...]` to `BeeKeeper.__init__` to replac
 
 The oversubscribed fixtures stress workload distribution: every worker who isn't rank-locked-out picks up multiple allocations. Used to validate that `LoadBalancingAssignmentAlgorithm` actually spreads work and that no algorithm chokes on the larger candidate pools.
 
-`tests/benchmarks/test_algorithm_benchmarks.py` runs each algorithm × each fixture (4 × 6 = 24 parametrized cases). Two budgets: warning at 500 ms (emits a `UserWarning`, doesn't fail), hard ceiling at 1 s (fails). On a developer laptop:
+`tests/benchmarks/test_algorithm_benchmarks.py` runs each algorithm × each fixture (3 × 6 = 18 parametrized cases). Two budgets: warning at 500 ms (emits a `UserWarning`, doesn't fail), hard ceiling at 1 s (fails). On a developer laptop:
 
 | | large 65/25 | xlarge 100/40 | xxlarge 200/80 | oversub_3x 50/150 | oversub_6x 50/300 | oversub_10x 50/500 |
 | --- | --- | --- | --- | --- | --- | --- |
-| greedy | ~8 ms | ~21 ms | ~74 ms | ~36 ms | ~68 ms | ~126 ms |
-| backtracking | ~9 ms | ~19 ms | ~81 ms | ~36 ms | ~91 ms | ~120 ms |
 | load_balancing | ~8 ms | ~19 ms | ~72 ms | ~39 ms | ~74 ms | ~120 ms |
+| backtracking | ~9 ms | ~19 ms | ~81 ms | ~36 ms | ~91 ms | ~120 ms |
 | or_tools | ~55 ms | ~470 ms (warn) | ~700 ms (warn) | ~190 ms | ~400 ms | ~670 ms (warn) |
 
 OR-Tools is order-of-magnitude slower because of its model-build + solver-init costs. Warnings on the larger sizes are expected.
+
+`tests/test_workload_distribution.py` is a separate suite that asserts `LoadBalancingAssignmentAlgorithm` achieves its distribution goals on the oversubscribed fixtures: every allocation filled, no eligible worker idle, Gini coefficient below 0.30, no worker carrying more than 3× the mean load.
 
 ### Documentation site
 
@@ -196,6 +196,6 @@ cd examples/
 uv run python -m mcdonalds.main mcdonalds/workers.json mcdonalds/allocations.json
 ```
 
-Domain code: `McWorker(Entity[McDonaldsInavailability])`, `McDonaldsAllocationRequest(AllocationRequest[McDonaldsAllocationType, McWorker])` with an `allowed_ranks: frozenset[McJobPosition]` field, `McRankRule(HardPreliminaryRule[...])`. Inputs come from JSON via `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. The default pipeline (greedy, three preliminary rules, console output) prints three planned allocations to stdout.
+Domain code: `McWorker(Entity[McDonaldsInavailability])`, `McDonaldsAllocationRequest(AllocationRequest[McDonaldsAllocationType, McWorker])` with an `allowed_ranks: frozenset[McJobPosition]` field, `McRankRule(HardPreliminaryRule[...])`. Inputs come from JSON via `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. The default pipeline (load-balancing algorithm, three preliminary rules, console output) prints three planned allocations to stdout.
 
 The example is **not installable**. Tests that import from it (`tests/test_mcdonalds_example.py`, `tests/benchmarks/*`) prepend `examples/` to `sys.path` at module load, with a `# noqa: E402` on the `mcdonalds.*` imports that follow.

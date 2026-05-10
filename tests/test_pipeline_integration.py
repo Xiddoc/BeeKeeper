@@ -27,7 +27,7 @@ from beekeeper import (
 )
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.flow.beekeeper import BeeKeeper
 from beekeeper.flow.flow_stages.assign_possible_entities_to_allocations import (
     AssignPossibleEntitiesToAllocations,
@@ -107,7 +107,7 @@ def _bk(
     sink = output or _CapturingOutput()
     bk = BeeKeeper[_Worker, _Request](
         input_adapter=_adapter(workers, requests),
-        algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+        algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
         preliminary_rules=preliminary_rules or [],
         output_adapters=[sink],
     )
@@ -285,7 +285,7 @@ class TestPluggablePipeline:
                 custom_stage,
                 RunPreliminaryRules[_Worker, _Request](),
                 RunAlgorithmAndDispatchResults(
-                    algorithms=[GreedyAssignmentAlgorithm[_Worker, _Request]()],
+                    algorithms=[LoadBalancingAssignmentAlgorithm[_Worker, _Request]()],
                     output_adapters=[sink],
                 ),
             ],
@@ -308,7 +308,7 @@ class TestPluggablePipeline:
 # --------------------------- algorithm chain --------------------------------
 
 
-class _AlwaysFails(GreedyAssignmentAlgorithm[_Worker, _Request]):
+class _AlwaysFails(LoadBalancingAssignmentAlgorithm[_Worker, _Request]):
     """Test double: a marker algorithm that always reports failure."""
 
     def run(self, allocations, entities, candidates, rules):  # type: ignore[no-untyped-def]
@@ -326,7 +326,7 @@ class TestAlgorithmChain:
 
         BeeKeeper[_Worker, _Request](
             input_adapter=_adapter([worker], [request]),
-            algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+            algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
             output_adapters=[sink],
         ).execute()
 
@@ -334,7 +334,7 @@ class TestAlgorithmChain:
         assert len(sink.captured.planned_allocations) == 1
 
     def test_chain_falls_through_failed_algorithms(self) -> None:
-        """An always-failing algorithm at the head; greedy after it; greedy wins."""
+        """An always-failing algorithm at the head; load-balancing after it wins."""
         worker = _Worker(name="W", inavailabilities=[])
         request = _request(1, 2)
         sink = _CapturingOutput()
@@ -343,7 +343,7 @@ class TestAlgorithmChain:
             input_adapter=_adapter([worker], [request]),
             algorithm=[
                 _AlwaysFails(),
-                GreedyAssignmentAlgorithm[_Worker, _Request](),
+                LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
             ],
             output_adapters=[sink],
         ).execute()
@@ -352,7 +352,7 @@ class TestAlgorithmChain:
         assert len(sink.captured.planned_allocations) == 1
 
     def test_chain_stops_at_first_success(self) -> None:
-        """Greedy at the head succeeds; the trailing entries never run."""
+        """Load-balancing at the head succeeds; the trailing entries never run."""
 
         class _ShouldNeverRun(_AlwaysFails):
             def run(self, *args, **kwargs):  # type: ignore[no-untyped-def, override]
@@ -365,7 +365,7 @@ class TestAlgorithmChain:
         BeeKeeper[_Worker, _Request](
             input_adapter=_adapter([worker], [request]),
             algorithm=[
-                GreedyAssignmentAlgorithm[_Worker, _Request](),
+                LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
                 _ShouldNeverRun(),
             ],
             output_adapters=[sink],
@@ -408,7 +408,7 @@ class TestOutputAdapterDispatch:
 
         BeeKeeper[_Worker, _Request](
             input_adapter=_adapter([worker], [request]),
-            algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+            algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
             output_adapters=[first, second],
         ).execute()
 
@@ -422,7 +422,7 @@ class TestOutputAdapterDispatch:
 
         BeeKeeper[_Worker, _Request](
             input_adapter=_adapter([worker], [request]),
-            algorithm=GreedyAssignmentAlgorithm[_Worker, _Request](),
+            algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
         ).execute()  # no output_adapters; just shouldn't blow up
 
 

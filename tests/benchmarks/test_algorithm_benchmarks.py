@@ -14,8 +14,8 @@ algorithms and all three fixture sizes. Two budgets apply:
 * **Hard ceiling at 1 s** — fails the test outright. The framework
   should be solving these sizes in well under a second.
 
-The thresholds are deliberately loose; greedy on the 200-worker fixture
-lands in the low double-digit milliseconds. The budgets catch
+The thresholds are deliberately loose; load_balancing on the 200-worker
+fixture lands in the low double-digit milliseconds. The budgets catch
 order-of-magnitude regressions, not single-digit-percent variation
 that's mostly CI-runner noise.
 """
@@ -38,7 +38,6 @@ from beekeeper import BaseAlgorithm, BeeKeeper, MixedInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm  # noqa: E402
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
@@ -48,7 +47,6 @@ FAIL_THRESHOLD_SECONDS = 1.0
 FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
 
 ALGORITHMS: dict[str, type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]] = {
-    "greedy": GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
     "backtracking": BacktrackingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
     "load_balancing": LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
 }

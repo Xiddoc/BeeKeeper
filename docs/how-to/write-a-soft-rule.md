@@ -11,7 +11,7 @@ class PreferSeniorWorkers(SoftPreliminaryRule[MyWorker, MyRequest]):
 
 Soft rules return a non-negative `score: float` instead of a `bool`. `compatible` stays `True` — soft rules never veto. The framework aggregates per-rule scores via geometric mean (see [Soft-rules aggregation](../explanations/soft-rules-aggregation.md)) and surfaces the result on each `Candidate`.
 
-A score of `1.0` is neutral. Higher is better. The bundled `GreedyAssignmentAlgorithm` picks highest-scored candidates first.
+A score of `1.0` is neutral. Higher is better. The bundled `LoadBalancingAssignmentAlgorithm` picks highest-scored candidates first, subject to a per-entity load penalty so work disperses across the pool.
 
 Both preliminary and stateful soft variants exist — `SoftPreliminaryRule` for static preferences, `SoftStatefulRule` when the score depends on what's already been scheduled (e.g. "prefer the worker who hasn't done this task recently").
 

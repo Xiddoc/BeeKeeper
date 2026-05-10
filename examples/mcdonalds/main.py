@@ -9,7 +9,7 @@ from beekeeper import BeeKeeper, MixedInputAdapter
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
 
@@ -46,7 +46,7 @@ def run(inputs: McDonaldsBeeKeeperInputs) -> None:
 
     BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=input_adapter,
-        algorithm=GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
+        algorithm=LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
         preliminary_rules=[
             McRankRule(),
             AvailabilityRule[McWorker, McDonaldsAllocationRequest](),

@@ -49,9 +49,9 @@ class BacktrackingAssignmentAlgorithm[
 
     If the search exhausts without finding a complete assignment for the
     feasible set, raises ``IncompleteSolutionError``. Wire this algorithm
-    in front of a guaranteed-completion algorithm (greedy or load-balancing)
+    in front of ``LoadBalancingAssignmentAlgorithm`` (which never raises)
     via ``BeeKeeper(algorithm=[BacktrackingAssignmentAlgorithm(),
-    GreedyAssignmentAlgorithm()])`` to fall back automatically.
+    LoadBalancingAssignmentAlgorithm()])`` to fall back automatically.
     """
 
     def __init__(

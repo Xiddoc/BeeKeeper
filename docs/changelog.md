@@ -84,6 +84,14 @@ Three new fixtures under `examples/mcdonalds/` exercise the worker-scarce regime
 
 Benchmark suite parametrization extends to `4 algorithms × 6 fixture sizes = 24 cases`. The oversubscribed fixtures expose load-distribution behavior — under 10x oversubscription every worker who isn't rank-locked-out absorbs multiple allocations.
 
+### `GreedyAssignmentAlgorithm` removed (breaking)
+
+The greedy reference algorithm is deleted. `LoadBalancingAssignmentAlgorithm` is now the default reference — it does the same work but with a `score / (1 + load)` penalty so assignments disperse across the entity pool instead of concentrating on the highest-scored handful.
+
+The two algorithms had identical wall-clock performance on every fixture (the State per-entity index made the load lookup O(1)), and load-balancing's distribution properties on the oversubscribed fixtures were dramatically better (Gini ~0.13 vs ~0.97 on `oversub_10x`). Keeping a strictly worse algorithm as a footgun wasn't worth the API surface.
+
+Callers using `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm` should switch to `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm`. The constructor signature is identical.
+
 ### Algorithm chain (breaking)
 
 `BeeKeeper(algorithm=...)` now accepts either a single algorithm or a sequence to try in order. When an algorithm raises `IncompleteSolutionError`, the next one in the sequence runs from scratch.

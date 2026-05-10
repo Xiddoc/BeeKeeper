@@ -114,7 +114,7 @@ def test_load_penalty_picks_fresh_entity_at_close_scores() -> None:
     assert result.planned_allocations[1].assigned_entities == (fresh,)
 
 
-def test_first_allocation_behaves_like_greedy() -> None:
+def test_unloaded_picks_highest_scored() -> None:
     """With no prior load, the algorithm picks the highest-scored candidate."""
     a = _Worker(name="A", inavailabilities=[])
     b = _Worker(name="B", inavailabilities=[])

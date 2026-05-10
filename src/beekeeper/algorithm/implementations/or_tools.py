@@ -73,7 +73,7 @@ class OrToolsAssignmentAlgorithm[
     post-processing step (or use ``BacktrackingAssignmentAlgorithm``,
     which evaluates stateful rules during the search).
 
-    Pros over greedy/backtracking:
+    Pros over the heuristic implementations:
 
     * Globally optimal under the modeled constraints.
     * Scales well to thousands of variables; CP-SAT is industrial-grade.
@@ -83,7 +83,7 @@ class OrToolsAssignmentAlgorithm[
     * Heavy dependency (``ortools`` is ~50 MB).
     * No stateful-rule support.
     * Solver overhead: small problems (the McDonald's fixtures) often
-      finish slower than greedy due to model-build and solver-init
+      finish slower than the heuristic algorithms due to model-build and solver-init
       costs. Pays off above ~500 entity-allocation pairs.
     """
 

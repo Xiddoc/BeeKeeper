@@ -50,17 +50,17 @@ if not solution_complete:
     )
 ```
 
-Greedy and load-balancing never raise; they return whatever schedule they could fill. Either makes a good chain terminator: `algorithm=[backtracking, greedy]` tries the smarter algorithm first and falls back to greedy on failure.
+`LoadBalancingAssignmentAlgorithm` never raises; it returns whatever schedule it could fill. That makes it a good chain terminator: `algorithm=[backtracking, load_balancing]` tries the smarter algorithm first and falls back to load-balancing on failure.
 
 ## What you may do (but don't have to)
 
-- **Use the score.** `Candidate.score` is the geometric mean of the soft rules' verdicts. Highest-scored is the algorithm's hint of "best candidate." A simple greedy picks the top-scored. A constraint solver might use it as a heuristic.
+- **Use the score.** `Candidate.score` is the geometric mean of the soft rules' verdicts. Highest-scored is the algorithm's hint of "best candidate." A simple algorithm picks the top-scored. A constraint solver might use it as a heuristic.
 - **Iterate allocations in any order.** Input order is one option. Most-constrained-first, by-date, by-priority — your call.
 - **Skip allocations.** Allocations that can't be filled (empty candidate list, all candidates fail stateful rules) just don't get a `PlannedAllocation`. The output adapter can compute the diff if needed.
 - **Use `state.get_allocations_done_by(entity)`** to look up an entity's existing assignments while deciding the next one — this is what stateful rules typically do.
 
 ## A reference implementation
 
-[`GreedyAssignmentAlgorithm`](../how-to/write-an-algorithm.md#bundled-implementations) is a 30-line reference: for each allocation, sort candidates by descending score, pick the top compatible ones until `required_count` is met. It's not optimal — it doesn't backtrack, doesn't optimize globally, doesn't care about anything beyond "fill the count." But it lets every example in this docs site have a runnable algorithm without writing one from scratch, and it's a fine starting point to copy and adapt.
+[`LoadBalancingAssignmentAlgorithm`](../how-to/write-an-algorithm.md#bundled-implementations) is a short reference: for each allocation, sort candidates by `score / (1 + load)` where `load` is the count of allocations the entity already has, then pick the top compatible candidates until `required_count` is met. The load penalty disperses work across the entity pool instead of concentrating it on whoever has the raw highest score. It's not optimal — it doesn't backtrack, doesn't optimize globally — but it gives every example in this docs site a runnable algorithm without writing one from scratch.
 
-For nontrivial scheduling, the same `BaseAlgorithm` contract is implemented by `BacktrackingAssignmentAlgorithm`, `LoadBalancingAssignmentAlgorithm`, and `OrToolsAssignmentAlgorithm` — see the [bundled implementations table](../how-to/write-an-algorithm.md#bundled-implementations).
+For nontrivial scheduling, the same `BaseAlgorithm` contract is implemented by `BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` — see the [bundled implementations table](../how-to/write-an-algorithm.md#bundled-implementations).

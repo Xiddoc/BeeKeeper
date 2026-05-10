@@ -11,16 +11,14 @@ class IncompleteSolutionError(Exception):
       feasible allocation.
     * ``OrToolsAssignmentAlgorithm`` raises when CP-SAT reports
       ``INFEASIBLE`` or ``MODEL_INVALID``.
-    * ``GreedyAssignmentAlgorithm`` and ``LoadBalancingAssignmentAlgorithm``
-      never raise — they return whatever partial schedule they could fill,
-      which by their semantics is always "complete" for what they're trying
-      to do.
+    * ``LoadBalancingAssignmentAlgorithm`` never raises — it returns whatever
+      schedule it could fill, which by its semantics is always "complete"
+      for what it's trying to do.
 
     The framework's flow uses this exception to walk through an algorithm
     chain (passed to ``BeeKeeper(algorithm=[...])``): if an algorithm raises,
-    the next one in the chain runs from scratch. Putting greedy or
-    load-balancing last in the chain guarantees the chain always produces
-    a result.
+    the next one in the chain runs from scratch. Putting load-balancing
+    last in the chain guarantees the chain always produces a result.
 
     The optional ``partial_state`` is whatever the algorithm had built up
     when it gave up. It's primarily for inspection/debugging — the chain

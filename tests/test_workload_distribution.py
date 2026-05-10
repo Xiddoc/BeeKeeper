@@ -1,21 +1,19 @@
 """Workload distribution tests on the oversubscribed fixtures.
 
-Wall-clock benchmarks tell us how *fast* each algorithm runs. They don't
-tell us how *well* each algorithm spreads work — and "spreads work" is the
-entire reason ``LoadBalancingAssignmentAlgorithm`` exists. These tests
-exercise the oversubscribed fixtures (where every worker who isn't
-rank-locked-out absorbs multiple allocations) and pin down the contract:
+Wall-clock benchmarks tell us how *fast* ``LoadBalancingAssignmentAlgorithm``
+runs. These tests pin down how *well* it spreads work — the entire reason
+the algorithm exists. They exercise the oversubscribed fixtures where every
+worker who isn't rank-locked-out has to absorb multiple allocations, and
+assert that load-balancing achieves its stated goals:
 
-* ``GreedyAssignmentAlgorithm`` concentrates work on top-scored workers.
-  With score=1.0 uniform across candidates (the McDonald's example default),
-  greedy picks the first eligible candidate every time, so the same handful
-  of workers absorb everything they can.
-* ``LoadBalancingAssignmentAlgorithm`` divides ``score / (1 + load)``, so
-  unloaded workers get preferred over already-loaded ones. The result
-  should be visibly more even by every standard inequality measure.
+* Every allocation gets filled.
+* Every eligible worker gets at least one allocation (no one idle).
+* The Gini coefficient stays low — near-perfect equality.
+* No single worker carries more than ~3x the mean load.
 
-If a future change to load-balancing makes it less effective at spreading
-work, these tests fail and surface the regression.
+The thresholds below are deliberately loose against measured behavior
+(~Gini=0.13, max=12 on oversub_10x) so the tests catch genuine
+regressions rather than minor drift.
 """
 
 import statistics
@@ -33,14 +31,18 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import BaseAlgorithm, BeeKeeper, MixedInputAdapter, OutputAdapter, State  # noqa: E402
+from beekeeper import BeeKeeper, MixedInputAdapter, OutputAdapter, State  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm  # noqa: E402
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
 FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
+
+# Generous thresholds against measured behavior. Real numbers on oversub_10x
+# are Gini ~0.13, max ~12; these limits catch regressions of 2-3x or more.
+GINI_CEILING = 0.30
+MAX_LOAD_MULTIPLIER = 3.0  # busiest worker may carry up to 3x the mean
 
 
 class _CapturingOutput(OutputAdapter[McWorker, McDonaldsAllocationRequest]):
@@ -59,10 +61,7 @@ def _load_workers(suffix: str) -> list[McWorker]:
     return list(adapter.get_entities())
 
 
-def _run_algorithm(
-    algorithm: BaseAlgorithm[McWorker, McDonaldsAllocationRequest],
-    suffix: str,
-) -> State[McWorker, McDonaldsAllocationRequest]:
+def _run_load_balancing(suffix: str) -> State[McWorker, McDonaldsAllocationRequest]:
     sink = _CapturingOutput()
     BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=MixedInputAdapter(
@@ -75,7 +74,7 @@ def _run_algorithm(
                 allocation_type=McDonaldsAllocationRequest,
             ),
         ),
-        algorithm=algorithm,
+        algorithm=LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
         preliminary_rules=[
             McRankRule(),
             AvailabilityRule[McWorker, McDonaldsAllocationRequest](),
@@ -97,11 +96,7 @@ def _per_worker_counts(state: State[McWorker, McDonaldsAllocationRequest], all_w
 
 
 def _gini(values: list[int]) -> float:
-    """Gini coefficient. 0 = perfect equality, 1 = one element has everything.
-
-    For integer counts, this is the canonical "how concentrated is the
-    distribution" measure that's bounded in [0, 1] and easy to interpret.
-    """
+    """Gini coefficient. 0 = perfect equality, 1 = one element has everything."""
     sorted_values = sorted(values)
     n = len(sorted_values)
     total = sum(sorted_values)
@@ -112,110 +107,65 @@ def _gini(values: list[int]) -> float:
 
 
 @pytest.fixture(scope="module")
-def oversub_runs() -> dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]]:
-    """Run greedy and load-balancing once per fixture; share results across tests."""
-    runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]] = {}
-    for suffix in ("oversub_3x", "oversub_6x", "oversub_10x"):
-        runs[suffix] = {
-            "greedy": _run_algorithm(
-                GreedyAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
-                suffix,
-            ),
-            "load_balancing": _run_algorithm(
-                LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
-                suffix,
-            ),
-        }
-    return runs
+def oversub_states() -> dict[str, State[McWorker, McDonaldsAllocationRequest]]:
+    """Run load-balancing once per fixture; share results across tests."""
+    return {suffix: _run_load_balancing(suffix) for suffix in ("oversub_3x", "oversub_6x", "oversub_10x")}
+
+
+@pytest.mark.parametrize(
+    ("suffix", "expected_total"),
+    [("oversub_3x", 150), ("oversub_6x", 300), ("oversub_10x", 500)],
+)
+def test_every_allocation_filled(
+    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
+    suffix: str,
+    expected_total: int,
+) -> None:
+    """With sparse inavailabilities and rank-eligible candidates everywhere, no
+    allocation should go unfilled."""
+    assert len(oversub_states[suffix].planned_allocations) == expected_total
 
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
-def test_both_algorithms_fill_comparable_allocation_counts(
-    oversub_runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]],
+def test_no_eligible_worker_idle(
+    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
-    """Distribution differences shouldn't come from one algorithm just filling fewer
-    allocations. Both algorithms should fulfill within 5% of each other."""
-    greedy_total = len(oversub_runs[suffix]["greedy"].planned_allocations)
-    lb_total = len(oversub_runs[suffix]["load_balancing"].planned_allocations)
-    assert greedy_total > 0
-    assert lb_total > 0
-    ratio = min(greedy_total, lb_total) / max(greedy_total, lb_total)
-    assert ratio >= 0.95, (
-        f"On {suffix}: greedy filled {greedy_total}, load_balancing filled {lb_total}. "
-        f"Distribution comparisons assume similar total fill; this is {ratio:.1%}."
-    )
-
-
-@pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
-def test_load_balancing_has_lower_gini_than_greedy(
-    oversub_runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]],
-    suffix: str,
-) -> None:
-    """Gini coefficient: 0 = perfect equality, 1 = max concentration.
-    Load-balancing should be measurably lower than greedy."""
+    """Under heavy oversubscription, load-balancing should never leave a worker
+    idle. (Every worker in these fixtures has at least one rank-eligible
+    allocation, so 'unused' indicates a distribution failure rather than a
+    feasibility one.)"""
     workers = _load_workers(suffix)
-    greedy_counts = _per_worker_counts(oversub_runs[suffix]["greedy"], workers)
-    lb_counts = _per_worker_counts(oversub_runs[suffix]["load_balancing"], workers)
-
-    greedy_gini = _gini(greedy_counts)
-    lb_gini = _gini(lb_counts)
-
-    assert lb_gini < greedy_gini, (
-        f"On {suffix}: load_balancing Gini ({lb_gini:.3f}) should be lower than "
-        f"greedy Gini ({greedy_gini:.3f}). Load balancing isn't doing its job."
-    )
+    counts = _per_worker_counts(oversub_states[suffix], workers)
+    idle = sum(1 for c in counts if c == 0)
+    assert idle == 0, f"On {suffix}, {idle} workers got zero allocations under load-balancing."
 
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
-def test_load_balancing_has_lower_stddev_than_greedy(
-    oversub_runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]],
+def test_gini_coefficient_below_ceiling(
+    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
-    """Standard deviation of per-worker counts: lower is more even."""
+    """Gini coefficient is the canonical inequality metric. Near 0 means perfectly
+    even; near 1 means one worker has everything. Load-balancing typically hits
+    ~0.13 on these fixtures; the 0.30 ceiling catches 2x+ degradation."""
     workers = _load_workers(suffix)
-    greedy_counts = _per_worker_counts(oversub_runs[suffix]["greedy"], workers)
-    lb_counts = _per_worker_counts(oversub_runs[suffix]["load_balancing"], workers)
-
-    greedy_std = statistics.pstdev(greedy_counts)
-    lb_std = statistics.pstdev(lb_counts)
-
-    assert lb_std < greedy_std, (
-        f"On {suffix}: load_balancing stddev ({lb_std:.2f}) should be lower than greedy stddev ({greedy_std:.2f})."
-    )
+    counts = _per_worker_counts(oversub_states[suffix], workers)
+    gini = _gini(counts)
+    assert gini < GINI_CEILING, f"On {suffix}, Gini={gini:.3f} exceeded ceiling {GINI_CEILING}."
 
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
-def test_load_balancing_uses_more_workers_than_greedy(
-    oversub_runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]],
+def test_busiest_worker_within_multiplier_of_mean(
+    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
-    """Number of workers with at least one allocation. Load-balancing should use
-    at least as many workers as greedy — strict-equality is allowed because at
-    full saturation both might use everyone, but greedy should never use more."""
+    """The busiest worker shouldn't be wildly more loaded than the average."""
     workers = _load_workers(suffix)
-    greedy_active = sum(1 for c in _per_worker_counts(oversub_runs[suffix]["greedy"], workers) if c > 0)
-    lb_active = sum(1 for c in _per_worker_counts(oversub_runs[suffix]["load_balancing"], workers) if c > 0)
-
-    assert lb_active >= greedy_active, (
-        f"On {suffix}: greedy used {greedy_active} workers, "
-        f"load_balancing used {lb_active}. Load balancing should not use fewer."
-    )
-
-
-@pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
-def test_load_balancing_max_count_lower_than_greedy(
-    oversub_runs: dict[str, dict[str, State[McWorker, McDonaldsAllocationRequest]]],
-    suffix: str,
-) -> None:
-    """The single most-loaded worker under load-balancing should be loaded less
-    than the single most-loaded worker under greedy. Direct test that the
-    'no one carries the whole shift' goal is being met."""
-    workers = _load_workers(suffix)
-    greedy_max = max(_per_worker_counts(oversub_runs[suffix]["greedy"], workers))
-    lb_max = max(_per_worker_counts(oversub_runs[suffix]["load_balancing"], workers))
-
-    assert lb_max < greedy_max, (
-        f"On {suffix}: greedy's busiest worker has {greedy_max} allocations, "
-        f"load_balancing's busiest has {lb_max}. Load balancing should cap the peak lower."
+    counts = _per_worker_counts(oversub_states[suffix], workers)
+    mean = statistics.mean(counts)
+    busiest = max(counts)
+    assert busiest <= MAX_LOAD_MULTIPLIER * mean, (
+        f"On {suffix}, busiest worker has {busiest} allocations against mean {mean:.1f} "
+        f"(ratio {busiest / mean:.2f}, ceiling {MAX_LOAD_MULTIPLIER})."
     )

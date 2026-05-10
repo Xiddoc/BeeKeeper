@@ -26,14 +26,14 @@ uv add 'beekeeper[ortools]'   # depending on BeeKeeper from another project
 pip install 'beekeeper[ortools]'   # if you prefer pip
 ```
 
-Without the extra installed, importing `beekeeper.algorithm.implementations.or_tools` succeeds; instantiating `OrToolsAssignmentAlgorithm()` raises `ImportError` with the install hint. The other three bundled algorithms (greedy, backtracking, load-balancing) have no extras to enable.
+Without the extra installed, importing `beekeeper.algorithm.implementations.or_tools` succeeds; instantiating `OrToolsAssignmentAlgorithm()` raises `ImportError` with the install hint. The other two bundled algorithms (backtracking and load-balancing) have no extras to enable.
 
 ## Quickstart
 
 ```python
 from beekeeper import BeeKeeper, MixedInputAdapter
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
 from my_app.adapters import ExcelEntityAdapter, ExcelAllocationAdapter
@@ -46,7 +46,7 @@ bk = BeeKeeper[MyWorker, MyRequest](
         entity_adapter=ExcelEntityAdapter("staff.xlsx"),
         allocation_adapter=ExcelAllocationAdapter("requests.xlsx"),
     ),
-    algorithm=GreedyAssignmentAlgorithm[MyWorker, MyRequest](),
+    algorithm=LoadBalancingAssignmentAlgorithm[MyWorker, MyRequest](),
     preliminary_rules=[
         MustHaveLicenseRule(),
         AvailabilityRule[MyWorker, MyRequest](),

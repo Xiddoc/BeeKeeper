@@ -19,7 +19,7 @@ BeeKeeper is **a framework**. It hands you abstract base classes, runs them thro
 
 ## What BeeKeeper isn't
 
-- **It isn't a solver.** The bundled `GreedyAssignmentAlgorithm` is a reference impl that picks the highest-scored compatible candidate for each allocation in input order. That's fine for examples and trivial scheduling. For nontrivial scheduling you supply your own algorithm — backtracking, constraint propagation, an OR-Tools bridge, whatever fits.
+- **It isn't a solver.** The bundled `LoadBalancingAssignmentAlgorithm` is a reference impl that picks the highest-scored compatible candidate per allocation, with a load penalty (`score / (1 + load)`) so work disperses across the pool instead of concentrating on a few high-scorers. That's fine for examples and trivial scheduling. For nontrivial scheduling you supply your own algorithm — backtracking, constraint propagation, an OR-Tools bridge, whatever fits.
 - **It isn't a calendar UI.** Output adapters can format planned allocations however you like (console, JSON, database), but BeeKeeper itself doesn't render anything.
 - **It isn't a data store.** Input adapters load from your sources at execute time; the framework holds nothing across runs. If you need persistence between executions, build it into your adapters or above the framework.
 - **It isn't opinionated about your domain.** Rules and algorithms know about your specific Entity and AllocationRequest subclasses, not the other way around.

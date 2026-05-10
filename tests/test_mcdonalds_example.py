@@ -23,7 +23,7 @@ def test_mcdonalds_example_runs_end_to_end(capsys: object) -> None:
     run(inputs)
 
     captured = capsys.readouterr().out  # type: ignore[attr-defined]
-    # Three allocations in the fixture; greedy fills all three under our rules.
+    # Three allocations in the fixture; load-balancing fills all three under our rules.
     assert "CLEANING" in captured
     assert "SERVING_FOOD" in captured
     assert "COOKING" in captured

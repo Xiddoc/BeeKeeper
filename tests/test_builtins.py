@@ -10,7 +10,7 @@ from beekeeper import (
 )
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
@@ -85,7 +85,7 @@ class TestRequestedEntityRule:
         assert rule.check(other, request) is False
 
 
-class TestGreedyAssignmentAlgorithm:
+class TestLoadBalancingAssignmentAlgorithm:
     def test_picks_highest_scored_candidate(self) -> None:
         low = _Worker(name="low", inavailabilities=[])
         high = _Worker(name="high", inavailabilities=[])
@@ -94,7 +94,7 @@ class TestGreedyAssignmentAlgorithm:
             id(request): [Candidate(entity=low, score=0.3), Candidate(entity=high, score=0.9)],
         }
 
-        result = GreedyAssignmentAlgorithm[_Worker, _Request]().run(
+        result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
             allocations=[request],
             entities=[low, high],
             candidates=candidates,
@@ -110,7 +110,7 @@ class TestGreedyAssignmentAlgorithm:
         request = _request(1, 2, required_count=2)
         candidates = {id(request): [Candidate(entity=worker)]}
 
-        result = GreedyAssignmentAlgorithm[_Worker, _Request]().run(
+        result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
             allocations=[request],
             entities=[worker],
             candidates=candidates,
@@ -132,7 +132,7 @@ class TestGreedyAssignmentAlgorithm:
             ],
         }
 
-        result = GreedyAssignmentAlgorithm[_Worker, _Request]().run(
+        result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
             allocations=[request],
             entities=[a, b, c],
             candidates=candidates,

@@ -25,7 +25,7 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     algorithm raises, the last error propagates to the caller.
 
     Putting an always-completing algorithm last in the chain
-    (``GreedyAssignmentAlgorithm`` or ``LoadBalancingAssignmentAlgorithm``)
+    (``LoadBalancingAssignmentAlgorithm`` or ``LoadBalancingAssignmentAlgorithm``)
     guarantees the chain produces a result.
     """
 
