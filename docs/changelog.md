@@ -54,3 +54,9 @@ New: `AvailabilityRule`, `RequestedEntityRule`, `GreedyAssignmentAlgorithm`, `Co
 ### McDonald's example
 
 Now runs end-to-end: `python -m mcdonalds.main mcdonalds/workers.json mcdonalds/allocations.json` prints three planned allocations. JSON fixtures replaced the hand-rolled faker adapter; `allowed_ranks` field added; `McRankRule` added. Integration test in `tests/test_mcdonalds_example.py`.
+
+### Docs
+
+A full mkdocs-material site under `docs/`, built locally via `uv run mkdocs serve` and deployed to GitHub Pages on push to `master` via `.github/workflows/docs.yml`.
+
+**One-time setup**: enable Pages on the repo under *Settings → Pages → Build and deployment → Source: GitHub Actions*. Until that's done, the docs workflow will fail at the deploy step (the build step will still pass).

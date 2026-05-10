@@ -27,6 +27,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/Xiddoc/Beekeeper"
+Documentation = "https://xiddoc.github.io/Beekeeper/"
 Repository = "https://github.com/Xiddoc/Beekeeper"
 Issues = "https://github.com/Xiddoc/Beekeeper/issues"
 
