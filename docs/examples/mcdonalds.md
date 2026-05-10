@@ -1,6 +1,6 @@
 # McDonald's Walkthrough
 
-A complete worked example lives at [`examples/mcdonalds/`](https://github.com/Xiddoc/Beekeeper/tree/master/examples/mcdonalds). Three workers, three allocations, all rules wired, runs end-to-end.
+A complete worked example lives at [`examples/mcdonalds/`](https://github.com/Xiddoc/BeeKeeper/tree/master/examples/mcdonalds). Three workers, three allocations, all rules wired, runs end-to-end.
 
 ## What's defined
 

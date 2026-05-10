@@ -31,10 +31,10 @@ dependencies = [
 ortools = ["ortools>=9.10"]
 
 [project.urls]
-Homepage = "https://github.com/Xiddoc/Beekeeper"
-Documentation = "https://xiddoc.github.io/Beekeeper/"
-Repository = "https://github.com/Xiddoc/Beekeeper"
-Issues = "https://github.com/Xiddoc/Beekeeper/issues"
+Homepage = "https://github.com/Xiddoc/BeeKeeper"
+Documentation = "https://xiddoc.github.io/BeeKeeper/"
+Repository = "https://github.com/Xiddoc/BeeKeeper"
+Issues = "https://github.com/Xiddoc/BeeKeeper/issues"
 
 [dependency-groups]
 dev = [

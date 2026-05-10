@@ -13,7 +13,7 @@ from beekeeper.algorithm.implementations.greedy import GreedyAssignmentAlgorithm
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 
 
-class McDonaldsBeekeeperInputs(BaseModel):
+class McDonaldsBeeKeeperInputs(BaseModel):
     allocations_input_file: FilePath
     workers_input_file: FilePath
 
@@ -25,12 +25,12 @@ def _create_cli_args_input_parser() -> ArgumentParser:
     return parser
 
 
-def _get_beekeeper_inputs_from_cli_args() -> McDonaldsBeekeeperInputs:
+def _get_beekeeper_inputs_from_cli_args() -> McDonaldsBeeKeeperInputs:
     cli_args = _create_cli_args_input_parser().parse_args()
-    return McDonaldsBeekeeperInputs(**vars(cli_args))
+    return McDonaldsBeeKeeperInputs(**vars(cli_args))
 
 
-def run(inputs: McDonaldsBeekeeperInputs) -> None:
+def run(inputs: McDonaldsBeeKeeperInputs) -> None:
     """Wire and execute a BeeKeeper for the McDonald's example.
 
     Split out from ``main`` so tests can drive the pipeline programmatically

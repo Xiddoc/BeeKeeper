@@ -3,9 +3,9 @@
 > Manage the Bee-sy with ease.
 
 <p align="center">
-  <a href="https://github.com/Xiddoc/Beekeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/Beekeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI"></a>
+  <a href="https://github.com/Xiddoc/BeeKeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/BeeKeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.13+-blue?style=for-the-badge&logo=python" alt="Python 3.13+">
-  <a href="https://xiddoc.github.io/Beekeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
+  <a href="https://xiddoc.github.io/BeeKeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3.0-green?style=for-the-badge" alt="License: GPL3.0"></a>
 </p>
 
@@ -14,8 +14,8 @@ BeeKeeper is a **Python 3.13+ framework** for assigning entities (workers, vehic
 ## Install
 
 ```bash
-git clone https://github.com/Xiddoc/Beekeeper.git
-cd Beekeeper
+git clone https://github.com/Xiddoc/BeeKeeper.git
+cd BeeKeeper
 uv sync
 ```
 
@@ -25,7 +25,7 @@ For the OR-Tools-backed assignment algorithm, add the optional extra:
 uv sync --extra ortools
 ```
 
-See [Optional extras](https://xiddoc.github.io/Beekeeper/#optional-extras) in the docs for the full set of install paths.
+See [Optional extras](https://xiddoc.github.io/BeeKeeper/#optional-extras) in the docs for the full set of install paths.
 
 ## 30-line quickstart
 
@@ -60,7 +60,7 @@ A complete worked example lives at [`examples/mcdonalds/`](examples/mcdonalds), 
 
 ## Documentation
 
-Full docs at **[xiddoc.github.io/Beekeeper](https://xiddoc.github.io/Beekeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
+Full docs at **[xiddoc.github.io/BeeKeeper](https://xiddoc.github.io/BeeKeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
 
 Or build locally:
 

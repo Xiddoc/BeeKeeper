@@ -5,8 +5,8 @@ Contributions welcome — bug reports, fixes, new built-ins, docs improvements, 
 ## Setup
 
 ```bash
-git clone https://github.com/Xiddoc/Beekeeper.git
-cd Beekeeper
+git clone https://github.com/Xiddoc/BeeKeeper.git
+cd BeeKeeper
 uv sync --all-groups
 uv run pre-commit install
 ```

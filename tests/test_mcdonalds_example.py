@@ -12,11 +12,11 @@ EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
 if str(EXAMPLES_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLES_DIR))
 
-from mcdonalds.main import McDonaldsBeekeeperInputs, run  # noqa: E402
+from mcdonalds.main import McDonaldsBeeKeeperInputs, run  # noqa: E402
 
 
 def test_mcdonalds_example_runs_end_to_end(capsys: object) -> None:
-    inputs = McDonaldsBeekeeperInputs(
+    inputs = McDonaldsBeeKeeperInputs(
         workers_input_file=EXAMPLES_DIR / "mcdonalds" / "workers.json",
         allocations_input_file=EXAMPLES_DIR / "mcdonalds" / "allocations.json",
     )

@@ -1,8 +1,8 @@
 site_name: BeeKeeper
 site_description: Manage the Bee-sy with ease — a Python framework for assigning entities to allocation requests.
-site_url: https://xiddoc.github.io/Beekeeper/
-repo_url: https://github.com/Xiddoc/Beekeeper
-repo_name: Xiddoc/Beekeeper
+site_url: https://xiddoc.github.io/BeeKeeper/
+repo_url: https://github.com/Xiddoc/BeeKeeper
+repo_name: Xiddoc/BeeKeeper
 edit_uri: edit/master/docs/
 
 theme:
@@ -98,4 +98,4 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/Xiddoc/Beekeeper
+      link: https://github.com/Xiddoc/BeeKeeper

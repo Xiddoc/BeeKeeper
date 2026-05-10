@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Beekeeper ("Manage the Bee-sy with ease.") is a Python 3.13 library for assigning **entities** (workers/resources) to **allocation requests** over date ranges, subject to a pluggable **rules** pipeline and a user-supplied **algorithm**. It is packaged as a library; there is no CLI entry point yet (the `[project.scripts]` block in `pyproject.toml` is commented out).
+BeeKeeper ("Manage the Bee-sy with ease.") is a Python 3.13 library for assigning **entities** (workers/resources) to **allocation requests** over date ranges, subject to a pluggable **rules** pipeline and a user-supplied **algorithm**. It is packaged as a library; there is no CLI entry point yet (the `[project.scripts]` block in `pyproject.toml` is commented out).
 
 Dependencies are managed with **uv** (`uv.lock` is committed). Runtime dep is `pydantic>=2.11.5`. Dev tools: `mypy`, `ruff`, `pytest`, `pre-commit`. The `examples` dependency group adds `faker`.
 
@@ -34,7 +34,7 @@ CI (`.github/workflows/ci.yml`) runs ruff (lint + format check), mypy, and pytes
 
 ## Architecture
 
-Beekeeper is a **framework**: callers bring data (via input adapters), constraints (rules), and an assignment strategy (algorithm). The library wires the orchestration.
+BeeKeeper is a **framework**: callers bring data (via input adapters), constraints (rules), and an assignment strategy (algorithm). The library wires the orchestration.
 
 ### Public surface
 
