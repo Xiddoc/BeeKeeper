@@ -102,9 +102,16 @@ def _check_budget(mean_seconds: float, label: str) -> None:
 @pytest.mark.parametrize(
     ("suffix", "size_label"),
     [
+        # Worker-rich fixtures: more workers than allocations, mixed required_count.
         ("large", "65w/25a"),
         ("xlarge", "100w/40a"),
         ("xxlarge", "200w/80a"),
+        # Worker-scarce (oversubscribed) fixtures: many more allocations than
+        # workers, every allocation n=1. Stress-tests how each algorithm
+        # distributes work across a constrained pool.
+        ("oversub_3x", "50w/150a (3x)"),
+        ("oversub_6x", "50w/300a (6x)"),
+        ("oversub_10x", "50w/500a (10x)"),
     ],
 )
 def test_full_pipeline_budget(

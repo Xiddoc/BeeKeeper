@@ -2,16 +2,25 @@
 
 Generated files (all checked in):
 
-* ``workers_large.json``   /  ``allocations_large.json``    —  65 workers, 25 allocations
-* ``workers_xlarge.json``  /  ``allocations_xlarge.json``   — 100 workers, 40 allocations
-* ``workers_xxlarge.json`` /  ``allocations_xxlarge.json``  — 200 workers, 80 allocations
+* ``workers_large.json``      /  ``allocations_large.json``      —  65 workers, 25 allocations
+* ``workers_xlarge.json``     /  ``allocations_xlarge.json``     — 100 workers, 40 allocations
+* ``workers_xxlarge.json``    /  ``allocations_xxlarge.json``    — 200 workers, 80 allocations
+* ``workers_oversub_3x.json`` /  ``allocations_oversub_3x.json`` —  50 workers, 150 allocations (3:1)
+* ``workers_oversub_6x.json`` /  ``allocations_oversub_6x.json`` —  50 workers, 300 allocations (6:1)
+* ``workers_oversub_10x.json``/  ``allocations_oversub_10x.json``—  50 workers, 500 allocations (10:1)
 
-The two larger fixtures crank up the property variety on each worker:
-inavailabilities are denser, more varied in length, and more clustered;
-allocations exercise multi-entity required_count and explicit
-requested_entities; the rank-vs-allowed-ranks intersection is wider.
-This is what the benchmark suite throws at the algorithm to make sure
-it scales.
+The first three fixtures (large/xlarge/xxlarge) test the worker-rich
+case: more workers than allocations, varied required_count (1–3),
+some pre-requested entities, denser inavailabilities at higher sizes.
+This is the canonical "scheduling under abundance" scenario.
+
+The three oversub_* fixtures test the worker-scarce case: many more
+allocations than workers, every allocation requires exactly one
+entity (n=1). With 50 workers fielding 150–500 allocations, every
+worker who isn't rank-locked-out picks up multiple. This is the
+canonical "spread the load" scenario, where a deterministic
+load-balancing algorithm should distribute work substantially more
+evenly than vanilla greedy.
 
 Each size is deterministic for a given seed. Re-running with the same
 seed reproduces the exact same JSON.
@@ -79,6 +88,12 @@ class FixtureSpec:
     allocation_length_choices: tuple[int, ...]
     allocation_length_weights: tuple[int, ...]
     requested_entities_probability: float
+    # When None, required_count is picked per-allocation-type from
+    # TYPE_TO_REQUIRED_COUNT (the realistic mix of singles and multi-entity
+    # shifts). When set, every allocation in the fixture has this count —
+    # used by the oversubscribed presets to force n=1 for clean
+    # workload-distribution stress tests.
+    force_required_count: int | None = None
 
 
 PRESETS = (
@@ -122,6 +137,52 @@ PRESETS = (
         allocation_length_choices=(1, 2, 3, 5, 7, 10, 14),
         allocation_length_weights=(40, 25, 15, 8, 6, 4, 2),
         requested_entities_probability=0.20,
+    ),
+    # Oversubscribed presets: way more allocations than workers, every allocation
+    # n=1. Sparse inavailabilities so workers are mostly available; short
+    # allocation lengths (1–3 days) so the workload is dominated by sheer count
+    # rather than overlap. requested_entities=0 because pre-requesting in this
+    # regime would mean the requested workers carry an outsized share — we want
+    # the algorithm's distribution choice to be the only thing that determines
+    # who gets what.
+    FixtureSpec(
+        suffix="oversub_3x",
+        worker_count=50,
+        allocation_count=150,
+        inavailability_count_choices=(0, 1, 2),
+        inavailability_count_weights=(50, 35, 15),
+        inavailability_length_choices=(1, 2, 3, 5, 7),
+        inavailability_length_weights=(40, 25, 15, 12, 8),
+        allocation_length_choices=(1, 2, 3),
+        allocation_length_weights=(60, 25, 15),
+        requested_entities_probability=0.0,
+        force_required_count=1,
+    ),
+    FixtureSpec(
+        suffix="oversub_6x",
+        worker_count=50,
+        allocation_count=300,
+        inavailability_count_choices=(0, 1, 2),
+        inavailability_count_weights=(50, 35, 15),
+        inavailability_length_choices=(1, 2, 3, 5, 7),
+        inavailability_length_weights=(40, 25, 15, 12, 8),
+        allocation_length_choices=(1, 2, 3),
+        allocation_length_weights=(60, 25, 15),
+        requested_entities_probability=0.0,
+        force_required_count=1,
+    ),
+    FixtureSpec(
+        suffix="oversub_10x",
+        worker_count=50,
+        allocation_count=500,
+        inavailability_count_choices=(0, 1, 2),
+        inavailability_count_weights=(50, 35, 15),
+        inavailability_length_choices=(1, 2, 3, 5, 7),
+        inavailability_length_weights=(40, 25, 15, 12, 8),
+        allocation_length_choices=(1, 2, 3),
+        allocation_length_weights=(60, 25, 15),
+        requested_entities_probability=0.0,
+        force_required_count=1,
     ),
 )
 
@@ -193,6 +254,11 @@ def _generate_allocations(
                     {"name": w["name"], "rank": w["rank"], "inavailabilities": w["inavailabilities"]} for w in picked
                 ]
 
+        required_count = (
+            spec.force_required_count
+            if spec.force_required_count is not None
+            else rng.choice(TYPE_TO_REQUIRED_COUNT[alloc_type])
+        )
         out.append(
             {
                 "allocation_type": alloc_type,
@@ -201,7 +267,7 @@ def _generate_allocations(
                     "end_date": end.isoformat(),
                 },
                 "allowed_ranks": eligible_ranks,
-                "required_count": rng.choice(TYPE_TO_REQUIRED_COUNT[alloc_type]),
+                "required_count": required_count,
                 "requested_entities": requested_entities,
             },
         )
