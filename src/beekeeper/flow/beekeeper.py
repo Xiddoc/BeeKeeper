@@ -28,10 +28,8 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         input_adapter: InputAdapter[TEntity, TAllocationRequest],
         preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
         stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
-        output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]] | None = None,
+        output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]] = (),
     ) -> None:
-        resolved_output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]] = output_adapters or []
-
         self._preliminary_rules = preliminary_rules
         self._stateful_rules = stateful_rules
         self._input_adapter = input_adapter
@@ -42,7 +40,7 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         ] = [
             AssignPossibleEntitiesToAllocations(),
             RunPreliminaryRules(),
-            RunAlgorithmAndDispatchResults(algorithm=algorithm, output_adapters=resolved_output_adapters),
+            RunAlgorithmAndDispatchResults(algorithm=algorithm, output_adapters=output_adapters),
         ]
 
     def execute(self) -> None:
