@@ -24,6 +24,22 @@ uv run pre-commit run --all-files
 
 CI (`.github/workflows/ci.yml`) runs ruff (lint + format check), mypy, and pytest on every push to `master` and every PR.
 
+## Git workflow
+
+`master` is the project's default branch. Branch protection has been removed; direct fast-forward pushes from feature branches are permitted, and the project's preferred merge style is **fast-forward only** (no squash merges, no merge commits) so the per-commit history stays intact on master.
+
+**When merging a feature branch locally instead of via a GitHub PR, delete both the local and the remote branch immediately after merging.** GitHub's "Automatically delete head branches" setting only fires for PR-based merges; direct-merge branches accumulate as orphans on origin until cleaned up. The full pattern:
+
+```bash
+git checkout master
+git merge --ff-only feature/whatever
+git push origin master
+git push origin --delete feature/whatever   # only if the branch was pushed to origin
+git branch -d feature/whatever              # local cleanup
+```
+
+If the feature branch was never pushed to origin (purely local work), skip the `push --delete` line. `git branch -d` (lowercase d) refuses to delete an unmerged branch — if it errors, that's a signal to investigate, not to use `-D`.
+
 ## Tooling configuration to be aware of
 
 - **mypy** runs in `strict` mode with the `pydantic.mypy` plugin and `disallow_untyped_defs`. `examples/` is excluded; the rest of the codebase must type-check cleanly.
