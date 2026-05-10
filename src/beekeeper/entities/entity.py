@@ -6,4 +6,4 @@ from beekeeper.inavailabilities.inavailability import Inavailability
 
 
 class Entity[TInavailability: Inavailability](BaseModel):
-    inavailabilities: Iterable[Inavailability]
+    inavailabilities: Iterable[TInavailability]
