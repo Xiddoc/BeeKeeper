@@ -44,6 +44,6 @@ Four reference implementations live under `beekeeper.algorithm.implementations.*
 | `greedy` | `GreedyAssignmentAlgorithm` | Baseline. Picks the highest-scored compatible candidates in input order. No backtracking, no global optimization. |
 | `backtracking` | `BacktrackingAssignmentAlgorithm` | Stateful rules + constrained candidate pools. Tries alternative orderings when greedy gets stuck; falls back to greedy when no complete solution exists. Has a configurable top-K cap and iteration budget. |
 | `load_balancing` | `LoadBalancingAssignmentAlgorithm` | You want work spread across the entity pool, not concentrated on a few high-scorers. Score is divided by `(1 + load)` so previously-assigned entities are scored down. Deterministic. |
-| `or_tools` | `OrToolsAssignmentAlgorithm` | Globally optimal under the modeled constraints. Heaviest dep (~50 MB); install via `pip install 'beekeeper[ortools]'`. Stateful rules are *not* encoded into the CP-SAT formulation — use backtracking if you need them. |
+| `or_tools` | `OrToolsAssignmentAlgorithm` | Globally optimal under the modeled constraints. Heaviest dep (~50 MB); requires the optional `ortools` extra (`uv sync --extra ortools` in the repo, `uv add 'beekeeper[ortools]'` from another project, or `pip install 'beekeeper[ortools]'`). Stateful rules are *not* encoded into the CP-SAT formulation — use backtracking if you need them. |
 
 See [The Algorithm Contract](../concepts/algorithm-contract.md) for what your `run(...)` is allowed to assume and required to return.

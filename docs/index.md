@@ -16,6 +16,18 @@ uv sync                       # install + create venv from uv.lock
 
 There is no published PyPI release yet — clone the repo and depend on it via path or git URL.
 
+### Optional extras
+
+The `OrToolsAssignmentAlgorithm` requires Google's OR-Tools, which is heavyweight enough (~50 MB) that it's gated behind an optional extra:
+
+```bash
+uv sync --extra ortools       # working in the Beekeeper repo itself
+uv add 'beekeeper[ortools]'   # depending on Beekeeper from another project
+pip install 'beekeeper[ortools]'   # if you prefer pip
+```
+
+Without the extra installed, importing `beekeeper.algorithm.implementations.or_tools` succeeds; instantiating `OrToolsAssignmentAlgorithm()` raises `ImportError` with the install hint. The other three bundled algorithms (greedy, backtracking, load-balancing) have no extras to enable.
+
 ## Quickstart
 
 ```python

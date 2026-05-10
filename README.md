@@ -19,6 +19,14 @@ cd Beekeeper
 uv sync
 ```
 
+For the OR-Tools-backed assignment algorithm, add the optional extra:
+
+```bash
+uv sync --extra ortools
+```
+
+See [Optional extras](https://xiddoc.github.io/Beekeeper/#optional-extras) in the docs for the full set of install paths.
+
 ## 30-line quickstart
 
 ```python
