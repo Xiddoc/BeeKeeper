@@ -1,12 +1,14 @@
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 
 
 class PlannedAllocation[TAllocationRequest: AllocationRequest[Any, Any], TEntity: Entity[Any]](BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     """The result of assigning one or more entities to an allocation request.
 
     Composition rather than inheritance: a planned allocation *has* a request and

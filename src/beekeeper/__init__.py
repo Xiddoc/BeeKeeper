@@ -3,6 +3,8 @@
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
+from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
+from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
 from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm_state import State
@@ -31,6 +33,8 @@ __all__ = [
     "HardStatefulRule",
     "Inavailability",
     "InputAdapter",
+    "JsonAllocationInputAdapter",
+    "JsonEntityInputAdapter",
     "MixedInputAdapter",
     "OutputAdapter",
     "PlannedAllocation",

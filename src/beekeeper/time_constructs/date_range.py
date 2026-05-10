@@ -1,10 +1,12 @@
 from datetime import date, datetime
 from typing import Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class DateRange[T: date = datetime](BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     """A date or datetime range, inclusive on both ends.
 
     Generic over `T: date`, which admits both `date` (whole-day shifts)

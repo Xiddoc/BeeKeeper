@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.entities.entity import Entity
@@ -9,6 +9,7 @@ from beekeeper.time_constructs.date_range import DateRange
 
 
 class AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]](BaseModel):
+    model_config = ConfigDict(extra="forbid")
     allocation_type: TAllocationType
     date_range: DateRange[datetime]
     required_count: int = 1
