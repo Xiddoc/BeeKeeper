@@ -39,7 +39,8 @@ def run(inputs: McDonaldsBeekeeperInputs) -> None:
     input_adapter = MixedInputAdapter(
         entity_adapter=JsonEntityInputAdapter(file=inputs.workers_input_file, entity_type=McWorker),
         allocation_adapter=JsonAllocationInputAdapter(
-            file=inputs.allocations_input_file, allocation_type=McDonaldsAllocationRequest,
+            file=inputs.allocations_input_file,
+            allocation_type=McDonaldsAllocationRequest,
         ),
     )
 

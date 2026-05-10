@@ -41,6 +41,4 @@ class AssignPossibleEntitiesToAllocations[TEntity: Entity[Any], TAllocationReque
     def _is_blocked_by_inavailability(entity: TEntity, allocation: TAllocationRequest) -> bool:
         alloc_start = allocation.date_range.start_date
         alloc_end = allocation.date_range.end_date
-        return any(
-            inav.start_date <= alloc_start and inav.end_date >= alloc_end for inav in entity.inavailabilities
-        )
+        return any(inav.start_date <= alloc_start and inav.end_date >= alloc_end for inav in entity.inavailabilities)

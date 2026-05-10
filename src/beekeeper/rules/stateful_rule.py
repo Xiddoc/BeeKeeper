@@ -30,7 +30,8 @@ class StatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[A
 
 
 class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
-    StatefulRule[TEntity, TAllocationRequest], ABC,
+    StatefulRule[TEntity, TAllocationRequest],
+    ABC,
 ):
     """A stateful rule that is purely binary: either the entity passes or it doesn't."""
 
@@ -53,7 +54,8 @@ class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
 
 
 class SoftStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
-    StatefulRule[TEntity, TAllocationRequest], ABC,
+    StatefulRule[TEntity, TAllocationRequest],
+    ABC,
 ):
     """A stateful rule that expresses preference rather than hard eligibility.
 

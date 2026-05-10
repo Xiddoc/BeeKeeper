@@ -47,14 +47,10 @@ class GreedyAssignmentAlgorithm[TEntity: Entity[Any], TAllocationRequest: Alloca
             for candidate in ranked:
                 if len(chosen) >= allocation.required_count:
                     break
-                if all(
-                    rule.evaluate(candidate.entity, allocation, state).compatible for rule in rules_list
-                ):
+                if all(rule.evaluate(candidate.entity, allocation, state).compatible for rule in rules_list):
                     chosen.append(candidate.entity)
 
             if len(chosen) == allocation.required_count:
-                state.add_allocation(
-                    PlannedAllocation(request=allocation, assigned_entities=tuple(chosen))
-                )
+                state.add_allocation(PlannedAllocation(request=allocation, assigned_entities=tuple(chosen)))
 
         return state

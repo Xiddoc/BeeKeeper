@@ -24,11 +24,12 @@ class _Request(AllocationRequest[_Task, _Worker]):
     pass
 
 
-def _state(
-    entities: list[_Worker], allocations: list[_Request]
-) -> BeeKeeperFlowState[_Worker, _Request]:
+def _state(entities: list[_Worker], allocations: list[_Request]) -> BeeKeeperFlowState[_Worker, _Request]:
     return BeeKeeperFlowState(
-        entities=entities, allocations=allocations, preliminary_rules=[], stateful_rules=[],
+        entities=entities,
+        allocations=allocations,
+        preliminary_rules=[],
+        stateful_rules=[],
     )
 
 

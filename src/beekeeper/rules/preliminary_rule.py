@@ -27,7 +27,8 @@ class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationReques
 
 
 class HardPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
-    PreliminaryRule[TEntity, TAllocationRequest], ABC,
+    PreliminaryRule[TEntity, TAllocationRequest],
+    ABC,
 ):
     """A preliminary rule that is purely binary: either the entity passes or it doesn't."""
 
@@ -40,7 +41,8 @@ class HardPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRe
 
 
 class SoftPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
-    PreliminaryRule[TEntity, TAllocationRequest], ABC,
+    PreliminaryRule[TEntity, TAllocationRequest],
+    ABC,
 ):
     """A preliminary rule that expresses preference rather than hard eligibility.
 
