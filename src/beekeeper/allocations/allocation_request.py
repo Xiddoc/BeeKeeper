@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.entities.entity import Entity
@@ -12,5 +12,8 @@ class AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]](B
     model_config = ConfigDict(extra="forbid")
     allocation_type: TAllocationType
     date_range: DateRange[datetime]
-    required_count: int = 1
+    # An allocation that asks for zero entities is a no-op the pipeline would
+    # silently skip; a negative count would crash downstream in the algorithm
+    # layer (e.g. ``combinations(pool, -5)``). Reject both at the IO boundary.
+    required_count: int = Field(default=1, ge=1)
     requested_entities: tuple[TEntity, ...] = ()
