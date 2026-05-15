@@ -1,11 +1,9 @@
-from typing import Any
-
-from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.allocations.allocation_request import AnyRequest
 from beekeeper.allocations.assignment import Assignment
-from beekeeper.entities.entity import Entity
+from beekeeper.entities.entity import AnyEntity
 
 
-class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
+class AssignmentState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
     """
     This class represents the state of the algorithm, almost like the "memory"
     of the work that the algorithm has already completed.

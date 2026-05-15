@@ -1,18 +1,17 @@
 from collections.abc import Iterable, Mapping
-from typing import Any
 
 from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
-from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.allocations.allocation_request import AnyRequest
 from beekeeper.allocations.assignment import Assignment
-from beekeeper.entities.entity import Entity
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
 class LoadBalancingAssignmentAlgorithm[
-    TEntity: Entity[Any],
-    TAllocationRequest: AllocationRequest[Any, Any],
+    TEntity: AnyEntity,
+    TAllocationRequest: AnyRequest,
 ](
     Algorithm[TEntity, TAllocationRequest],
 ):

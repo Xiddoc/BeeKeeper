@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.rules.rule_verdict import RuleVerdict
 
 
-class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](ABC):
+class PreliminaryRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
     """A rule that can be evaluated without referring to the in-progress schedule.
 
     Preliminary rules answer "is this entity, on principle, capable of
@@ -26,7 +25,7 @@ class PreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationReques
         """Return the rule's verdict for this (entity, allocation) pair."""
 
 
-class HardPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class HardPreliminaryRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     PreliminaryRule[TEntity, TAllocationRequest],
     ABC,
 ):
@@ -40,7 +39,7 @@ class HardPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRe
         """Return ``True`` if this entity may be considered for this allocation."""
 
 
-class SoftPreliminaryRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class SoftPreliminaryRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     PreliminaryRule[TEntity, TAllocationRequest],
     ABC,
 ):

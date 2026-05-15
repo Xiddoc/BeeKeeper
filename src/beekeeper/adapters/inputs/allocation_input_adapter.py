@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import Any
 
-from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.allocations.allocation_request import AnyRequest
 
 
-class AllocationInputAdapter[TAllocationRequest: AllocationRequest[Any, Any]](ABC):
+class AllocationInputAdapter[TAllocationRequest: AnyRequest](ABC):
     @abstractmethod
     def get_allocations(self) -> Iterable[TAllocationRequest]:
         pass

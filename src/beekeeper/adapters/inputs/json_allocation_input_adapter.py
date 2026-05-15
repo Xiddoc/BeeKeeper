@@ -1,16 +1,15 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from pydantic import TypeAdapter
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
-from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.allocations.allocation_request import AnyRequest
 
 
 @dataclass
-class JsonAllocationInputAdapter[TAllocationRequest: AllocationRequest[Any, Any]](
+class JsonAllocationInputAdapter[TAllocationRequest: AnyRequest](
     AllocationInputAdapter[TAllocationRequest],
 ):
     """Strict JSON-backed adapter that loads allocation requests from a file.

@@ -1,16 +1,15 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 
 
 @dataclass
-class CompositeInputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class CompositeInputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     InputAdapter[TEntity, TAllocationRequest],
 ):
     entity_adapter: EntityInputAdapter[TEntity]

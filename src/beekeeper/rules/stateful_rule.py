@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 from beekeeper.algorithm.algorithm_state import AssignmentState
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.rules.rule_verdict import RuleVerdict
 
 
-class StatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](ABC):
+class StatefulRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
     """A rule whose verdict depends on the in-progress assignment state.
 
     Stateful rules answer "given what's already been planned, can this entity
@@ -29,7 +28,7 @@ class StatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[A
         """Return the rule's verdict for this (entity, allocation, state) triple."""
 
 
-class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class HardStatefulRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     StatefulRule[TEntity, TAllocationRequest],
     ABC,
 ):
@@ -53,7 +52,7 @@ class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         """Return ``True`` if this entity may take this allocation given the current state."""
 
 
-class SoftStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class SoftStatefulRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     StatefulRule[TEntity, TAllocationRequest],
     ABC,
 ):

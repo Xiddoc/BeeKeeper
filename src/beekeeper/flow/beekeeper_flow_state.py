@@ -1,17 +1,16 @@
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any
 
 from beekeeper.algorithm.algorithm_state import AssignmentState
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.preliminary_rule import PreliminaryRule
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
 @dataclass
-class BeeKeeperFlowState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
+class BeeKeeperFlowState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
     """In-flight state passed between flow stages.
 
     The pipeline materializes the input adapter's iterables into lists at

@@ -1,12 +1,10 @@
-from typing import Any
-
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm_state import AssignmentState
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 
 
-class ConsoleOutputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class ConsoleOutputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     OutputAdapter[TEntity, TAllocationRequest],
 ):
     """Prints planned allocations to stdout.

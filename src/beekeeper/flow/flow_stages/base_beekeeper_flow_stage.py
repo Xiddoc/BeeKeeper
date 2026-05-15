@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 
 
-class BaseBeeKeeperFlowStage[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](ABC):
+class BaseBeeKeeperFlowStage[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
     @abstractmethod
     def run_stage(
         self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]

@@ -1,17 +1,16 @@
 from collections.abc import Callable, Sequence
-from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
 
 
-class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class RunAlgorithmAndDispatchResults[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocationRequest],
 ):
     """

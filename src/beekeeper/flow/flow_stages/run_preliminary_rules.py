@@ -1,14 +1,13 @@
 import math
-from typing import Any
 
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.candidate import Candidate
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
 
 
-class RunPreliminaryRules[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class RunPreliminaryRules[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocationRequest],
 ):
     """Apply preliminary rules to the candidate map: prune incompatibilities, aggregate scores.

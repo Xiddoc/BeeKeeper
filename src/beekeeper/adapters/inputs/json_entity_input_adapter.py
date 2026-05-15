@@ -1,16 +1,15 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from pydantic import TypeAdapter
 
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
-from beekeeper.entities.entity import Entity
+from beekeeper.entities.entity import AnyEntity
 
 
 @dataclass
-class JsonEntityInputAdapter[TEntity: Entity[Any]](EntityInputAdapter[TEntity]):
+class JsonEntityInputAdapter[TEntity: AnyEntity](EntityInputAdapter[TEntity]):
     """Strict JSON-backed adapter that loads entities from a file.
 
     The file must contain a JSON array of objects matching ``entity_type``'s

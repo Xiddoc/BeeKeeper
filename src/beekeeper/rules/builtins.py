@@ -6,14 +6,12 @@ opinions about what most schedulers want, not framework primitives, and
 the user is expected to choose them explicitly.
 """
 
-from typing import Any
-
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.rules.preliminary_rule import HardPreliminaryRule
 
 
-class AvailabilityRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class AvailabilityRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     HardPreliminaryRule[TEntity, TAllocationRequest],
 ):
     """Reject an entity whose unavailabilities overlap the allocation's date range at all.
@@ -33,7 +31,7 @@ class AvailabilityRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         )
 
 
-class RequestedEntityRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class RequestedEntityRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     HardPreliminaryRule[TEntity, TAllocationRequest],
 ):
     """If the allocation explicitly requests entities, only those entities are eligible.

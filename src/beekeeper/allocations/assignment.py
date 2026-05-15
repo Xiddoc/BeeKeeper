@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Any
 
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 
 
 @dataclass(frozen=True)
-class Assignment[TAllocationRequest: AllocationRequest[Any, Any], TEntity: Entity[Any]]:
+class Assignment[TAllocationRequest: AnyRequest, TEntity: AnyEntity]:
     """The result of assigning one or more entities to an allocation request.
 
     Composition rather than inheritance: an assignment *has* a request and

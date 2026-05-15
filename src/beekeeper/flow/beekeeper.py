@@ -1,12 +1,12 @@
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, overload
+from typing import overload
 
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.errors import IncompleteSolutionError
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.assign_possible_entities_to_allocations import AssignPossibleEntitiesToAllocations
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
@@ -16,7 +16,7 @@ from beekeeper.rules.preliminary_rule import PreliminaryRule
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
-class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
+class BeeKeeper[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
     """
     Just buzzing along...
                             🐝 ~ ~ ~
