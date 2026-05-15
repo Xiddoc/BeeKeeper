@@ -34,7 +34,7 @@ EXPECTED_EXPORTS = frozenset(
         "RuleVerdict",
         "SoftPreliminaryRule",
         "SoftStatefulRule",
-        "State",
+        "AssignmentState",
         "StatefulRule",
     },
 )

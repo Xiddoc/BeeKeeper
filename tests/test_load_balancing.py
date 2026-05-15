@@ -4,10 +4,10 @@ from enum import auto
 from beekeeper import (
     AllocationRequest,
     AllocationType,
+    AssignmentState,
     DateRange,
     Entity,
     HardStatefulRule,
-    State,
     Unavailability,
 )
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
@@ -123,7 +123,7 @@ def test_rejected_candidate_falls_through_to_next() -> None:
         def __init__(self, banned: str) -> None:
             self._banned = banned
 
-        def check(self, entity: _Worker, allocation: _Request, state: State[_Worker, _Request]) -> bool:
+        def check(self, entity: _Worker, allocation: _Request, state: AssignmentState[_Worker, _Request]) -> bool:
             return entity.name != self._banned
 
     a = _Worker(name="banned", unavailabilities=[])

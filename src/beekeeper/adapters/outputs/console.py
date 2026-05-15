@@ -1,7 +1,7 @@
 from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 
@@ -16,7 +16,7 @@ class ConsoleOutputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationR
     call, file export) instead of relying on this one.
     """
 
-    def handle_output(self, output_state: State[TEntity, TAllocationRequest]) -> None:
+    def handle_output(self, output_state: AssignmentState[TEntity, TAllocationRequest]) -> None:
         for planned in output_state.planned_allocations:
             assigned = ", ".join(repr(e) for e in planned.assigned_entities)
             print(

@@ -1,14 +1,14 @@
 # Write an Output Adapter
 
 ```python
-from beekeeper import OutputAdapter, State
+from beekeeper import OutputAdapter, AssignmentState
 
 
 class DatabaseOutputAdapter(OutputAdapter[MyWorker, MyRequest]):
     def __init__(self, connection: Connection) -> None:
         self._conn = connection
 
-    def handle_output(self, output_state: State[MyWorker, MyRequest]) -> None:
+    def handle_output(self, output_state: AssignmentState[MyWorker, MyRequest]) -> None:
         for planned in output_state.planned_allocations:
             self._conn.insert_allocation(
                 task=planned.request.allocation_type.value,

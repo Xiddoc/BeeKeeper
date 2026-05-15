@@ -2,7 +2,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from beekeeper.algorithm.algorithm import Algorithm
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
@@ -40,7 +40,7 @@ class LoadBalancingAssignmentAlgorithm[
     randomness; the algorithm is fully deterministic for a given input.
 
     Load is read from ``state.get_allocations_done_by`` (now O(k) thanks to
-    the State's per-entity index); no side bookkeeping is needed.
+    the AssignmentState's per-entity index); no side bookkeeping is needed.
     """
 
     def run(
@@ -49,10 +49,10 @@ class LoadBalancingAssignmentAlgorithm[
         entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
-    ) -> State[TEntity, TAllocationRequest]:
+    ) -> AssignmentState[TEntity, TAllocationRequest]:
         del entities
         rules_list = list(rules)
-        state: State[TEntity, TAllocationRequest] = State()
+        state: AssignmentState[TEntity, TAllocationRequest] = AssignmentState()
 
         for allocation in allocations:
             alloc_candidates = candidates.get(id(allocation), [])

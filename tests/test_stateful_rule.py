@@ -12,10 +12,10 @@ from enum import auto
 from beekeeper import (
     AllocationRequest,
     AllocationType,
+    AssignmentState,
     DateRange,
     Entity,
     SoftStatefulRule,
-    State,
     Unavailability,
 )
 
@@ -45,14 +45,14 @@ def _request() -> _Request:
 class _LoadAdjustedScore(SoftStatefulRule[_Worker, _Request]):
     """Score 1.0 for unloaded entities, 0.25 if they already have an assignment."""
 
-    def score(self, entity: _Worker, allocation: _Request, state: State[_Worker, _Request]) -> float:
+    def score(self, entity: _Worker, allocation: _Request, state: AssignmentState[_Worker, _Request]) -> float:
         return 0.25 if state.get_allocations_done_by(entity) else 1.0
 
 
 def test_soft_stateful_rule_evaluate_returns_compatible_with_score() -> None:
     """``SoftStatefulRule.evaluate`` wraps ``score`` and never vetoes a candidate."""
     worker = _Worker(name="W", unavailabilities=[])
-    state: State[_Worker, _Request] = State()
+    state: AssignmentState[_Worker, _Request] = AssignmentState()
     rule = _LoadAdjustedScore()
 
     verdict = rule.evaluate(worker, _request(), state)

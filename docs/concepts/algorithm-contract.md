@@ -14,7 +14,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
         entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocReq]],
-    ) -> State[TEntity, TAllocReq]:
+    ) -> AssignmentState[TEntity, TAllocReq]:
         ...
 ```
 
@@ -27,7 +27,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
 
 ## What you must return
 
-A `State[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_allocation(PlannedAllocation(request=..., assigned_entities=(...)))` to record an assignment. The state's `planned_allocations` property is what output adapters read.
+A `AssignmentState[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_allocation(PlannedAllocation(request=..., assigned_entities=(...)))` to record an assignment. The state's `planned_allocations` property is what output adapters read.
 
 ## What you must guarantee
 

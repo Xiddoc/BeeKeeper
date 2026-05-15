@@ -3,7 +3,7 @@ from itertools import combinations
 from typing import Any
 
 from beekeeper.algorithm.algorithm import Algorithm
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
@@ -68,7 +68,7 @@ class BacktrackingAssignmentAlgorithm[
         entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
-    ) -> State[TEntity, TAllocationRequest]:
+    ) -> AssignmentState[TEntity, TAllocationRequest]:
         del entities  # backtracking works only off the pre-pruned candidate map
         rules_list = list(rules)
         allocations_list = list(allocations)
@@ -76,7 +76,7 @@ class BacktrackingAssignmentAlgorithm[
 
         feasible = [a for a in allocations_list if len(ranked[id(a)]) >= a.required_count]
 
-        state: State[TEntity, TAllocationRequest] = State()
+        state: AssignmentState[TEntity, TAllocationRequest] = AssignmentState()
         budget = [self._max_iterations]
         if self._search(feasible, 0, ranked, rules_list, state, budget):
             return state
@@ -108,7 +108,7 @@ class BacktrackingAssignmentAlgorithm[
         index: int,
         ranked: dict[int, list[TEntity]],
         rules: list[StatefulRule[TEntity, TAllocationRequest]],
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
         budget: list[int],
     ) -> bool:
         if index >= len(allocations):

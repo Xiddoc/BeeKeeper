@@ -5,7 +5,7 @@ The bundled `LoadBalancingAssignmentAlgorithm` is a short reference. Copy it as 
 ```python
 from collections.abc import Iterable, Mapping
 from typing import Any
-from beekeeper import Algorithm, PlannedAllocation, State, StatefulRule
+from beekeeper import Algorithm, PlannedAllocation, AssignmentState, StatefulRule
 from beekeeper.flow.candidate import Candidate
 
 
@@ -13,7 +13,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
     Algorithm[TEntity, TAllocReq],
 ):
     def run(self, allocations, entities, candidates, rules):
-        state: State[TEntity, TAllocReq] = State()
+        state: AssignmentState[TEntity, TAllocReq] = AssignmentState()
         rules_list = list(rules)
 
         for allocation in allocations:

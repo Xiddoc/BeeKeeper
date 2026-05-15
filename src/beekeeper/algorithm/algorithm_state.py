@@ -5,7 +5,7 @@ from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
 
 
-class State[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
+class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
     """
     This class represents the state of the algorithm, almost like the "memory"
     of the work that the algorithm has already completed.
@@ -51,19 +51,19 @@ class State[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any
         try:
             index = next(i for i, p in enumerate(self._allocations) if p is allocation)
         except StopIteration:
-            msg = "allocation is not present in this State"
+            msg = "allocation is not present in this AssignmentState"
             raise ValueError(msg) from None
         del self._allocations[index]
 
         for entity in allocation.assigned_entities:
             bucket = self._by_entity.get(id(entity))
             if bucket is None:
-                msg = "allocation is not present in this State"
+                msg = "allocation is not present in this AssignmentState"
                 raise ValueError(msg)
             try:
                 entity_index = next(i for i, p in enumerate(bucket) if p is allocation)
             except StopIteration:
-                msg = "allocation is not present in this State"
+                msg = "allocation is not present in this AssignmentState"
                 raise ValueError(msg) from None
             del bucket[entity_index]
 

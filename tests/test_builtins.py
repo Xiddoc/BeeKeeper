@@ -9,7 +9,7 @@ from beekeeper import (
     Unavailability,
 )
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.flow.candidate import Candidate
@@ -169,7 +169,7 @@ class TestConsoleOutputAdapter:
     def test_prints_each_planned_allocation(self, capsys: object) -> None:
         worker = _Worker(name="W", unavailabilities=[])
         request = _request(1, 2)
-        state: State[_Worker, _Request] = State()
+        state: AssignmentState[_Worker, _Request] = AssignmentState()
         state.add_allocation(PlannedAllocation(request=request, assigned_entities=(worker,)))
 
         ConsoleOutputAdapter[_Worker, _Request]().handle_output(state)

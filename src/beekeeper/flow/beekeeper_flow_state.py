@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
 
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
@@ -38,4 +38,4 @@ class BeeKeeperFlowState[TEntity: Entity[Any], TAllocationRequest: AllocationReq
     preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]]
     stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]]
     candidate_map: dict[int, list[Candidate[TEntity]]] = field(default_factory=dict)
-    algorithm_result: State[TEntity, TAllocationRequest] | None = None
+    algorithm_result: AssignmentState[TEntity, TAllocationRequest] | None = None

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.rules.rule_verdict import RuleVerdict
@@ -13,7 +13,7 @@ class StatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[A
     Stateful rules answer "given what's already been planned, can this entity
     take this allocation?" — checks like consecutive-shift limits, weekly
     hour caps, or rotation requirements. The algorithm consults them as it
-    assigns, so they have access to the current ``State``.
+    assigns, so they have access to the current ``AssignmentState``.
 
     Most rules want one of the convenience subclasses — ``HardStatefulRule``
     for binary checks, ``SoftStatefulRule`` for scoring preferences.
@@ -24,7 +24,7 @@ class StatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[A
         self,
         entity: TEntity,
         allocation: TAllocationRequest,
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
     ) -> RuleVerdict:
         """Return the rule's verdict for this (entity, allocation, state) triple."""
 
@@ -39,7 +39,7 @@ class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         self,
         entity: TEntity,
         allocation: TAllocationRequest,
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
     ) -> RuleVerdict:
         return RuleVerdict(compatible=self.check(entity, allocation, state))
 
@@ -48,7 +48,7 @@ class HardStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         self,
         entity: TEntity,
         allocation: TAllocationRequest,
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
     ) -> bool:
         """Return ``True`` if this entity may take this allocation given the current state."""
 
@@ -67,7 +67,7 @@ class SoftStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         self,
         entity: TEntity,
         allocation: TAllocationRequest,
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
     ) -> RuleVerdict:
         return RuleVerdict(compatible=True, score=self.score(entity, allocation, state))
 
@@ -76,6 +76,6 @@ class SoftStatefulRule[TEntity: Entity[Any], TAllocationRequest: AllocationReque
         self,
         entity: TEntity,
         allocation: TAllocationRequest,
-        state: State[TEntity, TAllocationRequest],
+        state: AssignmentState[TEntity, TAllocationRequest],
     ) -> float:
         """Return a non-negative preference score given the current state; higher is better."""

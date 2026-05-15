@@ -70,9 +70,9 @@ The reference algorithms move under a new `beekeeper.algorithm.implementations.*
 * `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm` — greedy with a per-entity load penalty so work disperses across the pool.
 * `beekeeper.algorithm.implementations.or_tools.OrToolsAssignmentAlgorithm` — Google OR-Tools CP-SAT-backed global optimizer. Optional dep: `pip install 'beekeeper[ortools]'` or `uv sync --extra ortools`.
 
-### State indexing (perf, internal)
+### AssignmentState indexing (perf, internal)
 
-`State` now maintains a per-entity index alongside the flat allocation list, making `get_allocations_done_by(entity)` O(k) instead of O(n). Stateful rules and load-balancing both benefit; `LoadBalancingAssignmentAlgorithm` dropped its workaround side-dict.
+`AssignmentState` now maintains a per-entity index alongside the flat allocation list, making `get_allocations_done_by(entity)` O(k) instead of O(n). Stateful rules and load-balancing both benefit; `LoadBalancingAssignmentAlgorithm` dropped its workaround side-dict.
 
 ### Oversubscribed benchmark fixtures
 
@@ -88,7 +88,7 @@ Benchmark suite parametrization extends to `4 algorithms × 6 fixture sizes = 24
 
 The greedy reference algorithm is deleted. `LoadBalancingAssignmentAlgorithm` is now the default reference — it does the same work but with a `score / (1 + load)` penalty so assignments disperse across the entity pool instead of concentrating on the highest-scored handful.
 
-The two algorithms had identical wall-clock performance on every fixture (the State per-entity index made the load lookup O(1)), and load-balancing's distribution properties on the oversubscribed fixtures were dramatically better (Gini ~0.13 vs ~0.97 on `oversub_10x`). Keeping a strictly worse algorithm as a footgun wasn't worth the API surface.
+The two algorithms had identical wall-clock performance on every fixture (the AssignmentState per-entity index made the load lookup O(1)), and load-balancing's distribution properties on the oversubscribed fixtures were dramatically better (Gini ~0.13 vs ~0.97 on `oversub_10x`). Keeping a strictly worse algorithm as a footgun wasn't worth the API surface.
 
 Callers using `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm` should switch to `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm`. The constructor signature is identical.
 

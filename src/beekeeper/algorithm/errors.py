@@ -26,7 +26,7 @@ class IncompleteSolutionError(Exception):
     if the algorithm had nothing meaningful to return.
     """
 
-    def __init__(self, reason: str, *, partial_state: Any = None) -> None:  # noqa: ANN401 — the State is generic, error stays type-erased
+    def __init__(self, reason: str, *, partial_state: Any = None) -> None:  # noqa: ANN401 — the AssignmentState is generic, error stays type-erased
         super().__init__(reason)
         self.reason = reason
         self.partial_state = partial_state

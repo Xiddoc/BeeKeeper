@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
@@ -17,7 +17,7 @@ class Algorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
-    ) -> State[TEntity, TAllocationRequest]:
+    ) -> AssignmentState[TEntity, TAllocationRequest]:
         """The entry point to your sorting and allocating algorithm.
 
         You receive the full list of allocations to assign, the full list of
@@ -33,9 +33,9 @@ class Algorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
                 with ``compatible=False`` from any preliminary rule have
                 already been pruned; what's left passed every binary check.
             rules: The stateful rules that must hold given the in-progress
-                State — consult them before adding a PlannedAllocation.
+                AssignmentState — consult them before adding a PlannedAllocation.
 
         Returns:
             The final state of the algorithm, where the chosen allocations
-            have been assigned via ``State.add_allocation``.
+            have been assigned via ``AssignmentState.add_allocation``.
         """

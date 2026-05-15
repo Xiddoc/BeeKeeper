@@ -7,7 +7,7 @@ A *rule* in BeeKeeper is a constraint: given an (entity, allocation) pair, does 
 |                  | **Hard** (binary verdict) | **Soft** (preference score) |
 | ---              | --- | --- |
 | **Preliminary** (no in-progress state) | `HardPreliminaryRule` — implement `check(entity, allocation) -> bool` | `SoftPreliminaryRule` — implement `score(entity, allocation) -> float` |
-| **Stateful** (sees the in-progress State) | `HardStatefulRule` — implement `check(entity, allocation, state) -> bool` | `SoftStatefulRule` — implement `score(entity, allocation, state) -> float` |
+| **Stateful** (sees the in-progress AssignmentState) | `HardStatefulRule` — implement `check(entity, allocation, state) -> bool` | `SoftStatefulRule` — implement `score(entity, allocation, state) -> float` |
 
 The base `PreliminaryRule` and `StatefulRule` classes have a single abstract method, `evaluate(...) -> RuleVerdict`, that returns both axes at once:
 
@@ -24,7 +24,7 @@ Author a Hard or Soft subclass when you only need one axis (the common case). Au
 
 **Preliminary** rules are evaluated once per (allocation, candidate) pair before the algorithm runs. They're for facts that don't change as more allocations are scheduled: "is this worker certified for this task," "does the rank match," "is the worker even on the roster." Their verdicts are aggregated in stage 2 and presented to the algorithm as a pruned, scored candidate map.
 
-**Stateful** rules are evaluated by the algorithm during assignment, with access to the current `State[TEntity, TAllocationRequest]` (the planned allocations so far). They're for facts that depend on what's already been scheduled: "this worker has already taken three shifts this week," "this entity worked yesterday and needs the day off," "we already have a manager on this shift."
+**Stateful** rules are evaluated by the algorithm during assignment, with access to the current `AssignmentState[TEntity, TAllocationRequest]` (the planned allocations so far). They're for facts that depend on what's already been scheduled: "this worker has already taken three shifts this week," "this entity worked yesterday and needs the day off," "we already have a manager on this shift."
 
 ## Hard vs. soft
 

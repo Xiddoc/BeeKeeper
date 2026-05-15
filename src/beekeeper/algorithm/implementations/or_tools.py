@@ -16,7 +16,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from beekeeper.algorithm.algorithm import Algorithm
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
@@ -118,7 +118,7 @@ class OrToolsAssignmentAlgorithm[
         entities: Iterable[TEntity],
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
-    ) -> State[TEntity, TAllocationRequest]:
+    ) -> AssignmentState[TEntity, TAllocationRequest]:
         del rules  # CP-SAT formulation doesn't model stateful rules — see class docstring
         allocations_list = list(allocations)
         entities_list = list(entities)
@@ -161,7 +161,7 @@ class OrToolsAssignmentAlgorithm[
             msg = f"OR-Tools CP-SAT solver returned status {status_name}; no assignment was produced."
             raise IncompleteSolutionError(msg)
 
-        state: State[TEntity, TAllocationRequest] = State()
+        state: AssignmentState[TEntity, TAllocationRequest] = AssignmentState()
         for i, alloc in enumerate(allocations_list):
             assigned: tuple[TEntity, ...] = tuple(
                 entities_list[j] for j in range(len(entities_list)) if (i, j) in x and solver.value(x[(i, j)]) == 1

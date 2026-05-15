@@ -6,10 +6,10 @@ import pytest
 from beekeeper import (
     AllocationRequest,
     AllocationType,
+    AssignmentState,
     DateRange,
     Entity,
     HardStatefulRule,
-    State,
     Unavailability,
 )
 from beekeeper.algorithm.errors import IncompleteSolutionError
@@ -43,7 +43,7 @@ def _request(start_day: int, end_day: int, **kwargs: object) -> _Request:
 class _NoDoubleBooking(HardStatefulRule[_Worker, _Request]):
     """Disallow assigning the same worker to overlapping allocations."""
 
-    def check(self, entity: _Worker, allocation: _Request, state: State[_Worker, _Request]) -> bool:
+    def check(self, entity: _Worker, allocation: _Request, state: AssignmentState[_Worker, _Request]) -> bool:
         for already in state.get_allocations_done_by(entity):
             if (
                 allocation.date_range.start_date <= already.request.date_range.end_date

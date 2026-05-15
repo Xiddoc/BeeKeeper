@@ -64,7 +64,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 - **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
 - **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Unavailability`, `DateRange`, `AllocationType`
 - **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
-- **Algorithm primitives**: `Algorithm`, `State`
+- **Algorithm primitives**: `Algorithm`, `AssignmentState`
 
 Concrete algorithm implementations and the built-in rules / output adapter live in submodules (not re-exported from the top-level), under `beekeeper.algorithm.implementations.*`, `beekeeper.rules.builtins`, and `beekeeper.adapters.outputs.*`.
 
@@ -85,7 +85,7 @@ Inside `src/beekeeper/`, prefer **submodule imports** (`from beekeeper.entities.
 Generic classes that take a generic class as a TypeVar bound write the bound with an `[Any]` slot:
 
 ```python
-class State[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]: ...
+class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]: ...
 ```
 
 Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entity` is itself generic). The `[Any]` accepts any parameterization of `Entity` as a valid bound. At call sites, parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`); the `[Any]` is purely a syntactic accommodation in bound positions.
@@ -105,7 +105,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 ### Rules (`src/beekeeper/rules/`)
 
-- **`PreliminaryRule[TEntity, TAllocationRequest]`** and **`StatefulRule[TEntity, TAllocationRequest]`** — abstract bases. Single abstract method `evaluate(...) -> RuleVerdict`. Preliminary rules run before the algorithm with no state; stateful rules run during assignment with the in-progress `State`.
+- **`PreliminaryRule[TEntity, TAllocationRequest]`** and **`StatefulRule[TEntity, TAllocationRequest]`** — abstract bases. Single abstract method `evaluate(...) -> RuleVerdict`. Preliminary rules run before the algorithm with no state; stateful rules run during assignment with the in-progress `AssignmentState`.
 - **`RuleVerdict`** — frozen dataclass with `compatible: bool, score: float = 1.0`. A failing `compatible` prunes the candidate; the score contributes to the per-candidate aggregate.
 - **`HardPreliminaryRule` / `HardStatefulRule`** — convenience subclasses wrapping `check(...) -> bool`. The verdict's score stays at 1.0 (neutral).
 - **`SoftPreliminaryRule` / `SoftStatefulRule`** — convenience subclasses wrapping `score(...) -> float`. The verdict's compatible stays True.
@@ -113,8 +113,8 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 ### Algorithm (`src/beekeeper/algorithm/`)
 
-- **`Algorithm[TEntity, TAllocationRequest]`** — abstract. The `run(allocations, entities, candidates, rules) -> State` signature receives the full allocations and entities iterables, the **candidate map** (pruned by stage 2), and the stateful rules.
-- **`State[TEntity, TAllocationRequest]`** — accumulator for `PlannedAllocation`s. Maintains a per-entity index alongside the flat list, so `get_allocations_done_by(entity)` is O(k) where k is that entity's count. Stateful rules and load-balancing both rely on this.
+- **`Algorithm[TEntity, TAllocationRequest]`** — abstract. The `run(allocations, entities, candidates, rules) -> AssignmentState` signature receives the full allocations and entities iterables, the **candidate map** (pruned by stage 2), and the stateful rules.
+- **`AssignmentState[TEntity, TAllocationRequest]`** — accumulator for `PlannedAllocation`s. Maintains a per-entity index alongside the flat list, so `get_allocations_done_by(entity)` is O(k) where k is that entity's count. Stateful rules and load-balancing both rely on this.
 - **`IncompleteSolutionError`** (in `beekeeper.algorithm.errors`) — raised by an algorithm that can't produce what it considers a complete solution. The flow stage catches it and falls through to the next algorithm in the chain.
 
 #### Bundled implementations (`beekeeper.algorithm.implementations.*`)
@@ -147,7 +147,7 @@ Putting load-balancing last guarantees the chain produces a result (it never rai
 
 1. **`AssignPossibleEntitiesToAllocations`** — for each allocation, walks the entity list and includes the entity unless the allocation specifies `requested_entities` and this entity isn't in the set, or the entity has an unavailability that fully covers the allocation's date range. Partial overlaps pass through. Output: `state.candidate_map: dict[int, list[Candidate[TEntity]]]` keyed by `id(allocation)`.
 2. **`RunPreliminaryRules`** — for each (allocation, candidate) pair, evaluates every preliminary rule. Hard-rule failures prune the candidate; surviving candidates' scores become the geometric mean of per-rule scores.
-3. **`RunAlgorithmAndDispatchResults`** — walks the algorithm chain and dispatches the resulting `State` to every configured `OutputAdapter`.
+3. **`RunAlgorithmAndDispatchResults`** — walks the algorithm chain and dispatches the resulting `AssignmentState` to every configured `OutputAdapter`.
 
 The pipeline is pluggable: pass `stages=[...]` to `BeeKeeper.__init__` to replace the default 3-stage sequence entirely. When supplying `stages=`, the user owns the wiring and `algorithm`/`output_adapters` become optional.
 

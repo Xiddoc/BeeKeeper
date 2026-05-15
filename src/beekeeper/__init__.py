@@ -8,7 +8,7 @@ from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputA
 from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.allocation_type import AllocationType
@@ -26,6 +26,7 @@ __all__ = [
     "AllocationInputAdapter",
     "AllocationRequest",
     "AllocationType",
+    "AssignmentState",
     "BeeKeeper",
     "DateRange",
     "Entity",
@@ -43,7 +44,6 @@ __all__ = [
     "RuleVerdict",
     "SoftPreliminaryRule",
     "SoftStatefulRule",
-    "State",
     "StatefulRule",
     "Unavailability",
 ]

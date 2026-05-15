@@ -31,7 +31,7 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import BeeKeeper, MixedInputAdapter, OutputAdapter, State  # noqa: E402
+from beekeeper import AssignmentState, BeeKeeper, MixedInputAdapter, OutputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
@@ -47,9 +47,9 @@ MAX_LOAD_MULTIPLIER = 3.0  # busiest worker may carry up to 3x the mean
 
 class _CapturingOutput(OutputAdapter[McWorker, McDonaldsAllocationRequest]):
     def __init__(self) -> None:
-        self.captured: State[McWorker, McDonaldsAllocationRequest] | None = None
+        self.captured: AssignmentState[McWorker, McDonaldsAllocationRequest] | None = None
 
-    def handle_output(self, output_state: State[McWorker, McDonaldsAllocationRequest]) -> None:
+    def handle_output(self, output_state: AssignmentState[McWorker, McDonaldsAllocationRequest]) -> None:
         self.captured = output_state
 
 
@@ -61,7 +61,7 @@ def _load_workers(suffix: str) -> list[McWorker]:
     return list(adapter.get_entities())
 
 
-def _run_load_balancing(suffix: str) -> State[McWorker, McDonaldsAllocationRequest]:
+def _run_load_balancing(suffix: str) -> AssignmentState[McWorker, McDonaldsAllocationRequest]:
     sink = _CapturingOutput()
     BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=MixedInputAdapter(
@@ -86,7 +86,9 @@ def _run_load_balancing(suffix: str) -> State[McWorker, McDonaldsAllocationReque
     return sink.captured
 
 
-def _per_worker_counts(state: State[McWorker, McDonaldsAllocationRequest], all_workers: list[McWorker]) -> list[int]:
+def _per_worker_counts(
+    state: AssignmentState[McWorker, McDonaldsAllocationRequest], all_workers: list[McWorker]
+) -> list[int]:
     """Allocations per worker, including zeros for workers who weren't picked."""
     counts: Counter[str] = Counter({w.name: 0 for w in all_workers})
     for planned in state.planned_allocations:
@@ -107,7 +109,7 @@ def _gini(values: list[int]) -> float:
 
 
 @pytest.fixture(scope="module")
-def oversub_states() -> dict[str, State[McWorker, McDonaldsAllocationRequest]]:
+def oversub_states() -> dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]]:
     """Run load-balancing once per fixture; share results across tests."""
     return {suffix: _run_load_balancing(suffix) for suffix in ("oversub_3x", "oversub_6x", "oversub_10x")}
 
@@ -117,7 +119,7 @@ def oversub_states() -> dict[str, State[McWorker, McDonaldsAllocationRequest]]:
     [("oversub_3x", 150), ("oversub_6x", 300), ("oversub_10x", 500)],
 )
 def test_every_allocation_filled(
-    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
+    oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
     expected_total: int,
 ) -> None:
@@ -128,7 +130,7 @@ def test_every_allocation_filled(
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
 def test_no_eligible_worker_idle(
-    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
+    oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
     """Under heavy oversubscription, load-balancing should never leave a worker
@@ -143,7 +145,7 @@ def test_no_eligible_worker_idle(
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
 def test_gini_coefficient_below_ceiling(
-    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
+    oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
     """Gini coefficient is the canonical inequality metric. Near 0 means perfectly
@@ -157,7 +159,7 @@ def test_gini_coefficient_below_ceiling(
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])
 def test_busiest_worker_within_multiplier_of_mean(
-    oversub_states: dict[str, State[McWorker, McDonaldsAllocationRequest]],
+    oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
     """The busiest worker shouldn't be wildly more loaded than the average."""

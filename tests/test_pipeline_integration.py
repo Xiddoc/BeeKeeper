@@ -14,6 +14,7 @@ from enum import auto
 from beekeeper import (
     AllocationRequest,
     AllocationType,
+    AssignmentState,
     DateRange,
     Entity,
     EntityInputAdapter,
@@ -22,7 +23,6 @@ from beekeeper import (
     OutputAdapter,
     PlannedAllocation,
     SoftPreliminaryRule,
-    State,
     Unavailability,
 )
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
@@ -69,12 +69,12 @@ class _StaticAllocations(AllocationInputAdapter[_Request]):
 
 
 class _CapturingOutput(OutputAdapter[_Worker, _Request]):
-    """Output adapter that just stores the State for assertions."""
+    """Output adapter that just stores the AssignmentState for assertions."""
 
     def __init__(self) -> None:
-        self.captured: State[_Worker, _Request] | None = None
+        self.captured: AssignmentState[_Worker, _Request] | None = None
 
-    def handle_output(self, output_state: State[_Worker, _Request]) -> None:
+    def handle_output(self, output_state: AssignmentState[_Worker, _Request]) -> None:
         self.captured = output_state
 
 
@@ -306,7 +306,7 @@ class TestPluggablePipeline:
 
     def test_custom_post_stage_sees_algorithm_result(self) -> None:
         """A custom stage chained after the algorithm stage must see the
-        produced ``State`` on ``state.algorithm_result``. Without that field,
+        produced ``AssignmentState`` on ``state.algorithm_result``. Without that field,
         the pluggable-pipeline contract is hollow: downstream stages can only
         consume the result by re-implementing dispatch."""
         from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
@@ -314,7 +314,7 @@ class TestPluggablePipeline:
 
         class _CapturePostStage(BaseBeeKeeperFlowStage[_Worker, _Request]):
             def __init__(self) -> None:
-                self.seen: State[_Worker, _Request] | None = None
+                self.seen: AssignmentState[_Worker, _Request] | None = None
 
             def run_stage(self, state: BeeKeeperFlowState[_Worker, _Request]) -> BeeKeeperFlowState[_Worker, _Request]:
                 self.seen = state.algorithm_result
@@ -338,7 +338,7 @@ class TestPluggablePipeline:
             ],
         ).execute()
 
-        # The post stage observed the same State the output adapter received.
+        # The post stage observed the same AssignmentState the output adapter received.
         assert post.seen is not None
         assert sink.captured is not None
         assert post.seen is sink.captured
@@ -353,7 +353,7 @@ class TestPluggablePipeline:
 
         class _Inspect(BaseBeeKeeperFlowStage[_Worker, _Request]):
             def __init__(self) -> None:
-                self.observed_result: State[_Worker, _Request] | None = "sentinel"  # type: ignore[assignment]
+                self.observed_result: AssignmentState[_Worker, _Request] | None = "sentinel"  # type: ignore[assignment]
 
             def run_stage(self, state: BeeKeeperFlowState[_Worker, _Request]) -> BeeKeeperFlowState[_Worker, _Request]:
                 self.observed_result = state.algorithm_result

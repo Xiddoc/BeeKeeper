@@ -1,7 +1,7 @@
 # Write a Stateful Rule
 
 ```python
-from beekeeper import HardStatefulRule, State
+from beekeeper import HardStatefulRule, AssignmentState
 
 
 class MaxThreeShiftsPerWeek(HardStatefulRule[MyWorker, MyRequest]):
@@ -9,7 +9,7 @@ class MaxThreeShiftsPerWeek(HardStatefulRule[MyWorker, MyRequest]):
         self,
         entity: MyWorker,
         allocation: MyRequest,
-        state: State[MyWorker, MyRequest],
+        state: AssignmentState[MyWorker, MyRequest],
     ) -> bool:
         return len(state.get_allocations_done_by(entity)) < 3
 ```

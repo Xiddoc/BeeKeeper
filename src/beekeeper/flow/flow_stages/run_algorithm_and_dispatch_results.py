@@ -3,7 +3,7 @@ from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
-from beekeeper.algorithm.algorithm_state import State
+from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
@@ -55,7 +55,9 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
 
         return state
 
-    def _run_chain(self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]) -> State[TEntity, TAllocationRequest]:
+    def _run_chain(
+        self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]
+    ) -> AssignmentState[TEntity, TAllocationRequest]:
         last_error: IncompleteSolutionError | None = None
         for algorithm in self._algorithms:
             try:
