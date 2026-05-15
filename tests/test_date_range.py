@@ -1,4 +1,5 @@
 from datetime import UTC, date, datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -57,11 +58,33 @@ def test_rejects_end_before_start() -> None:
 
 
 def test_rejects_mixed_timezone_awareness() -> None:
-    with pytest.raises(ValueError, match="timezone-naive or both timezone-aware"):
+    with pytest.raises(ValueError, match="must share the same tzinfo"):
         DateRange(
             start_date=datetime(2025, 1, 1, tzinfo=UTC),
             end_date=datetime(2025, 1, 5),  # noqa: DTZ001 — intentionally naive for the mixed-tz test
         )
+
+
+def test_rejects_mixed_aware_timezones() -> None:
+    """Two aware datetimes with different tzinfo objects are rejected.
+
+    Both endpoints being timezone-aware isn't enough — they must share
+    the same tzinfo, otherwise the range's duration is ambiguous.
+    """
+    with pytest.raises(ValueError, match="must share the same tzinfo"):
+        DateRange(
+            start_date=datetime(2025, 1, 1, tzinfo=ZoneInfo("America/New_York")),
+            end_date=datetime(2025, 1, 5, tzinfo=ZoneInfo("Asia/Tokyo")),
+        )
+
+
+def test_accepts_matching_aware_timezones() -> None:
+    """Two aware datetimes with equal-but-distinct tzinfo instances pass."""
+    span = DateRange(
+        start_date=datetime(2025, 1, 1, tzinfo=ZoneInfo("America/New_York")),
+        end_date=datetime(2025, 1, 5, tzinfo=ZoneInfo("America/New_York")),
+    )
+    assert span.inclusive_day_count == 5
 
 
 def test_accepts_plain_date_range() -> None:
