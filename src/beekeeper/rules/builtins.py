@@ -41,9 +41,17 @@ class RequestedEntityRule[TEntity: Entity[Any], TAllocationRequest: AllocationRe
     Stage 1 already enforces this when the default pipeline is used, but
     the rule is available for domains that supply custom flow stages and
     want the same semantic without re-implementing it.
+
+    Membership is checked by **identity** (``is``), not structural
+    equality. Pydantic's auto-generated ``__eq__`` walks fields, so two
+    ``Entity`` instances with identical names / inavailabilities /
+    domain attributes would compare equal — and a request "I want
+    *this* worker" would then accept "any worker that happens to look
+    like this one". The contract is "this specific object", so identity
+    is the right relation.
     """
 
     def check(self, entity: TEntity, allocation: TAllocationRequest) -> bool:
         if not allocation.requested_entities:
             return True
-        return entity in allocation.requested_entities
+        return any(e is entity for e in allocation.requested_entities)

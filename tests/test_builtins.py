@@ -84,6 +84,26 @@ class TestRequestedEntityRule:
         assert rule.check(chosen, request) is True
         assert rule.check(other, request) is False
 
+    def test_identity_not_structural_equality(self) -> None:
+        """A look-alike entity (same field values, different object) is rejected.
+
+        Pydantic's auto-generated ``__eq__`` compares fields, so two
+        ``_Worker(name="A", inavailabilities=[])`` instances are
+        structurally equal. The rule's contract is "the specific
+        entity the caller put in the request", so identity is the
+        relevant relation.
+        """
+        chosen = _Worker(name="A", inavailabilities=[])
+        lookalike = _Worker(name="A", inavailabilities=[])
+        # Sanity check: the two instances are equal-but-distinct.
+        assert chosen == lookalike
+        assert chosen is not lookalike
+
+        request = _request(1, 2, requested_entities=(chosen,))
+        rule = RequestedEntityRule[_Worker, _Request]()
+        assert rule.check(chosen, request) is True
+        assert rule.check(lookalike, request) is False
+
 
 class TestLoadBalancingAssignmentAlgorithm:
     def test_picks_highest_scored_candidate(self) -> None:
