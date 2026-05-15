@@ -145,3 +145,14 @@ The canonical concrete implementations now re-export from the package root, matc
 - `AbstractEnum` (was: `from beekeeper.data_structures.abstract_enum import …`)
 
 The submodule paths still work, so existing imports don't break. The top-level paths are the recommended way going forward.
+
+### API ergonomics
+
+A batch of additive type-system + observability tweaks. Nothing in this section breaks existing call sites.
+
+- **`AnyEntity` / `AnyRequest` type aliases.** PEP 695 `type` statements re-exported from the top level: `type AnyEntity = Entity[Any]`, `type AnyRequest = AllocationRequest[Any, Any, Any]`. Use as `[TEntity: AnyEntity, TRequest: AnyRequest]` instead of the verbose `[TEntity: Entity[Any], TRequest: AllocationRequest[Any, Any, Any]]` boilerplate.
+- **`IncompleteSolutionError` is now generic.** Parameterized over the same TypeVars as the algorithm that raises it (`IncompleteSolutionError[TEntity, TAllocationRequest]`). `partial_state` is typed `AssignmentState[TEntity, TAllocationRequest] | None` instead of `Any`, so callers who catch and inspect the partial state get type-checked field access.
+- **`BeeKeeper.__init__` has `@overload` signatures.** Two valid call shapes are now distinguished at the type-checker level: `algorithm=` required (default pipeline) vs. `stages=` required (custom pipeline). The previous single-signature version typechecked `BeeKeeper(input_adapter=...)` cleanly and then raised at runtime; the overloads catch that mistake statically.
+- **`output_adapters` is now `Sequence[OutputAdapter[...]]`** (was `Iterable[...]`). Tightens the type so mypy rejects singleton mistakes and one-shot iterators at the call site.
+- **Algorithm chain observability: `on_incomplete_solution=` callback.** Receives `(algorithm, exception)` once per fall-through event in the chain. Useful for production telemetry when a primary algorithm silently degrades to its fallback. Default `None` (no-op).
+- **`AllocationRequest` has a third TypeVar `TDate: date = datetime`.** The contained `date_range: DateRange[TDate]` follows. Existing call sites are unchanged thanks to the PEP 696 default; domains that want whole-day allocations can parameterize as `AllocationRequest[MyType, MyEntity, date]`.

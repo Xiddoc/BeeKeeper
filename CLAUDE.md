@@ -64,6 +64,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 - **Adapters (abstract)**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `OutputAdapter`
 - **Adapters (concrete)**: `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `ConsoleOutputAdapter`
 - **Domain models**: `Entity`, `AllocationRequest`, `Assignment`, `Unavailability`, `DateRange`, `AllocationType`, `AbstractEnum`
+- **Type aliases**: `AnyEntity` (= `Entity[Any]`), `AnyRequest` (= `AllocationRequest[Any, Any, Any]`)
 - **Rules (abstract)**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
 - **Rules (concrete)**: `AvailabilityRule`, `RequestedEntityRule`
 - **Algorithm primitives**: `Algorithm`, `AssignmentState`
@@ -88,10 +89,12 @@ Inside `src/beekeeper/`, prefer **submodule imports** (`from beekeeper.entities.
 Generic classes that take a generic class as a TypeVar bound write the bound with an `[Any]` slot:
 
 ```python
-class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]: ...
+class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any, Any]]: ...
 ```
 
 Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entity` is itself generic). The `[Any]` accepts any parameterization of `Entity` as a valid bound. At call sites, parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`); the `[Any]` is purely a syntactic accommodation in bound positions.
+
+The `AnyEntity` and `AnyRequest` type aliases (re-exported from the top level) wrap this boilerplate: `[TEntity: AnyEntity, TRequest: AnyRequest]` says the same thing as the spelled-out form. Use whichever reads better at the call site.
 
 ### Domain model
 
@@ -99,7 +102,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 - **`Unavailability[T: date = datetime]`** — pydantic `BaseModel` extending `DateRange[T]`. Adds `reason: str`. PEP 696 default (`datetime`) keeps the common path frictionless.
 - **`DateRange[T: date = datetime]`** — pydantic `BaseModel` with `start_date: T`, `end_date: T`. Validators reject `end < start` and require tz-consistency on datetimes. Two day-count properties: `inclusive_day_count` (same-day → 1, the "active days on duty" reading) and `days` (matches stdlib `(end - start).days`, exclusive).
 - **`AllocationType`** — empty `AbstractEnum` subclass; consumers extend with their domain's vocabulary (e.g. `class McAllocType(AllocationType): COOKING = "COOKING"`). String-valued enums recommended over `auto()` so JSON fixtures stay human-readable.
-- **`AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]]`** — pydantic `BaseModel`. Fields: `allocation_type: TAllocationType`, `date_range: DateRange[datetime]`, `required_count: int = 1`, `requested_entities: tuple[TEntity, ...] = ()`.
+- **`AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any], TDate: date = datetime]`** — pydantic `BaseModel`. Fields: `allocation_type: TAllocationType`, `date_range: DateRange[TDate]`, `required_count: int = Field(default=1, ge=1)`, `requested_entities: tuple[TEntity, ...] = ()`. The third TypeVar lets domains parameterize over plain `date` for whole-day allocations.
 - **`Assignment[TAllocationRequest, TEntity]`** — frozen `@dataclass` (composition, not inheritance). Fields: `allocation: TAllocationRequest`, `assigned_entities: tuple[TEntity, ...]`. Callers access `assignment.allocation.allocation_type` — wordy but unambiguous, and matches the user's mental model ("the allocation that's been assigned").
 
 ### `AbstractEnum` pattern (`src/beekeeper/data_structures/abstract_enum.py`)
