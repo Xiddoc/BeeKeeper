@@ -7,6 +7,8 @@ add/remove/get must stay consistent with it. These tests pin that behavior down.
 from datetime import UTC, datetime
 from enum import auto
 
+import pytest
+
 from beekeeper import (
     AllocationRequest,
     AllocationType,
@@ -123,3 +125,81 @@ def test_remove_then_add_lookup_stays_correct() -> None:
 
     assert state.get_allocations_done_by(worker) == [plan_two]
     assert state.planned_allocations == [plan_two]
+
+
+def test_remove_uses_identity_not_equality() -> None:
+    """Two structurally-equal ``PlannedAllocation`` objects must not be confused.
+
+    ``PlannedAllocation`` is a frozen dataclass, so distinct instances built
+    from the same request and entities compare ``==``. ``list.remove`` matches
+    by equality; if we used that, removing one would silently pop the other and
+    desync the flat list from the per-entity index. Backtracking-style search
+    churn creates exactly this scenario.
+    """
+    state: State[_Worker, _Request] = State()
+    worker = _Worker(name="W", inavailabilities=[])
+    req = _request(1)
+    first = PlannedAllocation(request=req, assigned_entities=(worker,))
+    second = PlannedAllocation(request=req, assigned_entities=(worker,))
+
+    # Pre-condition: the two instances are structurally equal but distinct.
+    assert first == second
+    assert first is not second
+
+    state.add_allocation(first)
+    state.add_allocation(second)
+
+    state.remove_allocation(first)
+
+    # ``second`` survives in both views — identity-based remove pulled only ``first``.
+    assert state.planned_allocations == [second]
+    assert state.planned_allocations[0] is second
+    done = state.get_allocations_done_by(worker)
+    assert done == [second]
+    assert done[0] is second
+
+
+def test_remove_missing_allocation_raises_value_error() -> None:
+    """Removing an allocation that was never added is a misuse — surface it loudly."""
+    state: State[_Worker, _Request] = State()
+    worker = _Worker(name="W", inavailabilities=[])
+    stray = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
+
+    with pytest.raises(ValueError, match="not present"):
+        state.remove_allocation(stray)
+
+
+def test_remove_missing_allocation_with_known_entity_raises_value_error() -> None:
+    """Even if a different planned allocation for the same entity was added,
+    removing one that wasn't added must raise (not silently corrupt state)."""
+    state: State[_Worker, _Request] = State()
+    worker = _Worker(name="W", inavailabilities=[])
+    other_worker = _Worker(name="O", inavailabilities=[])
+
+    added = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
+    state.add_allocation(added)
+
+    # An allocation whose flat-list lookup succeeds but whose entity bucket does
+    # not contain it. We trip this by hand-constructing the corruption: add an
+    # allocation referencing an entity that was never indexed.
+    not_in_index = PlannedAllocation(request=_request(5), assigned_entities=(other_worker,))
+    state._allocations.append(not_in_index)  # hand-corrupt the flat list to hit the missing-bucket branch
+
+    with pytest.raises(ValueError, match="not present"):
+        state.remove_allocation(not_in_index)
+
+
+def test_remove_inconsistent_entity_bucket_raises_value_error() -> None:
+    """If the per-entity bucket exists but doesn't contain the allocation,
+    we still raise ValueError rather than letting list.remove emit its own."""
+    state: State[_Worker, _Request] = State()
+    worker = _Worker(name="W", inavailabilities=[])
+
+    real = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
+    state.add_allocation(real)
+
+    phantom = PlannedAllocation(request=_request(5), assigned_entities=(worker,))
+    state._allocations.append(phantom)  # hand-corrupt the flat list, leaving the entity bucket without it
+
+    with pytest.raises(ValueError, match="not present"):
+        state.remove_allocation(phantom)

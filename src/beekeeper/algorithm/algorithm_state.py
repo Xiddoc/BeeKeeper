@@ -37,9 +37,35 @@ class State[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any
             self._by_entity.setdefault(id(entity), []).append(allocation)
 
     def remove_allocation(self, allocation: PlannedAllocation[TAllocationRequest, TEntity]) -> None:
-        self._allocations.remove(allocation)
+        """Remove ``allocation`` from both views by **identity**, not equality.
+
+        ``PlannedAllocation`` is a frozen dataclass and so compares structurally
+        equal whenever two distinct instances share the same request and
+        assigned entities. ``list.remove`` matches by ``__eq__`` and would pop
+        the first equal entry — silently desynchronising the flat list from the
+        per-entity index during backtracking churn where multiple structurally
+        equal planned allocations coexist. Scanning for the exact instance
+        keeps the two views in lock-step. The lists are short enough that the
+        linear scan is fine.
+        """
+        try:
+            index = next(i for i, p in enumerate(self._allocations) if p is allocation)
+        except StopIteration:
+            msg = "allocation is not present in this State"
+            raise ValueError(msg) from None
+        del self._allocations[index]
+
         for entity in allocation.assigned_entities:
-            self._by_entity[id(entity)].remove(allocation)
+            bucket = self._by_entity.get(id(entity))
+            if bucket is None:
+                msg = "allocation is not present in this State"
+                raise ValueError(msg)
+            try:
+                entity_index = next(i for i, p in enumerate(bucket) if p is allocation)
+            except StopIteration:
+                msg = "allocation is not present in this State"
+                raise ValueError(msg) from None
+            del bucket[entity_index]
 
     def get_allocations_done_by(self, entity: TEntity) -> list[PlannedAllocation[TAllocationRequest, TEntity]]:
         """Allocations the given entity is assigned to. O(k) where k is that entity's count."""
