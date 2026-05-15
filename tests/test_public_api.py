@@ -17,6 +17,8 @@ EXPECTED_EXPORTS = frozenset(
         "AllocationInputAdapter",
         "AllocationRequest",
         "AllocationType",
+        "AnyEntity",
+        "AnyRequest",
         "Assignment",
         "AssignmentState",
         "AvailabilityRule",

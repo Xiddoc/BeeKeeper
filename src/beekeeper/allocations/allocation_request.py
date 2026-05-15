@@ -17,3 +17,9 @@ class AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]](B
     # layer (e.g. ``combinations(pool, -5)``). Reject both at the IO boundary.
     required_count: int = Field(default=1, ge=1)
     requested_entities: tuple[TEntity, ...] = ()
+
+
+# Convenience alias for generic-bound positions where the user just needs
+# "any AllocationRequest parameterization". Use as
+# ``[TRequest: AnyRequest]`` instead of ``[TRequest: AllocationRequest[Any, Any]]``.
+type AnyRequest = AllocationRequest[Any, Any]

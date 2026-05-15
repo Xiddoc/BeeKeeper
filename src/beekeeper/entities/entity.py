@@ -8,3 +8,9 @@ from beekeeper.unavailabilities.unavailability import Unavailability
 class Entity[TUnavailability: Unavailability[Any]](BaseModel):
     model_config = ConfigDict(extra="forbid")
     unavailabilities: list[TUnavailability]
+
+
+# Convenience alias for generic-bound positions where the user just needs
+# "any Entity parameterization". Writing ``[TEntity: Entity[Any]]`` on
+# every subclass is verbose; ``[TEntity: AnyEntity]`` says the same thing.
+type AnyEntity = Entity[Any]

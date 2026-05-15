@@ -14,11 +14,11 @@ from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.algorithm.implementations.or_tools import OrToolsAssignmentAlgorithm
-from beekeeper.allocations.allocation_request import AllocationRequest
+from beekeeper.allocations.allocation_request import AllocationRequest, AnyRequest
 from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.allocations.assignment import Assignment
 from beekeeper.data_structures.abstract_enum import AbstractEnum
-from beekeeper.entities.entity import Entity
+from beekeeper.entities.entity import AnyEntity, Entity
 from beekeeper.flow.beekeeper import BeeKeeper
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
 from beekeeper.rules.preliminary_rule import HardPreliminaryRule, PreliminaryRule, SoftPreliminaryRule
@@ -33,6 +33,8 @@ __all__ = [
     "AllocationInputAdapter",
     "AllocationRequest",
     "AllocationType",
+    "AnyEntity",
+    "AnyRequest",
     "Assignment",
     "AssignmentState",
     "AvailabilityRule",
