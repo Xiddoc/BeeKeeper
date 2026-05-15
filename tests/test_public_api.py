@@ -15,7 +15,7 @@ EXPECTED_EXPORTS = frozenset(
         "AllocationInputAdapter",
         "AllocationRequest",
         "AllocationType",
-        "BaseAlgorithm",
+        "Algorithm",
         "BeeKeeper",
         "DateRange",
         "Entity",

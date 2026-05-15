@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping
 from typing import Any
 
@@ -9,7 +9,7 @@ from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
 
 
-class BaseAlgorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]:
+class Algorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](ABC):
     @abstractmethod
     def run(
         self,

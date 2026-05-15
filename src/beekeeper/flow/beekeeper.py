@@ -3,7 +3,7 @@ from typing import Any
 
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
-from beekeeper.algorithm.base_algorithm import BaseAlgorithm
+from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
@@ -27,7 +27,7 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         *,
         input_adapter: InputAdapter[TEntity, TAllocationRequest],
         algorithm: (
-            BaseAlgorithm[TEntity, TAllocationRequest] | Sequence[BaseAlgorithm[TEntity, TAllocationRequest]] | None
+            Algorithm[TEntity, TAllocationRequest] | Sequence[Algorithm[TEntity, TAllocationRequest]] | None
         ) = None,
         preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
         stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
@@ -53,8 +53,8 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
 
     @staticmethod
     def _normalize_algorithm_chain(
-        algorithm: (BaseAlgorithm[TEntity, TAllocationRequest] | Sequence[BaseAlgorithm[TEntity, TAllocationRequest]]),
-    ) -> list[BaseAlgorithm[TEntity, TAllocationRequest]]:
+        algorithm: (Algorithm[TEntity, TAllocationRequest] | Sequence[Algorithm[TEntity, TAllocationRequest]]),
+    ) -> list[Algorithm[TEntity, TAllocationRequest]]:
         """Accept either a single algorithm or a sequence; always return a list.
 
         A user who passes one algorithm gets a one-element chain. A user who
@@ -62,7 +62,7 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         sequence raises — the framework needs at least one algorithm to
         produce a schedule.
         """
-        if isinstance(algorithm, BaseAlgorithm):
+        if isinstance(algorithm, Algorithm):
             return [algorithm]
         chain = list(algorithm)
         if not chain:

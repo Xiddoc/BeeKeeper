@@ -1,12 +1,12 @@
 # The Algorithm Contract
 
-Your algorithm is the meaty part of your scheduler. BeeKeeper handles ingestion, rule evaluation, and dispatch; your `BaseAlgorithm.run` decides who goes where.
+Your algorithm is the meaty part of your scheduler. BeeKeeper handles ingestion, rule evaluation, and dispatch; your `Algorithm.run` decides who goes where.
 
 ## The signature
 
 ```python
 class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
-    BaseAlgorithm[TEntity, TAllocReq],
+    Algorithm[TEntity, TAllocReq],
 ):
     def run(
         self,
@@ -63,4 +63,4 @@ if not solution_complete:
 
 [`LoadBalancingAssignmentAlgorithm`](../how-to/write-an-algorithm.md#bundled-implementations) is a short reference: for each allocation, sort candidates by `score / (1 + load)` where `load` is the count of allocations the entity already has, then pick the top compatible candidates until `required_count` is met. The load penalty disperses work across the entity pool instead of concentrating it on whoever has the raw highest score. It's not optimal — it doesn't backtrack, doesn't optimize globally — but it gives every example in this docs site a runnable algorithm without writing one from scratch.
 
-For nontrivial scheduling, the same `BaseAlgorithm` contract is implemented by `BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` — see the [bundled implementations table](../how-to/write-an-algorithm.md#bundled-implementations).
+For nontrivial scheduling, the same `Algorithm` contract is implemented by `BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` — see the [bundled implementations table](../how-to/write-an-algorithm.md#bundled-implementations).

@@ -2,8 +2,8 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
+from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.base_algorithm import BaseAlgorithm
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
@@ -31,7 +31,7 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
 
     def __init__(
         self,
-        algorithms: Sequence[BaseAlgorithm[TEntity, TAllocationRequest]],
+        algorithms: Sequence[Algorithm[TEntity, TAllocationRequest]],
         output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]],
     ) -> None:
         if not algorithms:

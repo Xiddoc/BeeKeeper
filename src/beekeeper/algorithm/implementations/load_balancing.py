@@ -1,8 +1,8 @@
 from collections.abc import Iterable, Mapping
 from typing import Any
 
+from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.base_algorithm import BaseAlgorithm
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
@@ -14,7 +14,7 @@ class LoadBalancingAssignmentAlgorithm[
     TEntity: Entity[Any],
     TAllocationRequest: AllocationRequest[Any, Any],
 ](
-    BaseAlgorithm[TEntity, TAllocationRequest],
+    Algorithm[TEntity, TAllocationRequest],
 ):
     """Greedy with a load-balancing penalty so work disperses across the entity pool.
 

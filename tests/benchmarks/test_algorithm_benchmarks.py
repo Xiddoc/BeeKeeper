@@ -34,7 +34,7 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import BaseAlgorithm, BeeKeeper, MixedInputAdapter  # noqa: E402
+from beekeeper import Algorithm, BeeKeeper, MixedInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
@@ -46,7 +46,7 @@ FAIL_THRESHOLD_SECONDS = 1.0
 
 FIXTURES_DIR = EXAMPLES_DIR / "mcdonalds"
 
-ALGORITHMS: dict[str, type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]] = {
+ALGORITHMS: dict[str, type[Algorithm[McWorker, McDonaldsAllocationRequest]]] = {
     "backtracking": BacktrackingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
     "load_balancing": LoadBalancingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest],
 }
@@ -61,7 +61,7 @@ except ImportError:
 
 
 def _build_beekeeper(
-    suffix: str, algorithm_factory: type[BaseAlgorithm[McWorker, McDonaldsAllocationRequest]]
+    suffix: str, algorithm_factory: type[Algorithm[McWorker, McDonaldsAllocationRequest]]
 ) -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
     return BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=MixedInputAdapter(

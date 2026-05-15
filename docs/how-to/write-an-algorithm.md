@@ -5,12 +5,12 @@ The bundled `LoadBalancingAssignmentAlgorithm` is a short reference. Copy it as 
 ```python
 from collections.abc import Iterable, Mapping
 from typing import Any
-from beekeeper import BaseAlgorithm, PlannedAllocation, State, StatefulRule
+from beekeeper import Algorithm, PlannedAllocation, State, StatefulRule
 from beekeeper.flow.candidate import Candidate
 
 
 class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
-    BaseAlgorithm[TEntity, TAllocReq],
+    Algorithm[TEntity, TAllocReq],
 ):
     def run(self, allocations, entities, candidates, rules):
         state: State[TEntity, TAllocReq] = State()
@@ -40,7 +40,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
 
 ## Bundled implementations
 
-Three reference implementations live under `beekeeper.algorithm.implementations.*`. Pick the one closest to what your domain needs and copy or wrap; or write a fresh implementation against the same `BaseAlgorithm` contract.
+Three reference implementations live under `beekeeper.algorithm.implementations.*`. Pick the one closest to what your domain needs and copy or wrap; or write a fresh implementation against the same `Algorithm` contract.
 
 | Module | Class | Use when |
 | --- | --- | --- |

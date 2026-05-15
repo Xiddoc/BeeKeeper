@@ -7,8 +7,8 @@ from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocati
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
 from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
+from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.base_algorithm import BaseAlgorithm
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.allocation_type import AllocationType
@@ -22,10 +22,10 @@ from beekeeper.time_constructs.date_range import DateRange
 from beekeeper.unavailabilities.unavailability import Unavailability
 
 __all__ = [
+    "Algorithm",
     "AllocationInputAdapter",
     "AllocationRequest",
     "AllocationType",
-    "BaseAlgorithm",
     "BeeKeeper",
     "DateRange",
     "Entity",

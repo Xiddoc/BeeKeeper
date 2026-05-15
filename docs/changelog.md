@@ -41,7 +41,7 @@ Switched from inheritance to **composition**: `PlannedAllocation` now has `reque
 
 - `AssignPossibleEntitiesToAllocations` and `RunPreliminaryRules` are no longer stubs. Stage 1 builds a candidate map keyed by `id(allocation)`; stage 2 prunes hard-rule failures and aggregates soft scores via geometric mean.
 - `BeeKeeperFlowState` carries `candidate_map: dict[int, list[Candidate[TEntity]]]`.
-- `BaseAlgorithm.run` signature widens: `candidates` and the now-correct `Iterable[TAllocationRequest]` for allocations.
+- `Algorithm.run` signature widens: `candidates` and the now-correct `Iterable[TAllocationRequest]` for allocations.
 
 ### JSON adapters
 

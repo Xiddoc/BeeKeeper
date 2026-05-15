@@ -40,7 +40,7 @@ Auto-generated from the source. Click any class to see its full signature, gener
 
 ## Algorithm
 
-::: beekeeper.algorithm.base_algorithm
+::: beekeeper.algorithm.algorithm
 ::: beekeeper.algorithm.algorithm_state
 ::: beekeeper.algorithm.errors
 ::: beekeeper.algorithm.implementations.backtracking

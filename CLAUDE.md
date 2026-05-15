@@ -64,7 +64,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 - **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
 - **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Unavailability`, `DateRange`, `AllocationType`
 - **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
-- **Algorithm primitives**: `BaseAlgorithm`, `State`
+- **Algorithm primitives**: `Algorithm`, `State`
 
 Concrete algorithm implementations and the built-in rules / output adapter live in submodules (not re-exported from the top-level), under `beekeeper.algorithm.implementations.*`, `beekeeper.rules.builtins`, and `beekeeper.adapters.outputs.*`.
 
@@ -113,7 +113,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 ### Algorithm (`src/beekeeper/algorithm/`)
 
-- **`BaseAlgorithm[TEntity, TAllocationRequest]`** — abstract. The `run(allocations, entities, candidates, rules) -> State` signature receives the full allocations and entities iterables, the **candidate map** (pruned by stage 2), and the stateful rules.
+- **`Algorithm[TEntity, TAllocationRequest]`** — abstract. The `run(allocations, entities, candidates, rules) -> State` signature receives the full allocations and entities iterables, the **candidate map** (pruned by stage 2), and the stateful rules.
 - **`State[TEntity, TAllocationRequest]`** — accumulator for `PlannedAllocation`s. Maintains a per-entity index alongside the flat list, so `get_allocations_done_by(entity)` is O(k) where k is that entity's count. Stateful rules and load-balancing both rely on this.
 - **`IncompleteSolutionError`** (in `beekeeper.algorithm.errors`) — raised by an algorithm that can't produce what it considers a complete solution. The flow stage catches it and falls through to the next algorithm in the chain.
 
@@ -127,7 +127,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 #### The algorithm chain
 
-`BeeKeeper(algorithm=...)` accepts either a single `BaseAlgorithm` or a `Sequence[BaseAlgorithm]`. The flow stage tries each in order, catches `IncompleteSolutionError`, falls through. The first non-raising algorithm wins. If all raise, the last error reaches the caller.
+`BeeKeeper(algorithm=...)` accepts either a single `Algorithm` or a `Sequence[Algorithm]`. The flow stage tries each in order, catches `IncompleteSolutionError`, falls through. The first non-raising algorithm wins. If all raise, the last error reaches the caller.
 
 ```python
 BeeKeeper[McWorker, McRequest](

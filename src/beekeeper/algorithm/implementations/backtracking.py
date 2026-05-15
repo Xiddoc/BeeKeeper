@@ -2,8 +2,8 @@ from collections.abc import Iterable, Mapping
 from itertools import combinations
 from typing import Any
 
+from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import State
-from beekeeper.algorithm.base_algorithm import BaseAlgorithm
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.planned_allocation import PlannedAllocation
@@ -19,7 +19,7 @@ class BacktrackingAssignmentAlgorithm[
     TEntity: Entity[Any],
     TAllocationRequest: AllocationRequest[Any, Any],
 ](
-    BaseAlgorithm[TEntity, TAllocationRequest],
+    Algorithm[TEntity, TAllocationRequest],
 ):
     """Depth-first backtracking solver.
 

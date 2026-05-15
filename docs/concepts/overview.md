@@ -26,4 +26,4 @@ BeeKeeper is **a framework**. It hands you abstract base classes, runs them thro
 
 ## The mental model
 
-Read [`concepts/pipeline.md`](pipeline.md) for the data flow through the three default stages, [`concepts/type-system.md`](type-system.md) for how generic parameters propagate, [`concepts/rules.md`](rules.md) for the rule taxonomy, and [`concepts/algorithm-contract.md`](algorithm-contract.md) for what your `BaseAlgorithm.run` is allowed to assume and required to return.
+Read [`concepts/pipeline.md`](pipeline.md) for the data flow through the three default stages, [`concepts/type-system.md`](type-system.md) for how generic parameters propagate, [`concepts/rules.md`](rules.md) for the rule taxonomy, and [`concepts/algorithm-contract.md`](algorithm-contract.md) for what your `Algorithm.run` is allowed to assume and required to return.
