@@ -119,3 +119,29 @@ Callers must update:
 - and the JSON key in any persisted entity payloads (`"unavailabilities"`).
 
 No backwards-compatibility alias is shipped — this is an alpha (v0.1.0), and the misspelling is the whole reason for the rename.
+
+### API renames (breaking)
+
+A coherent batch of renames that drop awkward prefixes, replace overloaded vocabulary, and surface the public abstract bases consistently:
+
+- `BaseAlgorithm` → `Algorithm`. The `Base` prefix was the only one on a public abstract base; every sibling (`PreliminaryRule`, `StatefulRule`, `EntityInputAdapter`, …) uses the bare name. The class also now inherits from `abc.ABC`, so `@abstractmethod` is actually enforced (previously the decorator was silently ignored and instantiation crashed downstream).
+- `State` → `AssignmentState`. The bare name was generic to the point of unhelpful at call sites (`state: State[...]` doesn't say what kind of state).
+- `MixedInputAdapter` → `CompositeInputAdapter`. "Mixed" suggested mixed contents; the class actually composes two sub-adapters.
+- `PlannedAllocation` → `Assignment`. Resolves a three-way overload of "allocation" in the codebase (`AllocationRequest`, planned result, verb). The field rename `Assignment.request` → `Assignment.allocation` follows from the new name. `AssignmentState` method/attribute renames for symmetry: `add_allocation` → `add_assignment`, `remove_allocation` → `remove_assignment`, `planned_allocations` → `assignments`, `get_allocations_done_by` → `get_assignments_done_by`.
+
+Module files renamed via `git mv` so blame history is preserved:
+
+- `beekeeper.algorithm.base_algorithm` → `beekeeper.algorithm.algorithm`
+- `beekeeper.adapters.inputs.mixed_input_adapter` → `beekeeper.adapters.inputs.composite_input_adapter`
+- `beekeeper.allocations.planned_allocation` → `beekeeper.allocations.assignment`
+
+### Top-level re-exports
+
+The canonical concrete implementations now re-export from the package root, matching the way users actually want to import them:
+
+- `LoadBalancingAssignmentAlgorithm`, `BacktrackingAssignmentAlgorithm`, `OrToolsAssignmentAlgorithm` (was: `from beekeeper.algorithm.implementations.* import …`)
+- `AvailabilityRule`, `RequestedEntityRule` (was: `from beekeeper.rules.builtins import …`)
+- `ConsoleOutputAdapter` (was: `from beekeeper.adapters.outputs.console import …`)
+- `AbstractEnum` (was: `from beekeeper.data_structures.abstract_enum import …`)
+
+The submodule paths still work, so existing imports don't break. The top-level paths are the recommended way going forward.
