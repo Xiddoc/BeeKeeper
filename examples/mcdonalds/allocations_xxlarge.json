@@ -25,7 +25,7 @@
       {
         "name": "Philip Cannon",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-26T00:00:00",
             "end_date": "2025-08-31T00:00:00",
@@ -37,7 +37,7 @@
       {
         "name": "Richard Henson",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-26T00:00:00",
             "end_date": "2025-07-03T00:00:00",
@@ -76,7 +76,7 @@
       {
         "name": "Richard Aguirre",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-25T00:00:00",
             "end_date": "2025-09-28T00:00:00",
@@ -107,7 +107,7 @@
       {
         "name": "Stephanie Salazar",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-07-24T00:00:00",
             "end_date": "2025-07-26T00:00:00",
@@ -197,7 +197,7 @@
       {
         "name": "April Frost",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-14T00:00:00",
             "end_date": "2025-09-28T00:00:00",
@@ -306,7 +306,7 @@
       {
         "name": "Lindsey Walker",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-11T00:00:00",
             "end_date": "2025-06-12T00:00:00",
@@ -349,7 +349,7 @@
       {
         "name": "Michael Powell",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-08T00:00:00",
             "end_date": "2025-09-09T00:00:00",
@@ -426,7 +426,7 @@
       {
         "name": "Paula Moreno",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-11T00:00:00",
             "end_date": "2025-06-25T00:00:00",
@@ -519,7 +519,7 @@
       {
         "name": "Richard Aguirre",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-25T00:00:00",
             "end_date": "2025-09-28T00:00:00",
@@ -537,7 +537,7 @@
       {
         "name": "Paul Jones",
         "rank": "COOK",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-19T00:00:00",
             "end_date": "2025-09-21T00:00:00",
@@ -658,7 +658,7 @@
       {
         "name": "Kelly Donovan",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-17T00:00:00",
             "end_date": "2025-08-19T00:00:00",
@@ -709,7 +709,7 @@
       {
         "name": "Alyssa Day",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-30T00:00:00",
             "end_date": "2025-10-03T00:00:00",
@@ -733,7 +733,7 @@
       {
         "name": "Melissa Gates",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-10T00:00:00",
             "end_date": "2025-08-12T00:00:00",
@@ -771,7 +771,7 @@
       {
         "name": "Megan Young",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-17T00:00:00",
             "end_date": "2025-09-20T00:00:00",
@@ -821,7 +821,7 @@
       {
         "name": "Rebecca Valencia",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-07-01T00:00:00",
             "end_date": "2025-07-05T00:00:00",
@@ -833,7 +833,7 @@
       {
         "name": "Michelle Harmon",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-11T00:00:00",
             "end_date": "2025-09-13T00:00:00",
@@ -876,7 +876,7 @@
       {
         "name": "Julia Torres",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-27T00:00:00",
             "end_date": "2025-10-01T00:00:00",
@@ -1049,7 +1049,7 @@
       {
         "name": "Anna Henderson",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-07-01T00:00:00",
             "end_date": "2025-07-11T00:00:00",
@@ -1182,7 +1182,7 @@
       {
         "name": "Dr. Hannah Patterson",
         "rank": "COOK",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-13T00:00:00",
             "end_date": "2025-08-14T00:00:00",
@@ -1259,7 +1259,7 @@
       {
         "name": "Michael Wang",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-09-13T00:00:00",
             "end_date": "2025-09-16T00:00:00",
@@ -1377,7 +1377,7 @@
       {
         "name": "Whitney Peters",
         "rank": "MANAGER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-17T00:00:00",
             "end_date": "2025-06-21T00:00:00",
@@ -1478,7 +1478,7 @@
       {
         "name": "Debra Christian",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-09T00:00:00",
             "end_date": "2025-06-11T00:00:00",
@@ -1508,7 +1508,7 @@
       {
         "name": "Amber Kidd",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-14T00:00:00",
             "end_date": "2025-08-16T00:00:00",
@@ -1565,7 +1565,7 @@
       {
         "name": "Derek Zuniga",
         "rank": "COOK",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-06-16T00:00:00",
             "end_date": "2025-06-20T00:00:00",
@@ -1622,7 +1622,7 @@
       {
         "name": "Stephanie Manning",
         "rank": "CASHIER",
-        "inavailabilities": [
+        "unavailabilities": [
           {
             "start_date": "2025-08-01T00:00:00",
             "end_date": "2025-08-02T00:00:00",

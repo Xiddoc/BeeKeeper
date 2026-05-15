@@ -15,7 +15,7 @@ class AssignPossibleEntitiesToAllocations[TEntity: Entity[Any], TAllocationReque
     For each allocation, walks the entity list and includes the entity as a
     candidate unless it's *definitively* unavailable: either because the
     allocation specifies ``requested_entities`` and this entity isn't one of
-    them, or because the entity has an inavailability that fully covers the
+    them, or because the entity has an unavailability that fully covers the
     allocation's date range. Partial overlaps pass through — preliminary
     rules and the algorithm get the final say on partial-day semantics.
 
@@ -31,14 +31,14 @@ class AssignPossibleEntitiesToAllocations[TEntity: Entity[Any], TAllocationReque
             for entity in state.entities:
                 if allocation.requested_entities and entity not in allocation.requested_entities:
                     continue
-                if self._is_blocked_by_inavailability(entity, allocation):
+                if self._is_blocked_by_unavailability(entity, allocation):
                     continue
                 candidates.append(Candidate(entity=entity))
             state.candidate_map[id(allocation)] = candidates
         return state
 
     @staticmethod
-    def _is_blocked_by_inavailability(entity: TEntity, allocation: TAllocationRequest) -> bool:
+    def _is_blocked_by_unavailability(entity: TEntity, allocation: TAllocationRequest) -> bool:
         alloc_start = allocation.date_range.start_date
         alloc_end = allocation.date_range.end_date
-        return any(inav.start_date <= alloc_start and inav.end_date >= alloc_end for inav in entity.inavailabilities)
+        return any(inav.start_date <= alloc_start and inav.end_date >= alloc_end for inav in entity.unavailabilities)

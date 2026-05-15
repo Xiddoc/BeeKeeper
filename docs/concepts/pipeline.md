@@ -8,7 +8,7 @@
    ─────────────► │ build the candidate map               │   prune by hard rules,
    entities,      │ for each allocation, list the         │   aggregate soft scores
    allocations    │ entities not blocked by an            │   (geometric mean across rules)
-                  │ inavailability that fully covers it   │
+                  │ unavailability that fully covers it   │
                   └──────────────────────────────────────┘
                                    │
                                    ▼
@@ -26,7 +26,7 @@
 For each allocation, walks the entity list and includes the entity as a candidate **unless** something definitively rules it out:
 
 - The allocation specifies `requested_entities` and this entity isn't in the set.
-- The entity has an inavailability whose date range fully covers the allocation's date range.
+- The entity has an unavailability whose date range fully covers the allocation's date range.
 
 Partial overlaps **pass through** at this stage. Domain-specific availability semantics (e.g. "any conflict at all disqualifies") belong in a preliminary rule like [`AvailabilityRule`](../how-to/write-a-preliminary-rule.md). This keeps stage 1 cheap and conservative.
 

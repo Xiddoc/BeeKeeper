@@ -6,7 +6,7 @@ The 0.1.0 → 0.2.0 (forthcoming) refactor. Public API breaks called out at the 
 
 ### Type system
 
-- **All framework classes are now PEP 695 generic.** `Entity[TInavailability]`, `AllocationRequest[TAllocationType, TEntity]`, `Inavailability[T: date = datetime]`, `DateRange[T: date = datetime]`, plus every adapter, rule, algorithm, flow stage, and the `BeeKeeper` itself. Domain code parameterizes once at the call site (`BeeKeeper[McWorker, McRequest](...)`) and the types flow through the whole pipeline.
+- **All framework classes are now PEP 695 generic.** `Entity[TUnavailability]`, `AllocationRequest[TAllocationType, TEntity]`, `Unavailability[T: date = datetime]`, `DateRange[T: date = datetime]`, plus every adapter, rule, algorithm, flow stage, and the `BeeKeeper` itself. Domain code parameterizes once at the call site (`BeeKeeper[McWorker, McRequest](...)`) and the types flow through the whole pipeline.
 - **Module-level `TEntity` / `TAllocationType` / `TAllocationRequest` TypeVars are removed.** Each generic class declares its own.
 - **Bound class:** `Entity[Any]` and `AllocationRequest[Any, Any]` are used as PEP 695 bounds (the inner `[Any]` accommodates mypy's `[type-arg]` rule on generic-class bounds). At call sites, parameterize concretely.
 
@@ -106,3 +106,16 @@ BeeKeeper[McWorker, McRequest](
 `BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` raise `IncompleteSolutionError` instead of silently falling back / silently returning empty. Greedy and load-balancing never raise. Putting one of them last in the chain guarantees a result.
 
 The previously-bundled hardcoded backtracking → greedy fallback is removed in favor of the explicit chain.
+
+### `Inavailability` → `Unavailability` (breaking)
+
+The `Inavailability` class — which wasn't a real English word — is renamed to `Unavailability` throughout. The module also moves from `beekeeper.inavailabilities.inavailability` to `beekeeper.unavailabilities.unavailability`, and the `Entity.inavailabilities` field is renamed to `Entity.unavailabilities`. The type parameter on `Entity` follows suit: `Entity[TUnavailability: Unavailability[Any]]`.
+
+Callers must update:
+
+- the import (`from beekeeper import Unavailability`),
+- subclass declarations (`class MyUnavailability(Unavailability): ...`),
+- the field name on `Entity` subclasses (`unavailabilities: list[...]`),
+- and the JSON key in any persisted entity payloads (`"unavailabilities"`).
+
+No backwards-compatibility alias is shipped — this is an alpha (v0.1.0), and the misspelling is the whole reason for the rename.

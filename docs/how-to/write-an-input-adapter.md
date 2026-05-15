@@ -11,7 +11,7 @@ class CsvWorkerAdapter(EntityInputAdapter[MyWorker]):
     def get_entities(self) -> Iterable[MyWorker]:
         with self._file.open() as f:
             for row in csv.DictReader(f):
-                yield MyWorker(name=row["name"], role=row["role"], inavailabilities=[])
+                yield MyWorker(name=row["name"], role=row["role"], unavailabilities=[])
 ```
 
 For allocations, subclass `AllocationInputAdapter[YourRequest]` and implement `get_allocations(self) -> Iterable[YourRequest]`.

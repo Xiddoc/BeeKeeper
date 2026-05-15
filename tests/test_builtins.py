@@ -6,7 +6,7 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
-    Inavailability,
+    Unavailability,
 )
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
 from beekeeper.algorithm.algorithm_state import State
@@ -20,7 +20,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -43,8 +43,8 @@ class TestAvailabilityRule:
     def test_partial_overlap_rejects(self) -> None:
         worker = _Worker(
             name="A",
-            inavailabilities=[
-                Inavailability(
+            unavailabilities=[
+                Unavailability(
                     start_date=datetime(2025, 1, 4, tzinfo=UTC),
                     end_date=datetime(2025, 1, 6, tzinfo=UTC),
                     reason="dentist",
@@ -57,8 +57,8 @@ class TestAvailabilityRule:
     def test_no_overlap_accepts(self) -> None:
         worker = _Worker(
             name="A",
-            inavailabilities=[
-                Inavailability(
+            unavailabilities=[
+                Unavailability(
                     start_date=datetime(2025, 1, 10, tzinfo=UTC),
                     end_date=datetime(2025, 1, 15, tzinfo=UTC),
                     reason="vacation",
@@ -71,13 +71,13 @@ class TestAvailabilityRule:
 
 class TestRequestedEntityRule:
     def test_empty_requested_entities_accepts_anyone(self) -> None:
-        worker = _Worker(name="A", inavailabilities=[])
+        worker = _Worker(name="A", unavailabilities=[])
         request = _request(1, 2)
         assert RequestedEntityRule[_Worker, _Request]().check(worker, request) is True
 
     def test_non_empty_requested_entities_restricts(self) -> None:
-        chosen = _Worker(name="A", inavailabilities=[])
-        other = _Worker(name="B", inavailabilities=[])
+        chosen = _Worker(name="A", unavailabilities=[])
+        other = _Worker(name="B", unavailabilities=[])
         request = _request(1, 2, requested_entities=(chosen,))
 
         rule = RequestedEntityRule[_Worker, _Request]()
@@ -107,8 +107,8 @@ class TestRequestedEntityRule:
 
 class TestLoadBalancingAssignmentAlgorithm:
     def test_picks_highest_scored_candidate(self) -> None:
-        low = _Worker(name="low", inavailabilities=[])
-        high = _Worker(name="high", inavailabilities=[])
+        low = _Worker(name="low", unavailabilities=[])
+        high = _Worker(name="high", unavailabilities=[])
         request = _request(1, 2)
         candidates = {
             id(request): [Candidate(entity=low, score=0.3), Candidate(entity=high, score=0.9)],
@@ -126,7 +126,7 @@ class TestLoadBalancingAssignmentAlgorithm:
         assert planned[0].assigned_entities == (high,)
 
     def test_skips_allocation_when_required_count_unmet(self) -> None:
-        worker = _Worker(name="solo", inavailabilities=[])
+        worker = _Worker(name="solo", unavailabilities=[])
         request = _request(1, 2, required_count=2)
         candidates = {id(request): [Candidate(entity=worker)]}
 
@@ -140,9 +140,9 @@ class TestLoadBalancingAssignmentAlgorithm:
         assert result.planned_allocations == []
 
     def test_fills_multi_entity_allocation(self) -> None:
-        a = _Worker(name="a", inavailabilities=[])
-        b = _Worker(name="b", inavailabilities=[])
-        c = _Worker(name="c", inavailabilities=[])
+        a = _Worker(name="a", unavailabilities=[])
+        b = _Worker(name="b", unavailabilities=[])
+        c = _Worker(name="c", unavailabilities=[])
         request = _request(1, 2, required_count=2)
         candidates = {
             id(request): [
@@ -167,7 +167,7 @@ class TestLoadBalancingAssignmentAlgorithm:
 
 class TestConsoleOutputAdapter:
     def test_prints_each_planned_allocation(self, capsys: object) -> None:
-        worker = _Worker(name="W", inavailabilities=[])
+        worker = _Worker(name="W", unavailabilities=[])
         request = _request(1, 2)
         state: State[_Worker, _Request] = State()
         state.add_allocation(PlannedAllocation(request=request, assigned_entities=(worker,)))

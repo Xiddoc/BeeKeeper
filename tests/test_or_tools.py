@@ -8,7 +8,7 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
-    Inavailability,
+    Unavailability,
 )
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.flow.candidate import Candidate
@@ -24,7 +24,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -44,7 +44,7 @@ def _request(start: int, end: int, **kwargs: object) -> _Request:
 
 
 def test_assigns_simple_problem() -> None:
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=worker)]}
 
@@ -60,8 +60,8 @@ def test_assigns_simple_problem() -> None:
 
 
 def test_picks_higher_scored_candidate() -> None:
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=a, score=0.3), Candidate(entity=b, score=0.9)]}
 
@@ -77,8 +77,8 @@ def test_picks_higher_scored_candidate() -> None:
 
 def test_finds_complete_assignment_where_greedy_might_fail() -> None:
     """The OR-Tools optimizer can find a globally-optimal assignment."""
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     alloc_one = _request(1, 2)
     alloc_two = _request(3, 4)
 
@@ -100,7 +100,7 @@ def test_finds_complete_assignment_where_greedy_might_fail() -> None:
 
 def test_skips_allocation_with_insufficient_candidates() -> None:
     """An allocation whose candidate pool is smaller than required_count goes unfilled."""
-    a = _Worker(name="A", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
     request = _request(1, 2, required_count=3)
     candidates = {id(request): [Candidate(entity=a)]}
 
@@ -259,9 +259,9 @@ def test_zero_score_remains_zero() -> None:
 
 
 def test_fills_multi_entity_allocation() -> None:
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
-    c = _Worker(name="C", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
+    c = _Worker(name="C", unavailabilities=[])
     request = _request(1, 2, required_count=2)
     candidates = {
         id(request): [

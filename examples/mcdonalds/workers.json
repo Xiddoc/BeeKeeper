@@ -2,12 +2,12 @@
   {
     "name": "Alice",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Bob",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-06-01T00:00:00",
         "end_date": "2025-06-05T00:00:00",
@@ -19,12 +19,12 @@
   {
     "name": "Carol",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Dave",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-06-15T00:00:00",
         "end_date": "2025-06-15T00:00:00",
@@ -36,6 +36,6 @@
   {
     "name": "Eve",
     "rank": "MANAGER",
-    "inavailabilities": []
+    "unavailabilities": []
   }
 ]

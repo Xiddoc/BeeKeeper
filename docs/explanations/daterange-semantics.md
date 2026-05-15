@@ -4,7 +4,7 @@
 
 ## Inclusive on both ends
 
-A `DateRange` is **inclusive on both ends**. A range from June 1 to June 3 covers June 1, June 2, *and* June 3. This matches how shifts and inavailabilities are typically described in scheduling domains ("I'm out from the 1st to the 3rd" usually means three days, not two).
+A `DateRange` is **inclusive on both ends**. A range from June 1 to June 3 covers June 1, June 2, *and* June 3. This matches how shifts and unavailabilities are typically described in scheduling domains ("I'm out from the 1st to the 3rd" usually means three days, not two).
 
 The two day-count properties make this explicit:
 
@@ -29,4 +29,4 @@ The framework doesn't care which you pick — both are valid — but be consiste
 
 ## When to choose `date` over `datetime`
 
-If your domain's allocations are whole-day shifts (no time-of-day), `DateRange[date]` (and `Inavailability[date]`) is more honest about what's modeled. A 9-to-5 schedule with hour granularity wants `datetime`. The default keeps the most-common `datetime` path frictionless.
+If your domain's allocations are whole-day shifts (no time-of-day), `DateRange[date]` (and `Unavailability[date]`) is more honest about what's modeled. A 9-to-5 schedule with hour granularity wants `datetime`. The default keeps the most-common `datetime` path frictionless.

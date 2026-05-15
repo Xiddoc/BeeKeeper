@@ -14,7 +14,7 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
-    Inavailability,
+    Unavailability,
 )
 from beekeeper.algorithm.algorithm_state import State
 from beekeeper.allocations.planned_allocation import PlannedAllocation
@@ -24,7 +24,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -45,13 +45,13 @@ def _request(start_day: int) -> _Request:
 def test_empty_state_has_no_allocations() -> None:
     state: State[_Worker, _Request] = State()
     assert state.planned_allocations == []
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     assert state.get_allocations_done_by(worker) == []
 
 
 def test_add_allocation_appears_in_planned_and_in_lookup() -> None:
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     req = _request(1)
     planned = PlannedAllocation(request=req, assigned_entities=(worker,))
 
@@ -63,7 +63,7 @@ def test_add_allocation_appears_in_planned_and_in_lookup() -> None:
 
 def test_remove_allocation_clears_both_views() -> None:
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     planned = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
 
     state.add_allocation(planned)
@@ -75,8 +75,8 @@ def test_remove_allocation_clears_both_views() -> None:
 
 def test_multi_entity_allocation_indexed_under_each_entity() -> None:
     state: State[_Worker, _Request] = State()
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     planned = PlannedAllocation(request=_request(1), assigned_entities=(a, b))
 
     state.add_allocation(planned)
@@ -87,8 +87,8 @@ def test_multi_entity_allocation_indexed_under_each_entity() -> None:
 
 def test_lookup_isolated_per_entity() -> None:
     state: State[_Worker, _Request] = State()
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     plan_a = PlannedAllocation(request=_request(1), assigned_entities=(a,))
     plan_b = PlannedAllocation(request=_request(5), assigned_entities=(b,))
 
@@ -102,7 +102,7 @@ def test_lookup_isolated_per_entity() -> None:
 def test_lookup_returns_a_copy_not_internal_list() -> None:
     """Mutating the returned list must not corrupt internal state."""
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     planned = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
     state.add_allocation(planned)
 
@@ -115,7 +115,7 @@ def test_lookup_returns_a_copy_not_internal_list() -> None:
 def test_remove_then_add_lookup_stays_correct() -> None:
     """Sanity check for the backtracking-style add/remove churn pattern."""
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     plan_one = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
     plan_two = PlannedAllocation(request=_request(5), assigned_entities=(worker,))
 

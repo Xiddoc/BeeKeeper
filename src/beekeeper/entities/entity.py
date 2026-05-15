@@ -2,9 +2,9 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
-from beekeeper.inavailabilities.inavailability import Inavailability
+from beekeeper.unavailabilities.unavailability import Unavailability
 
 
-class Entity[TInavailability: Inavailability[Any]](BaseModel):
+class Entity[TUnavailability: Unavailability[Any]](BaseModel):
     model_config = ConfigDict(extra="forbid")
-    inavailabilities: list[TInavailability]
+    unavailabilities: list[TUnavailability]

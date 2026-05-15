@@ -25,7 +25,7 @@ Auto-generated from the source. Click any class to see its full signature, gener
 ## Entities and allocations
 
 ::: beekeeper.entities.entity
-::: beekeeper.inavailabilities.inavailability
+::: beekeeper.unavailabilities.unavailability
 ::: beekeeper.time_constructs.date_range
 ::: beekeeper.allocations.allocation_type
 ::: beekeeper.allocations.allocation_request

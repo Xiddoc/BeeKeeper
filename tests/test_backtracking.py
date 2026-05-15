@@ -9,8 +9,8 @@ from beekeeper import (
     DateRange,
     Entity,
     HardStatefulRule,
-    Inavailability,
     State,
+    Unavailability,
 )
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm
@@ -21,7 +21,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -55,7 +55,7 @@ class _NoDoubleBooking(HardStatefulRule[_Worker, _Request]):
 
 class TestBacktrackingFindsCompleteSolution:
     def test_assigns_simple_problem(self) -> None:
-        worker = _Worker(name="solo", inavailabilities=[])
+        worker = _Worker(name="solo", unavailabilities=[])
         request = _request(1, 2)
         candidates = {id(request): [Candidate(entity=worker)]}
 
@@ -70,8 +70,8 @@ class TestBacktrackingFindsCompleteSolution:
 
     def test_assigns_two_independent_allocations(self) -> None:
         """Two non-overlapping allocations both filled."""
-        worker_a = _Worker(name="A", inavailabilities=[])
-        worker_b = _Worker(name="B", inavailabilities=[])
+        worker_a = _Worker(name="A", unavailabilities=[])
+        worker_b = _Worker(name="B", unavailabilities=[])
         alloc_first = _request(1, 2)
         alloc_second = _request(10, 11)
 
@@ -93,8 +93,8 @@ class TestBacktrackingFindsCompleteSolution:
 class TestBacktrackingWithOverlappingAllocations:
     def test_overlapping_allocations_force_smart_assignment(self) -> None:
         """Backtracking handles the case greedy fails on."""
-        worker_a = _Worker(name="A", inavailabilities=[])
-        worker_b = _Worker(name="B", inavailabilities=[])
+        worker_a = _Worker(name="A", unavailabilities=[])
+        worker_b = _Worker(name="B", unavailabilities=[])
         # Both allocations cover days 1-2: they OVERLAP.
         alloc_first = _request(1, 2)
         alloc_second = _request(1, 2)
@@ -128,7 +128,7 @@ class TestBacktrackingWithOverlappingAllocations:
 class TestBacktrackingRaisesOnIncomplete:
     def test_no_complete_solution_raises_incomplete_solution_error(self) -> None:
         """Backtracking signals failure with an exception so an algorithm chain can fall back."""
-        worker = _Worker(name="solo", inavailabilities=[])
+        worker = _Worker(name="solo", unavailabilities=[])
         # Two overlapping allocations, only one worker, no-double-booking rule.
         # No complete solution exists.
         alloc_a = _request(1, 2)
@@ -176,7 +176,7 @@ class TestBacktrackingIterationBudget:
 class TestBacktrackingTopKCap:
     def test_top_k_limits_branching(self) -> None:
         """The top_k_candidates parameter controls the search width."""
-        workers = [_Worker(name=f"W{i}", inavailabilities=[]) for i in range(50)]
+        workers = [_Worker(name=f"W{i}", unavailabilities=[]) for i in range(50)]
         request = _request(1, 2)
         candidates_list = [Candidate(entity=w, score=1.0 - i / 100) for i, w in enumerate(workers)]
         cap = 5

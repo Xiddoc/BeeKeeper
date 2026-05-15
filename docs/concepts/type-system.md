@@ -5,8 +5,8 @@ BeeKeeper is generic end-to-end using PEP 695 syntax. Two TypeVars carry every d
 ## The shape
 
 ```python
-class McInavailability(Inavailability[datetime]): ...
-class McWorker(Entity[McInavailability]):
+class McUnavailability(Unavailability[datetime]): ...
+class McWorker(Entity[McUnavailability]):
     name: str
     rank: McJobPosition
 
@@ -29,17 +29,17 @@ Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Insid
 
 ## The `[Any]` slot in bounds
 
-You'll see a lot of `[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]` in the framework source. Why `[Any]`? Because `Entity` is itself generic over `TInavailability`, and writing the bound as `[TEntity: Entity]` triggers mypy's `[type-arg]` warning ("missing parameters for generic type"). `Entity[Any]` tells mypy *any parameterization of Entity is acceptable as a bound*, which is what we want — `TEntity` can be `Entity[McInavailability]`, `Entity[Inavailability]`, or anything else, regardless of which inavailability flavor it picks.
+You'll see a lot of `[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]` in the framework source. Why `[Any]`? Because `Entity` is itself generic over `TUnavailability`, and writing the bound as `[TEntity: Entity]` triggers mypy's `[type-arg]` warning ("missing parameters for generic type"). `Entity[Any]` tells mypy *any parameterization of Entity is acceptable as a bound*, which is what we want — `TEntity` can be `Entity[McUnavailability]`, `Entity[Unavailability]`, or anything else, regardless of which unavailability flavor it picks.
 
-This is purely a syntactic accommodation. At call sites you parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`) and the framework infers `TInavailability=McInavailability` from the chain.
+This is purely a syntactic accommodation. At call sites you parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`) and the framework infers `TUnavailability=McUnavailability` from the chain.
 
 ## PEP 696 defaults
 
-`DateRange[T: date = datetime]` and `Inavailability[T: date = datetime]` use PEP 696 defaults: bare `DateRange(...)` instances default to `datetime` granularity. Domains that want whole-day shifts subclass with `DateRange[date]`. The default keeps the most-common path frictionless.
+`DateRange[T: date = datetime]` and `Unavailability[T: date = datetime]` use PEP 696 defaults: bare `DateRange(...)` instances default to `datetime` granularity. Domains that want whole-day shifts subclass with `DateRange[date]`. The default keeps the most-common path frictionless.
 
 ## Pydantic vs. plain dataclass
 
-BeeKeeper uses **pydantic `BaseModel`** for *data*: `Entity`, `AllocationRequest`, `Inavailability`, `DateRange`. These travel across IO boundaries (JSON adapters), get validated, get serialized.
+BeeKeeper uses **pydantic `BaseModel`** for *data*: `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. These travel across IO boundaries (JSON adapters), get validated, get serialized.
 
 It uses **plain `@dataclass`** for *services and runtime state*: `MixedInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`. These hold dependencies or in-flight state, not data. Pydantic doesn't earn its keep here, and its runtime introspection actively conflicts with ABC-typed fields and PEP 695 type parameter resolution.
 

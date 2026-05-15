@@ -6,7 +6,7 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
-    Inavailability,
+    Unavailability,
 )
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.assign_possible_entities_to_allocations import AssignPossibleEntitiesToAllocations
@@ -16,7 +16,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str = ""
 
 
@@ -41,12 +41,12 @@ def _request(start: datetime, end: datetime, *, requested_entities: tuple[_Worke
     )
 
 
-def _inav(start: datetime, end: datetime, reason: str = "out") -> Inavailability:
-    return Inavailability(start_date=start, end_date=end, reason=reason)
+def _inav(start: datetime, end: datetime, reason: str = "out") -> Unavailability:
+    return Unavailability(start_date=start, end_date=end, reason=reason)
 
 
-def test_entity_with_no_inavailability_is_a_candidate() -> None:
-    worker = _Worker(inavailabilities=[])
+def test_entity_with_no_unavailability_is_a_candidate() -> None:
+    worker = _Worker(unavailabilities=[])
     request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
     state = _state([worker], [request])
 
@@ -56,9 +56,9 @@ def test_entity_with_no_inavailability_is_a_candidate() -> None:
     assert state.candidate_map[id(request)][0].entity is worker
 
 
-def test_inavailability_fully_covering_allocation_excludes_entity() -> None:
+def test_unavailability_fully_covering_allocation_excludes_entity() -> None:
     worker = _Worker(
-        inavailabilities=[_inav(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))],
+        unavailabilities=[_inav(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))],
     )
     request = _request(datetime(2025, 1, 2, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))
     state = _state([worker], [request])
@@ -70,7 +70,7 @@ def test_inavailability_fully_covering_allocation_excludes_entity() -> None:
 
 def test_partial_overlap_does_not_exclude_entity() -> None:
     worker = _Worker(
-        inavailabilities=[_inav(datetime(2025, 1, 3, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))],
+        unavailabilities=[_inav(datetime(2025, 1, 3, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))],
     )
     request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))
     state = _state([worker], [request])
@@ -81,8 +81,8 @@ def test_partial_overlap_does_not_exclude_entity() -> None:
 
 
 def test_requested_entities_restricts_candidates() -> None:
-    chosen = _Worker(name="chosen", inavailabilities=[])
-    other = _Worker(name="other", inavailabilities=[])
+    chosen = _Worker(name="chosen", unavailabilities=[])
+    other = _Worker(name="other", unavailabilities=[])
     request = _request(
         datetime(2025, 1, 1, tzinfo=UTC),
         datetime(2025, 1, 2, tzinfo=UTC),
@@ -96,7 +96,7 @@ def test_requested_entities_restricts_candidates() -> None:
 
 
 def test_candidates_start_with_neutral_score() -> None:
-    worker = _Worker(inavailabilities=[])
+    worker = _Worker(unavailabilities=[])
     request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
     state = _state([worker], [request])
 

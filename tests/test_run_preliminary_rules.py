@@ -8,8 +8,8 @@ from beekeeper import (
     DateRange,
     Entity,
     HardPreliminaryRule,
-    Inavailability,
     SoftPreliminaryRule,
+    Unavailability,
 )
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.candidate import Candidate
@@ -20,7 +20,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -54,8 +54,8 @@ class _ScoreByLength(SoftPreliminaryRule[_Worker, _Request]):
 
 
 def test_hard_rule_failure_prunes_candidate() -> None:
-    keeper = _Worker(name="Alice", inavailabilities=[])
-    rejected = _Worker(name="Bob", inavailabilities=[])
+    keeper = _Worker(name="Alice", unavailabilities=[])
+    rejected = _Worker(name="Bob", unavailabilities=[])
     request = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[keeper, rejected],
@@ -72,8 +72,8 @@ def test_hard_rule_failure_prunes_candidate() -> None:
 
 
 def test_soft_rule_updates_candidate_score() -> None:
-    short = _Worker(name="Al", inavailabilities=[])  # 1/2 = 0.5
-    long = _Worker(name="Reginald", inavailabilities=[])  # 1/8 = 0.125
+    short = _Worker(name="Al", unavailabilities=[])  # 1/2 = 0.5
+    long = _Worker(name="Reginald", unavailabilities=[])  # 1/8 = 0.125
     request = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[short, long],
@@ -99,7 +99,7 @@ def test_geometric_mean_combines_multiple_soft_rules() -> None:
         def score(self, entity: _Worker, allocation: _Request) -> float:
             return 0.9
 
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     request = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],
@@ -139,7 +139,7 @@ def test_zero_score_short_circuits_geometric_mean_to_zero() -> None:
 
 
 def test_no_rules_leaves_score_neutral() -> None:
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     request = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],

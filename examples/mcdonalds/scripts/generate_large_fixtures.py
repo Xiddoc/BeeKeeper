@@ -11,7 +11,7 @@ Generated files (all checked in):
 
 The first three fixtures (large/xlarge/xxlarge) test the worker-rich
 case: more workers than allocations, varied required_count (1–3),
-some pre-requested entities, denser inavailabilities at higher sizes.
+some pre-requested entities, denser unavailabilities at higher sizes.
 This is the canonical "scheduling under abundance" scenario.
 
 The three oversub_* fixtures test the worker-scarce case: many more
@@ -57,7 +57,7 @@ TYPE_TO_REQUIRED_COUNT: dict[str, list[int]] = {
     "ANSWERING_DRIVE_THRU": [1, 1, 1, 2],
 }
 
-INAVAILABILITY_REASONS = (
+UNAVAILABILITY_REASONS = (
     "vacation",
     "doctor's appointment",
     "family wedding",
@@ -81,10 +81,10 @@ class FixtureSpec:
     suffix: str
     worker_count: int
     allocation_count: int
-    inavailability_count_choices: tuple[int, ...]
-    inavailability_count_weights: tuple[int, ...]
-    inavailability_length_choices: tuple[int, ...]
-    inavailability_length_weights: tuple[int, ...]
+    unavailability_count_choices: tuple[int, ...]
+    unavailability_count_weights: tuple[int, ...]
+    unavailability_length_choices: tuple[int, ...]
+    unavailability_length_weights: tuple[int, ...]
     allocation_length_choices: tuple[int, ...]
     allocation_length_weights: tuple[int, ...]
     requested_entities_probability: float
@@ -102,44 +102,44 @@ PRESETS = (
         suffix="large",
         worker_count=65,
         allocation_count=25,
-        inavailability_count_choices=(0, 1, 2, 3),
-        inavailability_count_weights=(40, 35, 20, 5),
-        inavailability_length_choices=(1, 2, 3, 4, 5, 6, 7),
-        inavailability_length_weights=(1,) * 7,
+        unavailability_count_choices=(0, 1, 2, 3),
+        unavailability_count_weights=(40, 35, 20, 5),
+        unavailability_length_choices=(1, 2, 3, 4, 5, 6, 7),
+        unavailability_length_weights=(1,) * 7,
         allocation_length_choices=(1, 2, 3, 5, 7),
         allocation_length_weights=(40, 25, 15, 10, 10),
         requested_entities_probability=0.0,
     ),
-    # 100-worker fixture: denser inavailabilities, occasional pre-requested entities,
-    # wider variety of inavailability lengths.
+    # 100-worker fixture: denser unavailabilities, occasional pre-requested entities,
+    # wider variety of unavailability lengths.
     FixtureSpec(
         suffix="xlarge",
         worker_count=100,
         allocation_count=40,
-        inavailability_count_choices=(0, 1, 2, 3, 4, 5),
-        inavailability_count_weights=(15, 25, 25, 20, 10, 5),
-        inavailability_length_choices=(1, 2, 3, 4, 5, 7, 10, 14),
-        inavailability_length_weights=(30, 25, 15, 10, 8, 5, 4, 3),
+        unavailability_count_choices=(0, 1, 2, 3, 4, 5),
+        unavailability_count_weights=(15, 25, 25, 20, 10, 5),
+        unavailability_length_choices=(1, 2, 3, 4, 5, 7, 10, 14),
+        unavailability_length_weights=(30, 25, 15, 10, 8, 5, 4, 3),
         allocation_length_choices=(1, 2, 3, 5, 7, 10, 14),
         allocation_length_weights=(40, 25, 15, 8, 6, 4, 2),
         requested_entities_probability=0.15,
     ),
-    # 200-worker fixture: even denser inavailabilities, more pre-requested entities.
+    # 200-worker fixture: even denser unavailabilities, more pre-requested entities.
     # Every axis the algorithm has to deal with is dialled up here.
     FixtureSpec(
         suffix="xxlarge",
         worker_count=200,
         allocation_count=80,
-        inavailability_count_choices=(1, 2, 3, 4, 5, 6, 7),
-        inavailability_count_weights=(10, 15, 25, 25, 15, 7, 3),
-        inavailability_length_choices=(1, 2, 3, 4, 5, 7, 10, 14),
-        inavailability_length_weights=(30, 25, 15, 10, 8, 5, 4, 3),
+        unavailability_count_choices=(1, 2, 3, 4, 5, 6, 7),
+        unavailability_count_weights=(10, 15, 25, 25, 15, 7, 3),
+        unavailability_length_choices=(1, 2, 3, 4, 5, 7, 10, 14),
+        unavailability_length_weights=(30, 25, 15, 10, 8, 5, 4, 3),
         allocation_length_choices=(1, 2, 3, 5, 7, 10, 14),
         allocation_length_weights=(40, 25, 15, 8, 6, 4, 2),
         requested_entities_probability=0.20,
     ),
     # Oversubscribed presets: way more allocations than workers, every allocation
-    # n=1. Sparse inavailabilities so workers are mostly available; short
+    # n=1. Sparse unavailabilities so workers are mostly available; short
     # allocation lengths (1–3 days) so the workload is dominated by sheer count
     # rather than overlap. requested_entities=0 because pre-requesting in this
     # regime would mean the requested workers carry an outsized share — we want
@@ -149,10 +149,10 @@ PRESETS = (
         suffix="oversub_3x",
         worker_count=50,
         allocation_count=150,
-        inavailability_count_choices=(0, 1, 2),
-        inavailability_count_weights=(50, 35, 15),
-        inavailability_length_choices=(1, 2, 3, 5, 7),
-        inavailability_length_weights=(40, 25, 15, 12, 8),
+        unavailability_count_choices=(0, 1, 2),
+        unavailability_count_weights=(50, 35, 15),
+        unavailability_length_choices=(1, 2, 3, 5, 7),
+        unavailability_length_weights=(40, 25, 15, 12, 8),
         allocation_length_choices=(1, 2, 3),
         allocation_length_weights=(60, 25, 15),
         requested_entities_probability=0.0,
@@ -162,10 +162,10 @@ PRESETS = (
         suffix="oversub_6x",
         worker_count=50,
         allocation_count=300,
-        inavailability_count_choices=(0, 1, 2),
-        inavailability_count_weights=(50, 35, 15),
-        inavailability_length_choices=(1, 2, 3, 5, 7),
-        inavailability_length_weights=(40, 25, 15, 12, 8),
+        unavailability_count_choices=(0, 1, 2),
+        unavailability_count_weights=(50, 35, 15),
+        unavailability_length_choices=(1, 2, 3, 5, 7),
+        unavailability_length_weights=(40, 25, 15, 12, 8),
         allocation_length_choices=(1, 2, 3),
         allocation_length_weights=(60, 25, 15),
         requested_entities_probability=0.0,
@@ -175,10 +175,10 @@ PRESETS = (
         suffix="oversub_10x",
         worker_count=50,
         allocation_count=500,
-        inavailability_count_choices=(0, 1, 2),
-        inavailability_count_weights=(50, 35, 15),
-        inavailability_length_choices=(1, 2, 3, 5, 7),
-        inavailability_length_weights=(40, 25, 15, 12, 8),
+        unavailability_count_choices=(0, 1, 2),
+        unavailability_count_weights=(50, 35, 15),
+        unavailability_length_choices=(1, 2, 3, 5, 7),
+        unavailability_length_weights=(40, 25, 15, 12, 8),
         allocation_length_choices=(1, 2, 3),
         allocation_length_weights=(60, 25, 15),
         requested_entities_probability=0.0,
@@ -199,18 +199,18 @@ def _random_date(rng: random.Random) -> datetime:
     return PLANNING_WINDOW_START + timedelta(days=rng.randint(0, span_days))
 
 
-def _generate_inavailabilities(spec: FixtureSpec, rng: random.Random) -> list[dict[str, str | bool]]:
-    count = rng.choices(spec.inavailability_count_choices, weights=spec.inavailability_count_weights)[0]
+def _generate_unavailabilities(spec: FixtureSpec, rng: random.Random) -> list[dict[str, str | bool]]:
+    count = rng.choices(spec.unavailability_count_choices, weights=spec.unavailability_count_weights)[0]
     out: list[dict[str, str | bool]] = []
     for _ in range(count):
         start = _random_date(rng)
-        length = rng.choices(spec.inavailability_length_choices, weights=spec.inavailability_length_weights)[0]
+        length = rng.choices(spec.unavailability_length_choices, weights=spec.unavailability_length_weights)[0]
         end = start + timedelta(days=length)
         out.append(
             {
                 "start_date": start.isoformat(),
                 "end_date": end.isoformat(),
-                "reason": rng.choice(INAVAILABILITY_REASONS),
+                "reason": rng.choice(UNAVAILABILITY_REASONS),
                 "is_paid_leave": rng.random() < 0.4,
             },
         )
@@ -224,7 +224,7 @@ def _generate_workers(spec: FixtureSpec, fake: Faker, rng: random.Random) -> lis
         {
             "name": fake.name(),
             "rank": rank_mix[i],
-            "inavailabilities": _generate_inavailabilities(spec, rng),
+            "unavailabilities": _generate_unavailabilities(spec, rng),
         }
         for i in range(spec.worker_count)
     ]
@@ -251,7 +251,7 @@ def _generate_allocations(
                 pick_count = rng.choice([1, 1, 2])
                 picked = rng.sample(candidates, k=min(pick_count, len(candidates)))
                 requested_entities = [
-                    {"name": w["name"], "rank": w["rank"], "inavailabilities": w["inavailabilities"]} for w in picked
+                    {"name": w["name"], "rank": w["rank"], "unavailabilities": w["unavailabilities"]} for w in picked
                 ]
 
         required_count = (

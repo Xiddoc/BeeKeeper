@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from beekeeper import Inavailability
+from beekeeper import Unavailability
 from beekeeper.data_structures.abstract_enum import AbstractEnum
 
 
@@ -14,5 +14,5 @@ class McJobPosition(Rank):
     MANAGER = "MANAGER"
 
 
-class McDonaldsInavailability(Inavailability[datetime]):
+class McDonaldsUnavailability(Unavailability[datetime]):
     is_paid_leave: bool

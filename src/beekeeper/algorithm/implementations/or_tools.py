@@ -72,7 +72,7 @@ class OrToolsAssignmentAlgorithm[
     * **Variables.** ``x[i, j]`` is a boolean: 1 if entity ``j`` is assigned
       to allocation ``i``, 0 otherwise. Variables are only created for
       (allocation, entity) pairs that appear in the candidate map — pairs
-      pruned by stage-1 inavailability filtering or stage-2 preliminary
+      pruned by stage-1 unavailability filtering or stage-2 preliminary
       rules don't enter the formulation at all.
     * **Constraints.** For each allocation, the sum of its ``x[i, j]``
       values is either 0 (unfulfilled) or exactly ``required_count`` —

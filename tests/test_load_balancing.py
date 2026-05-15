@@ -7,8 +7,8 @@ from beekeeper import (
     DateRange,
     Entity,
     HardStatefulRule,
-    Inavailability,
     State,
+    Unavailability,
 )
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.flow.candidate import Candidate
@@ -18,7 +18,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -39,8 +39,8 @@ def _request(start: int, end: int, **kwargs: object) -> _Request:
 
 def test_disperses_load_across_equally_scored_workers() -> None:
     """Two workers, both score 1.0, three allocations — load balancing distributes."""
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     requests = [_request(1, 2), _request(3, 4), _request(5, 6)]
 
     candidates = {id(r): [Candidate(entity=a, score=1.0), Candidate(entity=b, score=1.0)] for r in requests}
@@ -63,8 +63,8 @@ def test_disperses_load_across_equally_scored_workers() -> None:
 
 def test_high_score_still_wins_against_load_penalty() -> None:
     """Score difference can outweigh the load penalty."""
-    overworked = _Worker(name="overworked", inavailabilities=[])
-    fresh = _Worker(name="fresh", inavailabilities=[])
+    overworked = _Worker(name="overworked", unavailabilities=[])
+    fresh = _Worker(name="fresh", unavailabilities=[])
     requests = [_request(1, 2), _request(3, 4)]
 
     # First allocation has only `overworked` as candidate (so it has load=1 going into the second).
@@ -91,8 +91,8 @@ def test_high_score_still_wins_against_load_penalty() -> None:
 
 def test_load_penalty_picks_fresh_entity_at_close_scores() -> None:
     """When base scores are similar, prior load tips the balance."""
-    busy = _Worker(name="busy", inavailabilities=[])
-    fresh = _Worker(name="fresh", inavailabilities=[])
+    busy = _Worker(name="busy", unavailabilities=[])
+    fresh = _Worker(name="fresh", unavailabilities=[])
     requests = [_request(1, 2), _request(3, 4)]
 
     # First: only busy is a candidate; busy gets one assignment.
@@ -144,8 +144,8 @@ def test_rejected_candidate_falls_through_to_next() -> None:
 
 def test_unloaded_picks_highest_scored() -> None:
     """With no prior load, the algorithm picks the highest-scored candidate."""
-    a = _Worker(name="A", inavailabilities=[])
-    b = _Worker(name="B", inavailabilities=[])
+    a = _Worker(name="A", unavailabilities=[])
+    b = _Worker(name="B", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=a, score=0.3), Candidate(entity=b, score=0.9)]}
 

@@ -15,11 +15,11 @@ from beekeeper.allocations.allocation_type import AllocationType
 from beekeeper.allocations.planned_allocation import PlannedAllocation
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.beekeeper import BeeKeeper
-from beekeeper.inavailabilities.inavailability import Inavailability
 from beekeeper.rules.preliminary_rule import HardPreliminaryRule, PreliminaryRule, SoftPreliminaryRule
 from beekeeper.rules.rule_verdict import RuleVerdict
 from beekeeper.rules.stateful_rule import HardStatefulRule, SoftStatefulRule, StatefulRule
 from beekeeper.time_constructs.date_range import DateRange
+from beekeeper.unavailabilities.unavailability import Unavailability
 
 __all__ = [
     "AllocationInputAdapter",
@@ -32,7 +32,6 @@ __all__ = [
     "EntityInputAdapter",
     "HardPreliminaryRule",
     "HardStatefulRule",
-    "Inavailability",
     "IncompleteSolutionError",
     "InputAdapter",
     "JsonAllocationInputAdapter",
@@ -46,4 +45,5 @@ __all__ = [
     "SoftStatefulRule",
     "State",
     "StatefulRule",
+    "Unavailability",
 ]

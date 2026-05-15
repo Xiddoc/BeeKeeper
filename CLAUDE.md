@@ -48,8 +48,8 @@ If the feature branch was never pushed to origin (purely local work), skip the `
 - **mypy** runs in `strict` mode with the `pydantic.mypy` plugin and `disallow_untyped_defs`. `examples/` is excluded; `src/` and `tests/` must type-check cleanly.
 - **ruff** uses `select = ["ALL"]` with a curated ignore list in `pyproject.toml`. Per-file relaxations: `tests/**` skips `S101`/`ANN`/`ARG`/`PT011`/`SLF001`; `examples/**` skips `ANN`/`ARG`/`D`/`DTZ001`. New code in `src/` is expected to satisfy the full rule set out of the box. `[tool.ruff.lint.pylint] max-args = 8` so `BeeKeeper.__init__`'s six kwargs don't trip PLR0913.
 - **pre-commit** wires up ruff (lint + format), mypy, the standard pre-commit-hooks bundle, and `astral-sh/uv-pre-commit` (which keeps `uv.lock` in sync).
-- **Python 3.13+** required (`.python-version`, `requires-python = ">=3.13"`). The codebase uses **PEP 695 type-parameter syntax** end-to-end (e.g. `class Entity[TInavailability: Inavailability[Any]](BaseModel)`).
-- **PEP 696 defaults** on `DateRange[T: date = datetime]` and `Inavailability[T: date = datetime]` — bare instantiation defaults to datetime.
+- **Python 3.13+** required (`.python-version`, `requires-python = ">=3.13"`). The codebase uses **PEP 695 type-parameter syntax** end-to-end (e.g. `class Entity[TUnavailability: Unavailability[Any]](BaseModel)`).
+- **PEP 696 defaults** on `DateRange[T: date = datetime]` and `Unavailability[T: date = datetime]` — bare instantiation defaults to datetime.
 - Distribution is marked `Typing :: Typed`; `src/beekeeper/py.typed` (PEP 561) is shipped via `[tool.setuptools.package-data]`.
 
 ## Architecture
@@ -62,7 +62,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 
 - **Orchestrator**: `BeeKeeper`, `IncompleteSolutionError`
 - **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
-- **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Inavailability`, `DateRange`, `AllocationType`
+- **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Unavailability`, `DateRange`, `AllocationType`
 - **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
 - **Algorithm primitives**: `BaseAlgorithm`, `State`
 
@@ -70,7 +70,7 @@ Concrete algorithm implementations and the built-in rules / output adapter live 
 
 ### Pydantic vs. plain classes — the convention
 
-Use **pydantic `BaseModel`** for **data**: things that get validated, serialized, deserialized, or crossed across IO boundaries — `Entity`, `AllocationRequest`, `Inavailability`, `DateRange`. Each of these sets `model_config = ConfigDict(extra="forbid")`, which subclasses inherit, so unknown fields in JSON inputs fail loudly.
+Use **pydantic `BaseModel`** for **data**: things that get validated, serialized, deserialized, or crossed across IO boundaries — `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. Each of these sets `model_config = ConfigDict(extra="forbid")`, which subclasses inherit, so unknown fields in JSON inputs fail loudly.
 
 Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`, the flow-stage classes, `BeeKeeper` itself.
 
@@ -92,8 +92,8 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 
 ### Domain model
 
-- **`Entity[TInavailability: Inavailability[Any]]`** — pydantic `BaseModel`. One field: `inavailabilities: list[TInavailability]`. The type parameter actually flows through (subclasses see their concrete `Inavailability` subtype).
-- **`Inavailability[T: date = datetime]`** — pydantic `BaseModel` extending `DateRange[T]`. Adds `reason: str`. PEP 696 default (`datetime`) keeps the common path frictionless.
+- **`Entity[TUnavailability: Unavailability[Any]]`** — pydantic `BaseModel`. One field: `unavailabilities: list[TUnavailability]`. The type parameter actually flows through (subclasses see their concrete `Unavailability` subtype).
+- **`Unavailability[T: date = datetime]`** — pydantic `BaseModel` extending `DateRange[T]`. Adds `reason: str`. PEP 696 default (`datetime`) keeps the common path frictionless.
 - **`DateRange[T: date = datetime]`** — pydantic `BaseModel` with `start_date: T`, `end_date: T`. Validators reject `end < start` and require tz-consistency on datetimes. Two day-count properties: `inclusive_day_count` (same-day → 1, the "active days on duty" reading) and `days` (matches stdlib `(end - start).days`, exclusive).
 - **`AllocationType`** — empty `AbstractEnum` subclass; consumers extend with their domain's vocabulary (e.g. `class McAllocType(AllocationType): COOKING = "COOKING"`). String-valued enums recommended over `auto()` so JSON fixtures stay human-readable.
 - **`AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]]`** — pydantic `BaseModel`. Fields: `allocation_type: TAllocationType`, `date_range: DateRange[datetime]`, `required_count: int = 1`, `requested_entities: tuple[TEntity, ...] = ()`.
@@ -109,7 +109,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 - **`RuleVerdict`** — frozen dataclass with `compatible: bool, score: float = 1.0`. A failing `compatible` prunes the candidate; the score contributes to the per-candidate aggregate.
 - **`HardPreliminaryRule` / `HardStatefulRule`** — convenience subclasses wrapping `check(...) -> bool`. The verdict's score stays at 1.0 (neutral).
 - **`SoftPreliminaryRule` / `SoftStatefulRule`** — convenience subclasses wrapping `score(...) -> float`. The verdict's compatible stays True.
-- **Built-ins** in `beekeeper.rules.builtins`: `AvailabilityRule` (rejects entity if any inavailability overlaps the allocation), `RequestedEntityRule` (drops entities not in `allocation.requested_entities` when non-empty). Not re-exported from the top-level — domains import them explicitly.
+- **Built-ins** in `beekeeper.rules.builtins`: `AvailabilityRule` (rejects entity if any unavailability overlaps the allocation), `RequestedEntityRule` (drops entities not in `allocation.requested_entities` when non-empty). Not re-exported from the top-level — domains import them explicitly.
 
 ### Algorithm (`src/beekeeper/algorithm/`)
 
@@ -145,7 +145,7 @@ Putting load-balancing last guarantees the chain produces a result (it never rai
 
 `BeeKeeper.execute()` materializes the input adapter's iterables once and then passes a `BeeKeeperFlowState` through three stages:
 
-1. **`AssignPossibleEntitiesToAllocations`** — for each allocation, walks the entity list and includes the entity unless the allocation specifies `requested_entities` and this entity isn't in the set, or the entity has an inavailability that fully covers the allocation's date range. Partial overlaps pass through. Output: `state.candidate_map: dict[int, list[Candidate[TEntity]]]` keyed by `id(allocation)`.
+1. **`AssignPossibleEntitiesToAllocations`** — for each allocation, walks the entity list and includes the entity unless the allocation specifies `requested_entities` and this entity isn't in the set, or the entity has an unavailability that fully covers the allocation's date range. Partial overlaps pass through. Output: `state.candidate_map: dict[int, list[Candidate[TEntity]]]` keyed by `id(allocation)`.
 2. **`RunPreliminaryRules`** — for each (allocation, candidate) pair, evaluates every preliminary rule. Hard-rule failures prune the candidate; surviving candidates' scores become the geometric mean of per-rule scores.
 3. **`RunAlgorithmAndDispatchResults`** — walks the algorithm chain and dispatches the resulting `State` to every configured `OutputAdapter`.
 
@@ -196,6 +196,6 @@ cd examples/
 uv run python -m mcdonalds.main mcdonalds/workers.json mcdonalds/allocations.json
 ```
 
-Domain code: `McWorker(Entity[McDonaldsInavailability])`, `McDonaldsAllocationRequest(AllocationRequest[McDonaldsAllocationType, McWorker])` with an `allowed_ranks: frozenset[McJobPosition]` field, `McRankRule(HardPreliminaryRule[...])`. Inputs come from JSON via `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. The default pipeline (load-balancing algorithm, three preliminary rules, console output) prints three planned allocations to stdout.
+Domain code: `McWorker(Entity[McDonaldsUnavailability])`, `McDonaldsAllocationRequest(AllocationRequest[McDonaldsAllocationType, McWorker])` with an `allowed_ranks: frozenset[McJobPosition]` field, `McRankRule(HardPreliminaryRule[...])`. Inputs come from JSON via `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. The default pipeline (load-balancing algorithm, three preliminary rules, console output) prints three planned allocations to stdout.
 
 The example is **not installable**. Tests that import from it (`tests/test_mcdonalds_example.py`, `tests/benchmarks/*`) prepend `examples/` to `sys.path` at module load, with a `# noqa: E402` on the `mcdonalds.*` imports that follow.

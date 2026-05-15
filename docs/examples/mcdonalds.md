@@ -10,7 +10,7 @@ examples/mcdonalds/
 │   ├── allocation_request.py   — McDonaldsAllocationRequest with allowed_ranks
 │   └── allocation_type.py      — McDonaldsAllocationType: CLEANING, COOKING, ...
 ├── entities/
-│   ├── entity_properties.py    — Rank → McJobPosition + McDonaldsInavailability
+│   ├── entity_properties.py    — Rank → McJobPosition + McDonaldsUnavailability
 │   └── mcdonalds_employee.py   — McWorker with name + rank
 ├── rules/
 │   └── mc_rank_rule.py         — McRankRule checks entity.rank in allocation.allowed_ranks
@@ -38,9 +38,9 @@ COOKING [2025-06-15 00:00:00 -> 2025-06-15 00:00:00]: McWorker(...name='Carol'..
 
 - **Multi-entity allocations.** The `COOKING` request has `required_count: 2` and gets two cooks assigned.
 - **Preliminary rule combination.** `main.py` wires three rules: the domain-specific `McRankRule` plus the framework's `AvailabilityRule` and `RequestedEntityRule`. The load-balancing algorithm respects all of them.
-- **Inavailability filtering.** Bob has a vacation overlapping the CLEANING shift, so he's pruned from candidates. Dave has a wedding on June 15, so he's pruned from COOKING and Eve takes his place.
+- **Unavailability filtering.** Bob has a vacation overlapping the CLEANING shift, so he's pruned from candidates. Dave has a wedding on June 15, so he's pruned from COOKING and Eve takes his place.
 - **JSON-driven inputs.** Both fixtures are validated strictly by `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. Try adding a typo to either file and watch the validation error fire.
 
 ## Where to extend
 
-Add a `StatefulRule` that prevents the same worker from taking back-to-back allocations. Add a `SoftPreliminaryRule` that prefers more senior workers for managerial tasks. Replace the load-balancing algorithm with one that minimizes total `inavailability` violations across the schedule. The framework supports all three without changing the core; that's the point.
+Add a `StatefulRule` that prevents the same worker from taking back-to-back allocations. Add a `SoftPreliminaryRule` that prefers more senior workers for managerial tasks. Replace the load-balancing algorithm with one that minimizes total `unavailability` violations across the schedule. The framework supports all three without changing the core; that's the point.

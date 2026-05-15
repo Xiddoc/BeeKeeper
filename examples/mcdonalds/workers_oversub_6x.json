@@ -2,7 +2,7 @@
   {
     "name": "Allison Hill",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-27T00:00:00",
         "end_date": "2025-09-28T00:00:00",
@@ -14,7 +14,7 @@
   {
     "name": "Noah Rhodes",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-22T00:00:00",
         "end_date": "2025-09-27T00:00:00",
@@ -26,12 +26,12 @@
   {
     "name": "Angie Henderson",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Daniel Wagner",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-07T00:00:00",
         "end_date": "2025-09-08T00:00:00",
@@ -43,7 +43,7 @@
   {
     "name": "Cristian Santos",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-07-19T00:00:00",
         "end_date": "2025-07-20T00:00:00",
@@ -61,7 +61,7 @@
   {
     "name": "Connie Lawrence",
     "rank": "MANAGER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-06-10T00:00:00",
         "end_date": "2025-06-12T00:00:00",
@@ -73,22 +73,22 @@
   {
     "name": "Abigail Shaffer",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Gina Moore",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Gabrielle Davis",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Ryan Munoz",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-28T00:00:00",
         "end_date": "2025-08-30T00:00:00",
@@ -106,17 +106,17 @@
   {
     "name": "Monica Herrera",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Jamie Arnold",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Lisa Hensley",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-12T00:00:00",
         "end_date": "2025-08-17T00:00:00",
@@ -134,12 +134,12 @@
   {
     "name": "Michele Williams",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Dylan Miller",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-08T00:00:00",
         "end_date": "2025-08-09T00:00:00",
@@ -151,7 +151,7 @@
   {
     "name": "Brian Ramirez",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-07-17T00:00:00",
         "end_date": "2025-07-18T00:00:00",
@@ -163,22 +163,22 @@
   {
     "name": "Holly Wood",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Derek Zuniga",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Lisa Jackson",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Carla Gray",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-10T00:00:00",
         "end_date": "2025-09-13T00:00:00",
@@ -190,12 +190,12 @@
   {
     "name": "Margaret Hawkins DDS",
     "rank": "MANAGER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Patty Perez",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-07T00:00:00",
         "end_date": "2025-08-08T00:00:00",
@@ -213,7 +213,7 @@
   {
     "name": "Ethan Adams",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-07-05T00:00:00",
         "end_date": "2025-07-08T00:00:00",
@@ -225,17 +225,17 @@
   {
     "name": "Tommy Walter",
     "rank": "MANAGER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Matthew Foster",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Judy Baker",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-21T00:00:00",
         "end_date": "2025-09-24T00:00:00",
@@ -253,7 +253,7 @@
   {
     "name": "Justin Baker",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-06-26T00:00:00",
         "end_date": "2025-06-27T00:00:00",
@@ -265,7 +265,7 @@
   {
     "name": "Stephanie Ross",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-07T00:00:00",
         "end_date": "2025-08-12T00:00:00",
@@ -277,12 +277,12 @@
   {
     "name": "Zachary Hicks",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Anthony Rodriguez",
     "rank": "MANAGER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-21T00:00:00",
         "end_date": "2025-09-28T00:00:00",
@@ -300,17 +300,17 @@
   {
     "name": "Rebecca Henderson",
     "rank": "MANAGER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "James Ferrell",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Tricia Valencia",
     "rank": "COOK",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-07T00:00:00",
         "end_date": "2025-09-08T00:00:00",
@@ -322,12 +322,12 @@
   {
     "name": "Nathan Maldonado",
     "rank": "MANAGER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Debra Davidson",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-17T00:00:00",
         "end_date": "2025-08-19T00:00:00",
@@ -339,7 +339,7 @@
   {
     "name": "Jeffrey Chavez",
     "rank": "MANAGER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-28T00:00:00",
         "end_date": "2025-08-29T00:00:00",
@@ -351,7 +351,7 @@
   {
     "name": "Sherri Baker",
     "rank": "MANAGER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-07-18T00:00:00",
         "end_date": "2025-07-20T00:00:00",
@@ -363,22 +363,22 @@
   {
     "name": "Cassandra Gaines",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Elizabeth Fowler",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Brittany Farmer",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Paula Moreno",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-08-15T00:00:00",
         "end_date": "2025-08-16T00:00:00",
@@ -390,27 +390,27 @@
   {
     "name": "Fred Smith",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Sherry Decker",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Anthony Humphrey",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Angelica Tucker",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Philip Cannon",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-07-06T00:00:00",
         "end_date": "2025-07-09T00:00:00",
@@ -422,7 +422,7 @@
   {
     "name": "John Pierce",
     "rank": "CASHIER",
-    "inavailabilities": [
+    "unavailabilities": [
       {
         "start_date": "2025-09-21T00:00:00",
         "end_date": "2025-09-23T00:00:00",
@@ -434,16 +434,16 @@
   {
     "name": "Shane Henderson",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Joshua Blair",
     "rank": "CASHIER",
-    "inavailabilities": []
+    "unavailabilities": []
   },
   {
     "name": "Eric Carney",
     "rank": "COOK",
-    "inavailabilities": []
+    "unavailabilities": []
   }
 ]

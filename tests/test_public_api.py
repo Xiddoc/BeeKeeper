@@ -22,7 +22,7 @@ EXPECTED_EXPORTS = frozenset(
         "EntityInputAdapter",
         "HardPreliminaryRule",
         "HardStatefulRule",
-        "Inavailability",
+        "Unavailability",
         "IncompleteSolutionError",
         "InputAdapter",
         "JsonAllocationInputAdapter",
@@ -77,8 +77,8 @@ def test_mixed_input_adapter_implements_input_adapter() -> None:
     assert issubclass(beekeeper.MixedInputAdapter, beekeeper.InputAdapter)
 
 
-def test_inavailability_extends_daterange() -> None:
-    assert issubclass(beekeeper.Inavailability, beekeeper.DateRange)
+def test_unavailability_extends_daterange() -> None:
+    assert issubclass(beekeeper.Unavailability, beekeeper.DateRange)
 
 
 def test_beekeeper_init_signature_is_keyword_only() -> None:

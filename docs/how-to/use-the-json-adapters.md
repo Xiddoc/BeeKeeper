@@ -13,7 +13,7 @@ Each adapter takes a `file: Path` and a `*_type: type[...]` and produces an `Ite
 
 ## Strict-only, on purpose
 
-Both adapters reject unknown JSON fields. The framework's `Entity`, `AllocationRequest`, `Inavailability`, and `DateRange` base classes set `model_config = ConfigDict(extra="forbid")`, and your domain subclasses inherit it. A JSON object with a field your model doesn't declare raises `ValidationError`.
+Both adapters reject unknown JSON fields. The framework's `Entity`, `AllocationRequest`, `Unavailability`, and `DateRange` base classes set `model_config = ConfigDict(extra="forbid")`, and your domain subclasses inherit it. A JSON object with a field your model doesn't declare raises `ValidationError`.
 
 This is deliberate. Silent field drops are the source of an entire category of "the schema looks right but the data isn't being read" bugs. If your data legitimately has fields you want to ignore — old data, third-party feeds, exploratory work — write your own `EntityInputAdapter` / `AllocationInputAdapter` subclass with whatever leniency makes sense for your case. The framework doesn't ship a knob.
 

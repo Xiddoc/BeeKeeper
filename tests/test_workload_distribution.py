@@ -121,7 +121,7 @@ def test_every_allocation_filled(
     suffix: str,
     expected_total: int,
 ) -> None:
-    """With sparse inavailabilities and rank-eligible candidates everywhere, no
+    """With sparse unavailabilities and rank-eligible candidates everywhere, no
     allocation should go unfilled."""
     assert len(oversub_states[suffix].planned_allocations) == expected_total
 
