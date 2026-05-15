@@ -7,7 +7,7 @@ a candidate-evaluation pass. We reject both at the IO boundary so
 malformed JSON inputs fail fast.
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from enum import auto
 
 import pytest
@@ -53,3 +53,19 @@ def test_zero_required_count_rejected() -> None:
 def test_negative_required_count_rejected() -> None:
     with pytest.raises(ValidationError, match="greater than or equal to 1"):
         _Request(allocation_type=_Task.SHIFT, date_range=_date_range(), required_count=-5)
+
+
+def test_date_only_parameterization_uses_date_granularity() -> None:
+    """The third TypeVar lets domains parameterize the date_range over plain
+    ``date`` for whole-day allocations without subclassing or field overrides."""
+
+    class _DateOnlyRequest(AllocationRequest[_Task, _Worker, date]):
+        pass
+
+    allocation = _DateOnlyRequest(
+        allocation_type=_Task.SHIFT,
+        date_range=DateRange[date](start_date=date(2025, 1, 1), end_date=date(2025, 1, 3)),
+    )
+    assert isinstance(allocation.date_range.start_date, date)
+    # `datetime` is a subclass of `date`, so check that the value isn't a datetime.
+    assert not isinstance(allocation.date_range.start_date, datetime)
