@@ -27,7 +27,7 @@ EXPECTED_EXPORTS = frozenset(
         "InputAdapter",
         "JsonAllocationInputAdapter",
         "JsonEntityInputAdapter",
-        "MixedInputAdapter",
+        "CompositeInputAdapter",
         "OutputAdapter",
         "PlannedAllocation",
         "PreliminaryRule",
@@ -73,8 +73,8 @@ def test_input_adapter_inherits_both_halves() -> None:
     assert issubclass(beekeeper.InputAdapter, beekeeper.AllocationInputAdapter)
 
 
-def test_mixed_input_adapter_implements_input_adapter() -> None:
-    assert issubclass(beekeeper.MixedInputAdapter, beekeeper.InputAdapter)
+def test_composite_input_adapter_implements_input_adapter() -> None:
+    assert issubclass(beekeeper.CompositeInputAdapter, beekeeper.InputAdapter)
 
 
 def test_unavailability_extends_daterange() -> None:

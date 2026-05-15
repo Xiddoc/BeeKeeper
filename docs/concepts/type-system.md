@@ -41,6 +41,6 @@ This is purely a syntactic accommodation. At call sites you parameterize concret
 
 BeeKeeper uses **pydantic `BaseModel`** for *data*: `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. These travel across IO boundaries (JSON adapters), get validated, get serialized.
 
-It uses **plain `@dataclass`** for *services and runtime state*: `MixedInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`. These hold dependencies or in-flight state, not data. Pydantic doesn't earn its keep here, and its runtime introspection actively conflicts with ABC-typed fields and PEP 695 type parameter resolution.
+It uses **plain `@dataclass`** for *services and runtime state*: `CompositeInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`. These hold dependencies or in-flight state, not data. Pydantic doesn't earn its keep here, and its runtime introspection actively conflicts with ABC-typed fields and PEP 695 type parameter resolution.
 
 If you're authoring framework primitives — a custom flow stage, a custom adapter base — follow the same rule. If you're authoring domain data, use `BaseModel`.

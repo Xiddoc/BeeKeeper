@@ -26,7 +26,7 @@ from beekeeper import (
     Unavailability,
 )
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
-from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
+from beekeeper.adapters.inputs.composite_input_adapter import CompositeInputAdapter
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.flow.beekeeper import BeeKeeper
 from beekeeper.flow.flow_stages.assign_possible_entities_to_allocations import (
@@ -90,7 +90,7 @@ def _request(start: int, end: int, **kwargs: object) -> _Request:
 
 
 def _adapter(workers: list[_Worker], requests: list[_Request]) -> InputAdapter[_Worker, _Request]:
-    return MixedInputAdapter(
+    return CompositeInputAdapter(
         entity_adapter=_StaticEntities(workers),
         allocation_adapter=_StaticAllocations(requests),
     )

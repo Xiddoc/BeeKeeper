@@ -16,10 +16,10 @@ class CsvWorkerAdapter(EntityInputAdapter[MyWorker]):
 
 For allocations, subclass `AllocationInputAdapter[YourRequest]` and implement `get_allocations(self) -> Iterable[YourRequest]`.
 
-Most domains will have one of each. Compose them with `MixedInputAdapter`:
+Most domains will have one of each. Compose them with `CompositeInputAdapter`:
 
 ```python
-adapter = MixedInputAdapter(
+adapter = CompositeInputAdapter(
     entity_adapter=CsvWorkerAdapter(Path("staff.csv")),
     allocation_adapter=ApiAllocationAdapter(api_url="..."),
 )

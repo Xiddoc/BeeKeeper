@@ -31,7 +31,7 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import AssignmentState, BeeKeeper, MixedInputAdapter, OutputAdapter  # noqa: E402
+from beekeeper import AssignmentState, BeeKeeper, CompositeInputAdapter, OutputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
@@ -64,7 +64,7 @@ def _load_workers(suffix: str) -> list[McWorker]:
 def _run_load_balancing(suffix: str) -> AssignmentState[McWorker, McDonaldsAllocationRequest]:
     sink = _CapturingOutput()
     BeeKeeper[McWorker, McDonaldsAllocationRequest](
-        input_adapter=MixedInputAdapter(
+        input_adapter=CompositeInputAdapter(
             entity_adapter=JsonEntityInputAdapter(
                 file=FIXTURES_DIR / f"workers_{suffix}.json",
                 entity_type=McWorker,

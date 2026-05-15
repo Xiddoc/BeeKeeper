@@ -13,7 +13,7 @@ Auto-generated from the source. Click any class to see its full signature, gener
 ::: beekeeper.adapters.inputs.entity_input_adapter
 ::: beekeeper.adapters.inputs.allocation_input_adapter
 ::: beekeeper.adapters.inputs.input_adapter
-::: beekeeper.adapters.inputs.mixed_input_adapter
+::: beekeeper.adapters.inputs.composite_input_adapter
 ::: beekeeper.adapters.inputs.json_entity_input_adapter
 ::: beekeeper.adapters.inputs.json_allocation_input_adapter
 

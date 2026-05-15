@@ -5,7 +5,7 @@ from mcdonalds.entities.mcdonalds_employee import McWorker
 from mcdonalds.rules.mc_rank_rule import McRankRule
 from pydantic import BaseModel, FilePath
 
-from beekeeper import BeeKeeper, MixedInputAdapter
+from beekeeper import BeeKeeper, CompositeInputAdapter
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
 from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
@@ -36,7 +36,7 @@ def run(inputs: McDonaldsBeeKeeperInputs) -> None:
     Split out from ``main`` so tests can drive the pipeline programmatically
     without going through argparse.
     """
-    input_adapter = MixedInputAdapter(
+    input_adapter = CompositeInputAdapter(
         entity_adapter=JsonEntityInputAdapter(file=inputs.workers_input_file, entity_type=McWorker),
         allocation_adapter=JsonAllocationInputAdapter(
             file=inputs.allocations_input_file,

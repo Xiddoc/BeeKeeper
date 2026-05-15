@@ -10,7 +10,7 @@ from beekeeper.entities.entity import Entity
 
 
 @dataclass
-class MixedInputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
+class CompositeInputAdapter[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]](
     InputAdapter[TEntity, TAllocationRequest],
 ):
     entity_adapter: EntityInputAdapter[TEntity]

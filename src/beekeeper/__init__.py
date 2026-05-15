@@ -1,11 +1,11 @@
 """Root entry to BeeKeeper's interface."""
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
+from beekeeper.adapters.inputs.composite_input_adapter import CompositeInputAdapter
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
-from beekeeper.adapters.inputs.mixed_input_adapter import MixedInputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
@@ -28,6 +28,7 @@ __all__ = [
     "AllocationType",
     "AssignmentState",
     "BeeKeeper",
+    "CompositeInputAdapter",
     "DateRange",
     "Entity",
     "EntityInputAdapter",
@@ -37,7 +38,6 @@ __all__ = [
     "InputAdapter",
     "JsonAllocationInputAdapter",
     "JsonEntityInputAdapter",
-    "MixedInputAdapter",
     "OutputAdapter",
     "PlannedAllocation",
     "PreliminaryRule",

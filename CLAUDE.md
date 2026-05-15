@@ -61,7 +61,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 `src/beekeeper/__init__.py` re-exports everything in `__all__`. Anything not in `__all__` is internal. Today's exports:
 
 - **Orchestrator**: `BeeKeeper`, `IncompleteSolutionError`
-- **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
+- **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
 - **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Unavailability`, `DateRange`, `AllocationType`
 - **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
 - **Algorithm primitives**: `Algorithm`, `AssignmentState`
@@ -72,7 +72,7 @@ Concrete algorithm implementations and the built-in rules / output adapter live 
 
 Use **pydantic `BaseModel`** for **data**: things that get validated, serialized, deserialized, or crossed across IO boundaries — `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. Each of these sets `model_config = ConfigDict(extra="forbid")`, which subclasses inherit, so unknown fields in JSON inputs fail loudly.
 
-Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: `MixedInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`, the flow-stage classes, `BeeKeeper` itself.
+Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`, the flow-stage classes, `BeeKeeper` itself.
 
 **Why**: pydantic introspects every field type to build a JSON-schema validator. ABC-typed fields fail that introspection unless you set `arbitrary_types_allowed=True`, which silently disables validation for those fields anyway — defeating pydantic's purpose. Dataclasses don't introspect at runtime, so they accept ABC-typed fields without ceremony and still inherit cleanly from ABC bases. `PlannedAllocation` is also a dataclass for a different reason: with PEP 695 generics, pydantic's bound-resolution rejects subclass-only fields on tuple elements when the class is constructed without explicit parameterization (see commit `bfb8cfb` for context).
 

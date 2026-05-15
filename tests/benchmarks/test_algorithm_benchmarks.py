@@ -34,7 +34,7 @@ from mcdonalds.allocations.allocation_request import McDonaldsAllocationRequest 
 from mcdonalds.entities.mcdonalds_employee import McWorker  # noqa: E402
 from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 
-from beekeeper import Algorithm, BeeKeeper, MixedInputAdapter  # noqa: E402
+from beekeeper import Algorithm, BeeKeeper, CompositeInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
@@ -64,7 +64,7 @@ def _build_beekeeper(
     suffix: str, algorithm_factory: type[Algorithm[McWorker, McDonaldsAllocationRequest]]
 ) -> BeeKeeper[McWorker, McDonaldsAllocationRequest]:
     return BeeKeeper[McWorker, McDonaldsAllocationRequest](
-        input_adapter=MixedInputAdapter(
+        input_adapter=CompositeInputAdapter(
             entity_adapter=JsonEntityInputAdapter(
                 file=FIXTURES_DIR / f"workers_{suffix}.json",
                 entity_type=McWorker,
