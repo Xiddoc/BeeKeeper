@@ -23,7 +23,7 @@ uv run pytest                   # unit + integration tests
 uv run mkdocs build --strict    # docs build cleanly with no broken links
 ```
 
-CI runs all of these on every push and pull request.
+CI runs all of these on every push and pull allocation.
 
 ## House style
 

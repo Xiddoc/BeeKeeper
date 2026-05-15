@@ -6,7 +6,7 @@ BeeKeeper is built around six concepts. They form a small, orthogonal vocabulary
 | --- | --- |
 | **Entity** | Something you can assign to work — a worker, a vehicle, a machine. Carries its own *unavailabilities*. |
 | **AllocationRequest** | A slot to fill. Has a `date_range`, an `allocation_type`, optionally a list of pre-requested entities. |
-| **PlannedAllocation** | The outcome of a successful assignment: a request paired with its assigned entities. |
+| **Assignment** | The outcome of a successful assignment: a allocation paired with its assigned entities. |
 | **Rule** | A constraint. *Preliminary* rules run before the algorithm (static checks like rank eligibility); *stateful* rules run during assignment with access to the in-progress schedule. |
 | **Algorithm** | Your assignment strategy. Receives candidates, entities, and stateful rules; returns the final AssignmentState. |
 | **InputAdapter / OutputAdapter** | How data gets in and out. JSON adapters ship in core; you can write your own for any source/sink. |

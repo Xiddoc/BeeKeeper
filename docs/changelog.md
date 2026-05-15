@@ -10,9 +10,9 @@ The 0.1.0 → 0.2.0 (forthcoming) refactor. Public API breaks called out at the 
 - **Module-level `TEntity` / `TAllocationType` / `TAllocationRequest` TypeVars are removed.** Each generic class declares its own.
 - **Bound class:** `Entity[Any]` and `AllocationRequest[Any, Any]` are used as PEP 695 bounds (the inner `[Any]` accommodates mypy's `[type-arg]` rule on generic-class bounds). At call sites, parameterize concretely.
 
-### `PlannedAllocation` (breaking)
+### `Assignment` (breaking)
 
-Switched from inheritance to **composition**: `PlannedAllocation` now has `request: TAllocationRequest` and `assigned_entities: tuple[TEntity, ...]` rather than extending `AllocationRequest`. `planned.allocation_type` becomes `planned.request.allocation_type`. Also switched from pydantic `BaseModel` to a frozen `@dataclass`.
+Switched from inheritance to **composition**: `Assignment` now has `allocation: TAllocationRequest` and `assigned_entities: tuple[TEntity, ...]` rather than extending `AllocationRequest`. `planned.allocation_type` becomes `planned.allocation.allocation_type`. Also switched from pydantic `BaseModel` to a frozen `@dataclass`.
 
 ### `BeeKeeper` constructor (breaking)
 
@@ -31,7 +31,7 @@ Switched from inheritance to **composition**: `PlannedAllocation` now has `reque
 
 - `evaluate(...) -> RuleVerdict` is the new abstract method on `PreliminaryRule` / `StatefulRule`.
 - New convenience subclasses: `HardPreliminaryRule`, `SoftPreliminaryRule`, `HardStatefulRule`, `SoftStatefulRule`. Each wraps a single-method API (`check` for hard, `score` for soft).
-- `StatefulRule.is_compatible(entity, allocation: PlannedAllocation, state)` is replaced by `StatefulRule.evaluate(entity, allocation: TAllocationRequest, state)`. The rule receives the request being considered, not an already-planned allocation.
+- `StatefulRule.is_compatible(entity, allocation: Assignment, state)` is replaced by `StatefulRule.evaluate(entity, allocation: TAllocationRequest, state)`. The rule receives the allocation being considered, not an already-planned allocation.
 
 ### Multi-entity allocations
 
@@ -72,7 +72,7 @@ The reference algorithms move under a new `beekeeper.algorithm.implementations.*
 
 ### AssignmentState indexing (perf, internal)
 
-`AssignmentState` now maintains a per-entity index alongside the flat allocation list, making `get_allocations_done_by(entity)` O(k) instead of O(n). Stateful rules and load-balancing both benefit; `LoadBalancingAssignmentAlgorithm` dropped its workaround side-dict.
+`AssignmentState` now maintains a per-entity index alongside the flat allocation list, making `get_assignments_done_by(entity)` O(k) instead of O(n). Stateful rules and load-balancing both benefit; `LoadBalancingAssignmentAlgorithm` dropped its workaround side-dict.
 
 ### Oversubscribed benchmark fixtures
 

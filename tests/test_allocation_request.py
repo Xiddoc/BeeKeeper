@@ -36,13 +36,13 @@ def _date_range() -> DateRange[datetime]:
 
 
 def test_default_required_count_is_one() -> None:
-    request = _Request(allocation_type=_Task.SHIFT, date_range=_date_range())
-    assert request.required_count == 1
+    allocation = _Request(allocation_type=_Task.SHIFT, date_range=_date_range())
+    assert allocation.required_count == 1
 
 
 def test_positive_required_count_accepted() -> None:
-    request = _Request(allocation_type=_Task.SHIFT, date_range=_date_range(), required_count=3)
-    assert request.required_count == 3
+    allocation = _Request(allocation_type=_Task.SHIFT, date_range=_date_range(), required_count=3)
+    assert allocation.required_count == 3
 
 
 def test_zero_required_count_rejected() -> None:

@@ -242,7 +242,7 @@ def _generate_allocations(
         length = rng.choices(spec.allocation_length_choices, weights=spec.allocation_length_weights)[0]
         end = start + timedelta(days=length - 1)
 
-        # Optionally pre-request 1–2 specific workers (must match an allowed rank).
+        # Optionally pre-allocation 1–2 specific workers (must match an allowed rank).
         eligible_ranks = TYPE_TO_RANKS[alloc_type]
         requested_entities: list[dict[str, object]] = []
         if rng.random() < spec.requested_entities_probability:

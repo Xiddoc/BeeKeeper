@@ -4,7 +4,7 @@ from typing import Any
 from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
@@ -39,7 +39,7 @@ class LoadBalancingAssignmentAlgorithm[
     are preferred over equally-scored entities who already have several. No
     randomness; the algorithm is fully deterministic for a given input.
 
-    Load is read from ``state.get_allocations_done_by`` (now O(k) thanks to
+    Load is read from ``state.get_assignments_done_by`` (now O(k) thanks to
     the AssignmentState's per-entity index); no side bookkeeping is needed.
     """
 
@@ -58,7 +58,7 @@ class LoadBalancingAssignmentAlgorithm[
             alloc_candidates = candidates.get(id(allocation), [])
             ranked = sorted(
                 alloc_candidates,
-                key=lambda c: c.score / (1 + len(state.get_allocations_done_by(c.entity))),
+                key=lambda c: c.score / (1 + len(state.get_assignments_done_by(c.entity))),
                 reverse=True,
             )
             chosen: list[TEntity] = []
@@ -70,6 +70,6 @@ class LoadBalancingAssignmentAlgorithm[
                     chosen.append(candidate.entity)
 
             if len(chosen) == allocation.required_count:
-                state.add_allocation(PlannedAllocation(request=allocation, assigned_entities=tuple(chosen)))
+                state.add_assignment(Assignment(allocation=allocation, assigned_entities=tuple(chosen)))
 
         return state

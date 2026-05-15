@@ -56,36 +56,36 @@ class _ScoreByLength(SoftPreliminaryRule[_Worker, _Request]):
 def test_hard_rule_failure_prunes_candidate() -> None:
     keeper = _Worker(name="Alice", unavailabilities=[])
     rejected = _Worker(name="Bob", unavailabilities=[])
-    request = _request()
+    allocation = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[keeper, rejected],
-        allocations=[request],
+        allocations=[allocation],
         preliminary_rules=[_RejectByName(banned="Bob")],
         stateful_rules=[],
-        candidate_map={id(request): [Candidate(entity=keeper), Candidate(entity=rejected)]},
+        candidate_map={id(allocation): [Candidate(entity=keeper), Candidate(entity=rejected)]},
     )
 
     RunPreliminaryRules[_Worker, _Request]().run_stage(state)
 
-    survivors = state.candidate_map[id(request)]
+    survivors = state.candidate_map[id(allocation)]
     assert [c.entity for c in survivors] == [keeper]
 
 
 def test_soft_rule_updates_candidate_score() -> None:
     short = _Worker(name="Al", unavailabilities=[])  # 1/2 = 0.5
     long = _Worker(name="Reginald", unavailabilities=[])  # 1/8 = 0.125
-    request = _request()
+    allocation = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[short, long],
-        allocations=[request],
+        allocations=[allocation],
         preliminary_rules=[_ScoreByLength()],
         stateful_rules=[],
-        candidate_map={id(request): [Candidate(entity=short), Candidate(entity=long)]},
+        candidate_map={id(allocation): [Candidate(entity=short), Candidate(entity=long)]},
     )
 
     RunPreliminaryRules[_Worker, _Request]().run_stage(state)
 
-    by_name = {c.entity.name: c.score for c in state.candidate_map[id(request)]}
+    by_name = {c.entity.name: c.score for c in state.candidate_map[id(allocation)]}
     assert math.isclose(by_name["Al"], 0.5)
     assert math.isclose(by_name["Reginald"], 0.125)
 
@@ -100,19 +100,19 @@ def test_geometric_mean_combines_multiple_soft_rules() -> None:
             return 0.9
 
     worker = _Worker(name="W", unavailabilities=[])
-    request = _request()
+    allocation = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],
-        allocations=[request],
+        allocations=[allocation],
         preliminary_rules=[_Score04(), _Score09()],
         stateful_rules=[],
-        candidate_map={id(request): [Candidate(entity=worker)]},
+        candidate_map={id(allocation): [Candidate(entity=worker)]},
     )
 
     RunPreliminaryRules[_Worker, _Request]().run_stage(state)
 
     # geometric mean of [0.4, 0.9] = sqrt(0.36) = 0.6
-    survivor_score = state.candidate_map[id(request)][0].score
+    survivor_score = state.candidate_map[id(allocation)][0].score
     assert abs(survivor_score - 0.6) < 1e-9
 
 
@@ -124,31 +124,31 @@ def test_zero_score_short_circuits_geometric_mean_to_zero() -> None:
             return 0.0
 
     worker = _Worker(name="W", unavailabilities=[])
-    request = _request()
+    allocation = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],
-        allocations=[request],
+        allocations=[allocation],
         preliminary_rules=[_ZeroScore()],
         stateful_rules=[],
-        candidate_map={id(request): [Candidate(entity=worker)]},
+        candidate_map={id(allocation): [Candidate(entity=worker)]},
     )
 
     RunPreliminaryRules[_Worker, _Request]().run_stage(state)
 
-    assert state.candidate_map[id(request)][0].score == 0.0
+    assert state.candidate_map[id(allocation)][0].score == 0.0
 
 
 def test_no_rules_leaves_score_neutral() -> None:
     worker = _Worker(name="W", unavailabilities=[])
-    request = _request()
+    allocation = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],
-        allocations=[request],
+        allocations=[allocation],
         preliminary_rules=[],
         stateful_rules=[],
-        candidate_map={id(request): [Candidate(entity=worker)]},
+        candidate_map={id(allocation): [Candidate(entity=worker)]},
     )
 
     RunPreliminaryRules[_Worker, _Request]().run_stage(state)
 
-    assert state.candidate_map[id(request)][0].score == 1.0
+    assert state.candidate_map[id(allocation)][0].score == 1.0

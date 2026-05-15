@@ -36,7 +36,7 @@ COOKING [2025-06-15 00:00:00 -> 2025-06-15 00:00:00]: McWorker(...name='Carol'..
 
 ## What it teaches
 
-- **Multi-entity allocations.** The `COOKING` request has `required_count: 2` and gets two cooks assigned.
+- **Multi-entity allocations.** The `COOKING` allocation has `required_count: 2` and gets two cooks assigned.
 - **Preliminary rule combination.** `main.py` wires three rules: the domain-specific `McRankRule` plus the framework's `AvailabilityRule` and `RequestedEntityRule`. The load-balancing algorithm respects all of them.
 - **Unavailability filtering.** Bob has a vacation overlapping the CLEANING shift, so he's pruned from candidates. Dave has a wedding on June 15, so he's pruned from COOKING and Eve takes his place.
 - **JSON-driven inputs.** Both fixtures are validated strictly by `JsonEntityInputAdapter` / `JsonAllocationInputAdapter`. Try adding a typo to either file and watch the validation error fire.

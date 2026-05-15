@@ -43,7 +43,7 @@ Output: an updated `state.candidate_map` — fewer candidates per allocation, ea
 
 ### Stage 3 — `RunAlgorithmAndDispatchResults`
 
-Calls `algorithm.run(allocations, entities, candidates, rules)` with the now-pruned candidate map. The algorithm consults stateful rules as it assigns; its return value is a `AssignmentState[TEntity, TAllocationRequest]` carrying the final list of `PlannedAllocation`s. That state is then passed to every configured output adapter via `handle_output(state)`.
+Calls `algorithm.run(allocations, entities, candidates, rules)` with the now-pruned candidate map. The algorithm consults stateful rules as it assigns; its return value is a `AssignmentState[TEntity, TAllocationRequest]` carrying the final list of `Assignment`s. That state is then passed to every configured output adapter via `handle_output(state)`.
 
 ## Customizing the pipeline
 

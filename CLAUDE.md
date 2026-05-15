@@ -62,7 +62,7 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 
 - **Orchestrator**: `BeeKeeper`, `IncompleteSolutionError`
 - **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
-- **Domain models**: `Entity`, `AllocationRequest`, `PlannedAllocation`, `Unavailability`, `DateRange`, `AllocationType`
+- **Domain models**: `Entity`, `AllocationRequest`, `Assignment`, `Unavailability`, `DateRange`, `AllocationType`
 - **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
 - **Algorithm primitives**: `Algorithm`, `AssignmentState`
 
@@ -72,9 +72,9 @@ Concrete algorithm implementations and the built-in rules / output adapter live 
 
 Use **pydantic `BaseModel`** for **data**: things that get validated, serialized, deserialized, or crossed across IO boundaries — `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. Each of these sets `model_config = ConfigDict(extra="forbid")`, which subclasses inherit, so unknown fields in JSON inputs fail loudly.
 
-Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`, the flow-stage classes, `BeeKeeper` itself.
+Use **plain `@dataclass`** (or vanilla classes) for **services and runtime state**: `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `Assignment`, the flow-stage classes, `BeeKeeper` itself.
 
-**Why**: pydantic introspects every field type to build a JSON-schema validator. ABC-typed fields fail that introspection unless you set `arbitrary_types_allowed=True`, which silently disables validation for those fields anyway — defeating pydantic's purpose. Dataclasses don't introspect at runtime, so they accept ABC-typed fields without ceremony and still inherit cleanly from ABC bases. `PlannedAllocation` is also a dataclass for a different reason: with PEP 695 generics, pydantic's bound-resolution rejects subclass-only fields on tuple elements when the class is constructed without explicit parameterization (see commit `bfb8cfb` for context).
+**Why**: pydantic introspects every field type to build a JSON-schema validator. ABC-typed fields fail that introspection unless you set `arbitrary_types_allowed=True`, which silently disables validation for those fields anyway — defeating pydantic's purpose. Dataclasses don't introspect at runtime, so they accept ABC-typed fields without ceremony and still inherit cleanly from ABC bases. `Assignment` is also a dataclass for a different reason: with PEP 695 generics, pydantic's bound-resolution rejects subclass-only fields on tuple elements when the class is constructed without explicit parameterization (see commit `bfb8cfb` for context).
 
 ### Internal imports
 
@@ -97,7 +97,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 - **`DateRange[T: date = datetime]`** — pydantic `BaseModel` with `start_date: T`, `end_date: T`. Validators reject `end < start` and require tz-consistency on datetimes. Two day-count properties: `inclusive_day_count` (same-day → 1, the "active days on duty" reading) and `days` (matches stdlib `(end - start).days`, exclusive).
 - **`AllocationType`** — empty `AbstractEnum` subclass; consumers extend with their domain's vocabulary (e.g. `class McAllocType(AllocationType): COOKING = "COOKING"`). String-valued enums recommended over `auto()` so JSON fixtures stay human-readable.
 - **`AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]]`** — pydantic `BaseModel`. Fields: `allocation_type: TAllocationType`, `date_range: DateRange[datetime]`, `required_count: int = 1`, `requested_entities: tuple[TEntity, ...] = ()`.
-- **`PlannedAllocation[TAllocationRequest, TEntity]`** — frozen `@dataclass` (composition, not inheritance). Fields: `request: TAllocationRequest`, `assigned_entities: tuple[TEntity, ...]`. Callers access `planned.request.allocation_type`, not `planned.allocation_type`.
+- **`Assignment[TAllocationRequest, TEntity]`** — frozen `@dataclass` (composition, not inheritance). Fields: `allocation: TAllocationRequest`, `assigned_entities: tuple[TEntity, ...]`. Callers access `planned.allocation.allocation_type`, not `planned.allocation_type`.
 
 ### `AbstractEnum` pattern (`src/beekeeper/data_structures/abstract_enum.py`)
 
@@ -114,7 +114,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 ### Algorithm (`src/beekeeper/algorithm/`)
 
 - **`Algorithm[TEntity, TAllocationRequest]`** — abstract. The `run(allocations, entities, candidates, rules) -> AssignmentState` signature receives the full allocations and entities iterables, the **candidate map** (pruned by stage 2), and the stateful rules.
-- **`AssignmentState[TEntity, TAllocationRequest]`** — accumulator for `PlannedAllocation`s. Maintains a per-entity index alongside the flat list, so `get_allocations_done_by(entity)` is O(k) where k is that entity's count. Stateful rules and load-balancing both rely on this.
+- **`AssignmentState[TEntity, TAllocationRequest]`** — accumulator for `Assignment`s. Maintains a per-entity index alongside the flat list, so `get_assignments_done_by(entity)` is O(k) where k is that entity's count. Stateful rules and load-balancing both rely on this.
 - **`IncompleteSolutionError`** (in `beekeeper.algorithm.errors`) — raised by an algorithm that can't produce what it considers a complete solution. The flow stage catches it and falls through to the next algorithm in the chain.
 
 #### Bundled implementations (`beekeeper.algorithm.implementations.*`)

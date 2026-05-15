@@ -91,7 +91,7 @@ def _per_worker_counts(
 ) -> list[int]:
     """Allocations per worker, including zeros for workers who weren't picked."""
     counts: Counter[str] = Counter({w.name: 0 for w in all_workers})
-    for planned in state.planned_allocations:
+    for planned in state.assignments:
         for entity in planned.assigned_entities:
             counts[entity.name] += 1
     return list(counts.values())
@@ -125,7 +125,7 @@ def test_every_allocation_filled(
 ) -> None:
     """With sparse unavailabilities and rank-eligible candidates everywhere, no
     allocation should go unfilled."""
-    assert len(oversub_states[suffix].planned_allocations) == expected_total
+    assert len(oversub_states[suffix].assignments) == expected_total
 
 
 @pytest.mark.parametrize("suffix", ["oversub_3x", "oversub_6x", "oversub_10x"])

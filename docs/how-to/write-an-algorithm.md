@@ -5,7 +5,7 @@ The bundled `LoadBalancingAssignmentAlgorithm` is a short reference. Copy it as 
 ```python
 from collections.abc import Iterable, Mapping
 from typing import Any
-from beekeeper import Algorithm, PlannedAllocation, AssignmentState, StatefulRule
+from beekeeper import Algorithm, Assignment, AssignmentState, StatefulRule
 from beekeeper.flow.candidate import Candidate
 
 
@@ -22,7 +22,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
             # would just sort by `c.score` instead.
             ranked = sorted(
                 candidates.get(id(allocation), []),
-                key=lambda c: c.score / (1 + len(state.get_allocations_done_by(c.entity))),
+                key=lambda c: c.score / (1 + len(state.get_assignments_done_by(c.entity))),
                 reverse=True,
             )
             chosen = []
@@ -32,8 +32,8 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
                 if all(r.evaluate(c.entity, allocation, state).compatible for r in rules_list):
                     chosen.append(c.entity)
             if len(chosen) == allocation.required_count:
-                state.add_allocation(
-                    PlannedAllocation(request=allocation, assigned_entities=tuple(chosen))
+                state.add_assignment(
+                    Assignment(allocation=allocation, assigned_entities=tuple(chosen))
                 )
         return state
 ```

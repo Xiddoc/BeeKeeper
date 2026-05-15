@@ -44,10 +44,10 @@ class _NoDoubleBooking(HardStatefulRule[_Worker, _Request]):
     """Disallow assigning the same worker to overlapping allocations."""
 
     def check(self, entity: _Worker, allocation: _Request, state: AssignmentState[_Worker, _Request]) -> bool:
-        for already in state.get_allocations_done_by(entity):
+        for already in state.get_assignments_done_by(entity):
             if (
-                allocation.date_range.start_date <= already.request.date_range.end_date
-                and allocation.date_range.end_date >= already.request.date_range.start_date
+                allocation.date_range.start_date <= already.allocation.date_range.end_date
+                and allocation.date_range.end_date >= already.allocation.date_range.start_date
             ):
                 return False
         return True
@@ -56,17 +56,17 @@ class _NoDoubleBooking(HardStatefulRule[_Worker, _Request]):
 class TestBacktrackingFindsCompleteSolution:
     def test_assigns_simple_problem(self) -> None:
         worker = _Worker(name="solo", unavailabilities=[])
-        request = _request(1, 2)
-        candidates = {id(request): [Candidate(entity=worker)]}
+        allocation = _request(1, 2)
+        candidates = {id(allocation): [Candidate(entity=worker)]}
 
         result = BacktrackingAssignmentAlgorithm[_Worker, _Request]().run(
-            allocations=[request],
+            allocations=[allocation],
             entities=[worker],
             candidates=candidates,
             rules=[],
         )
 
-        assert len(result.planned_allocations) == 1
+        assert len(result.assignments) == 1
 
     def test_assigns_two_independent_allocations(self) -> None:
         """Two non-overlapping allocations both filled."""
@@ -87,7 +87,7 @@ class TestBacktrackingFindsCompleteSolution:
             rules=[],
         )
 
-        assert len(result.planned_allocations) == 2
+        assert len(result.assignments) == 2
 
 
 class TestBacktrackingWithOverlappingAllocations:
@@ -118,9 +118,9 @@ class TestBacktrackingWithOverlappingAllocations:
         )
 
         # Backtracking must put A on alloc_first so B is free for alloc_second.
-        assert len(result.planned_allocations) == 2
-        first_planned = next(p for p in result.planned_allocations if p.request is alloc_first)
-        second_planned = next(p for p in result.planned_allocations if p.request is alloc_second)
+        assert len(result.assignments) == 2
+        first_planned = next(p for p in result.assignments if p.allocation is alloc_first)
+        second_planned = next(p for p in result.assignments if p.allocation is alloc_second)
         assert first_planned.assigned_entities == (worker_a,)
         assert second_planned.assigned_entities == (worker_b,)
 
@@ -177,19 +177,19 @@ class TestBacktrackingTopKCap:
     def test_top_k_limits_branching(self) -> None:
         """The top_k_candidates parameter controls the search width."""
         workers = [_Worker(name=f"W{i}", unavailabilities=[]) for i in range(50)]
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         candidates_list = [Candidate(entity=w, score=1.0 - i / 100) for i, w in enumerate(workers)]
         cap = 5
         algo = BacktrackingAssignmentAlgorithm[_Worker, _Request](top_k_candidates=cap)
 
         result = algo.run(
-            allocations=[request],
+            allocations=[allocation],
             entities=workers,
-            candidates={id(request): candidates_list},
+            candidates={id(allocation): candidates_list},
             rules=[],
         )
 
         # First top-K candidate is picked; the rest don't enter consideration.
-        assigned = result.planned_allocations[0].assigned_entities
+        assigned = result.assignments[0].assigned_entities
         assert len(assigned) == 1
         assert assigned[0] in workers[:cap]

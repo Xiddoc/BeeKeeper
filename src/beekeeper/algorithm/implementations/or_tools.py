@@ -19,7 +19,7 @@ from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
@@ -167,6 +167,6 @@ class OrToolsAssignmentAlgorithm[
                 entities_list[j] for j in range(len(entities_list)) if (i, j) in x and solver.value(x[(i, j)]) == 1
             )
             if len(assigned) == alloc.required_count:
-                state.add_allocation(PlannedAllocation(request=alloc, assigned_entities=assigned))
+                state.add_assignment(Assignment(allocation=alloc, assigned_entities=assigned))
 
         return state

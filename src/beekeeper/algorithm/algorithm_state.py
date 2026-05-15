@@ -1,7 +1,7 @@
 from typing import Any
 
 from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 from beekeeper.entities.entity import Entity
 
 
@@ -15,32 +15,32 @@ class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationReques
     Two parallel views of the same data are maintained:
 
     * ``_allocations`` — the canonical insertion-ordered list of planned
-      allocations. Iterated by ``planned_allocations`` for output adapters.
+      allocations. Iterated by ``assignments`` for output adapters.
     * ``_by_entity`` — a per-entity index keyed by ``id(entity)``. Made the
-      primary lookup path for ``get_allocations_done_by`` so queries don't
+      primary lookup path for ``get_assignments_done_by`` so queries don't
       scan the whole schedule. Worth its weight: stateful rules and
       load-balancing algorithms call this method often, and an O(n) scan
       per call dominated the wall-clock runtime on the 200-worker fixture
       before the index existed.
 
-    The two views are kept in sync inside ``add_allocation`` /
-    ``remove_allocation``; everything else is read-only.
+    The two views are kept in sync inside ``add_assignment`` /
+    ``remove_assignment``; everything else is read-only.
     """
 
     def __init__(self) -> None:
-        self._allocations: list[PlannedAllocation[TAllocationRequest, TEntity]] = []
-        self._by_entity: dict[int, list[PlannedAllocation[TAllocationRequest, TEntity]]] = {}
+        self._allocations: list[Assignment[TAllocationRequest, TEntity]] = []
+        self._by_entity: dict[int, list[Assignment[TAllocationRequest, TEntity]]] = {}
 
-    def add_allocation(self, allocation: PlannedAllocation[TAllocationRequest, TEntity]) -> None:
+    def add_assignment(self, allocation: Assignment[TAllocationRequest, TEntity]) -> None:
         self._allocations.append(allocation)
         for entity in allocation.assigned_entities:
             self._by_entity.setdefault(id(entity), []).append(allocation)
 
-    def remove_allocation(self, allocation: PlannedAllocation[TAllocationRequest, TEntity]) -> None:
+    def remove_assignment(self, allocation: Assignment[TAllocationRequest, TEntity]) -> None:
         """Remove ``allocation`` from both views by **identity**, not equality.
 
-        ``PlannedAllocation`` is a frozen dataclass and so compares structurally
-        equal whenever two distinct instances share the same request and
+        ``Assignment`` is a frozen dataclass and so compares structurally
+        equal whenever two distinct instances share the same allocation and
         assigned entities. ``list.remove`` matches by ``__eq__`` and would pop
         the first equal entry — silently desynchronising the flat list from the
         per-entity index during backtracking churn where multiple structurally
@@ -67,11 +67,11 @@ class AssignmentState[TEntity: Entity[Any], TAllocationRequest: AllocationReques
                 raise ValueError(msg) from None
             del bucket[entity_index]
 
-    def get_allocations_done_by(self, entity: TEntity) -> list[PlannedAllocation[TAllocationRequest, TEntity]]:
+    def get_assignments_done_by(self, entity: TEntity) -> list[Assignment[TAllocationRequest, TEntity]]:
         """Allocations the given entity is assigned to. O(k) where k is that entity's count."""
         return list(self._by_entity.get(id(entity), []))
 
     @property
-    def planned_allocations(self) -> list[PlannedAllocation[TAllocationRequest, TEntity]]:
+    def assignments(self) -> list[Assignment[TAllocationRequest, TEntity]]:
         """All planned allocations recorded in this state, in the order they were added."""
         return list(self._allocations)

@@ -53,10 +53,10 @@ def test_disperses_load_across_equally_scored_workers() -> None:
     )
 
     # All three allocations are filled.
-    assert len(result.planned_allocations) == 3
+    assert len(result.assignments) == 3
     # Load distributes: each worker gets at least one allocation.
-    a_count = sum(1 for p in result.planned_allocations if a in p.assigned_entities)
-    b_count = sum(1 for p in result.planned_allocations if b in p.assigned_entities)
+    a_count = sum(1 for p in result.assignments if a in p.assigned_entities)
+    b_count = sum(1 for p in result.assignments if b in p.assigned_entities)
     assert a_count >= 1
     assert b_count >= 1
 
@@ -86,7 +86,7 @@ def test_high_score_still_wins_against_load_penalty() -> None:
         rules=[],
     )
 
-    assert result.planned_allocations[1].assigned_entities == (overworked,)
+    assert result.assignments[1].assigned_entities == (overworked,)
 
 
 def test_load_penalty_picks_fresh_entity_at_close_scores() -> None:
@@ -113,7 +113,7 @@ def test_load_penalty_picks_fresh_entity_at_close_scores() -> None:
         rules=[],
     )
 
-    assert result.planned_allocations[1].assigned_entities == (fresh,)
+    assert result.assignments[1].assigned_entities == (fresh,)
 
 
 def test_rejected_candidate_falls_through_to_next() -> None:
@@ -128,32 +128,32 @@ def test_rejected_candidate_falls_through_to_next() -> None:
 
     a = _Worker(name="banned", unavailabilities=[])
     b = _Worker(name="ok", unavailabilities=[])
-    request = _request(1, 2)
+    allocation = _request(1, 2)
     # `a` is higher-ranked but the rule will veto, so the loop must try `b`.
-    candidates = {id(request): [Candidate(entity=a, score=0.9), Candidate(entity=b, score=0.1)]}
+    candidates = {id(allocation): [Candidate(entity=a, score=0.9), Candidate(entity=b, score=0.1)]}
 
     result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
-        allocations=[request],
+        allocations=[allocation],
         entities=[a, b],
         candidates=candidates,
         rules=[_RejectByName("banned")],
     )
 
-    assert result.planned_allocations[0].assigned_entities == (b,)
+    assert result.assignments[0].assigned_entities == (b,)
 
 
 def test_unloaded_picks_highest_scored() -> None:
     """With no prior load, the algorithm picks the highest-scored candidate."""
     a = _Worker(name="A", unavailabilities=[])
     b = _Worker(name="B", unavailabilities=[])
-    request = _request(1, 2)
-    candidates = {id(request): [Candidate(entity=a, score=0.3), Candidate(entity=b, score=0.9)]}
+    allocation = _request(1, 2)
+    candidates = {id(allocation): [Candidate(entity=a, score=0.3), Candidate(entity=b, score=0.9)]}
 
     result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
-        allocations=[request],
+        allocations=[allocation],
         entities=[a, b],
         candidates=candidates,
         rules=[],
     )
 
-    assert result.planned_allocations[0].assigned_entities == (b,)
+    assert result.assignments[0].assigned_entities == (b,)

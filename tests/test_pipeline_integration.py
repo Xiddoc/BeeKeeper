@@ -1,6 +1,6 @@
 """Integration tests for the full BeeKeeper pipeline.
 
-Each test sets up a complete (entity, request, rule, algorithm, output)
+Each test sets up a complete (entity, allocation, rule, algorithm, output)
 graph and exercises ``BeeKeeper.execute()`` end-to-end. The tests are
 deliberately oriented around pipeline configurations — empty rules,
 hard-only rules, soft-only rules, mixed rules, multi-entity allocations,
@@ -14,6 +14,7 @@ from enum import auto
 from beekeeper import (
     AllocationRequest,
     AllocationType,
+    Assignment,
     AssignmentState,
     DateRange,
     Entity,
@@ -21,7 +22,6 @@ from beekeeper import (
     HardPreliminaryRule,
     InputAdapter,
     OutputAdapter,
-    PlannedAllocation,
     SoftPreliminaryRule,
     Unavailability,
 )
@@ -120,26 +120,26 @@ def _bk(
 class TestMinimalPipeline:
     def test_no_rules_assigns_first_compatible_candidate(self) -> None:
         worker = _Worker(name="solo", unavailabilities=[])
-        request = _request(1, 2)
-        bk, sink = _bk([worker], [request])
+        allocation = _request(1, 2)
+        bk, sink = _bk([worker], [allocation])
         bk.execute()
         assert sink.captured is not None
-        assert len(sink.captured.planned_allocations) == 1
-        assert sink.captured.planned_allocations[0].assigned_entities == (worker,)
+        assert len(sink.captured.assignments) == 1
+        assert sink.captured.assignments[0].assigned_entities == (worker,)
 
-    def test_no_workers_produces_no_planned_allocations(self) -> None:
-        request = _request(1, 2)
-        bk, sink = _bk([], [request])
+    def test_no_workers_produces_no_assignments(self) -> None:
+        allocation = _request(1, 2)
+        bk, sink = _bk([], [allocation])
         bk.execute()
         assert sink.captured is not None
-        assert sink.captured.planned_allocations == []
+        assert sink.captured.assignments == []
 
-    def test_no_allocations_produces_no_planned_allocations(self) -> None:
+    def test_no_allocations_produces_no_assignments(self) -> None:
         worker = _Worker(name="solo", unavailabilities=[])
         bk, sink = _bk([worker], [])
         bk.execute()
         assert sink.captured is not None
-        assert sink.captured.planned_allocations == []
+        assert sink.captured.assignments == []
 
 
 # --------------------------- rule combinations ------------------------------
@@ -159,43 +159,43 @@ class TestRuleCombinations:
     def test_hard_rule_filters_unsuitable_workers(self) -> None:
         unskilled = _Worker(name="A", unavailabilities=[], skill_level=1)
         skilled = _Worker(name="B", unavailabilities=[], skill_level=5)
-        request = _request(1, 2, minimum_skill=3)
+        allocation = _request(1, 2, minimum_skill=3)
 
-        bk, sink = _bk([unskilled, skilled], [request], preliminary_rules=[_MinimumSkillRule()])
+        bk, sink = _bk([unskilled, skilled], [allocation], preliminary_rules=[_MinimumSkillRule()])
         bk.execute()
 
         assert sink.captured is not None
-        planned = sink.captured.planned_allocations
+        planned = sink.captured.assignments
         assert len(planned) == 1
         assert planned[0].assigned_entities == (skilled,)
 
     def test_soft_rule_picks_highest_scored(self) -> None:
         low = _Worker(name="low", unavailabilities=[], skill_level=2)
         high = _Worker(name="high", unavailabilities=[], skill_level=9)
-        request = _request(1, 2)
+        allocation = _request(1, 2)
 
-        bk, sink = _bk([low, high], [request], preliminary_rules=[_PreferHigherSkill()])
+        bk, sink = _bk([low, high], [allocation], preliminary_rules=[_PreferHigherSkill()])
         bk.execute()
 
         assert sink.captured is not None
-        assert sink.captured.planned_allocations[0].assigned_entities == (high,)
+        assert sink.captured.assignments[0].assigned_entities == (high,)
 
     def test_mixed_hard_and_soft_rules(self) -> None:
         unskilled = _Worker(name="unskilled", unavailabilities=[], skill_level=1)
         ok = _Worker(name="ok", unavailabilities=[], skill_level=4)
         best = _Worker(name="best", unavailabilities=[], skill_level=9)
-        request = _request(1, 2, minimum_skill=3)
+        allocation = _request(1, 2, minimum_skill=3)
 
         bk, sink = _bk(
             [unskilled, ok, best],
-            [request],
+            [allocation],
             preliminary_rules=[_MinimumSkillRule(), _PreferHigherSkill()],
         )
         bk.execute()
 
         assert sink.captured is not None
         # unskilled fails the hard rule; best beats ok on the soft rule.
-        assert sink.captured.planned_allocations[0].assigned_entities == (best,)
+        assert sink.captured.assignments[0].assigned_entities == (best,)
 
 
 # --------------------------- multi-entity & availability --------------------
@@ -205,26 +205,26 @@ class TestMultiEntityAndAvailability:
     def test_multi_entity_allocation_filled(self) -> None:
         a = _Worker(name="a", unavailabilities=[])
         b = _Worker(name="b", unavailabilities=[])
-        request = _request(1, 2, required_count=2)
+        allocation = _request(1, 2, required_count=2)
 
-        bk, sink = _bk([a, b], [request])
+        bk, sink = _bk([a, b], [allocation])
         bk.execute()
 
         assert sink.captured is not None
-        planned = sink.captured.planned_allocations
+        planned = sink.captured.assignments
         assert len(planned) == 1
         assigned_names = {e.name for e in planned[0].assigned_entities}
         assert assigned_names == {"a", "b"}
 
     def test_multi_entity_allocation_unfulfillable_is_skipped(self) -> None:
         only_one = _Worker(name="solo", unavailabilities=[])
-        request = _request(1, 2, required_count=2)
+        allocation = _request(1, 2, required_count=2)
 
-        bk, sink = _bk([only_one], [request])
+        bk, sink = _bk([only_one], [allocation])
         bk.execute()
 
         assert sink.captured is not None
-        assert sink.captured.planned_allocations == []
+        assert sink.captured.assignments == []
 
     def test_availability_rule_excludes_partial_overlap(self) -> None:
         worker = _Worker(
@@ -237,25 +237,25 @@ class TestMultiEntityAndAvailability:
                 ),
             ],
         )
-        request = _request(1, 5)
+        allocation = _request(1, 5)
 
-        bk, sink = _bk([worker], [request], preliminary_rules=[AvailabilityRule[_Worker, _Request]()])
+        bk, sink = _bk([worker], [allocation], preliminary_rules=[AvailabilityRule[_Worker, _Request]()])
         bk.execute()
 
         assert sink.captured is not None
         # Stage-1 lets partial overlap through, but AvailabilityRule rejects it.
-        assert sink.captured.planned_allocations == []
+        assert sink.captured.assignments == []
 
     def test_requested_entities_restricts_assignment(self) -> None:
         chosen = _Worker(name="chosen", unavailabilities=[])
         unchosen = _Worker(name="unchosen", unavailabilities=[])
-        request = _request(1, 2, requested_entities=(chosen,))
+        allocation = _request(1, 2, requested_entities=(chosen,))
 
-        bk, sink = _bk([chosen, unchosen], [request])
+        bk, sink = _bk([chosen, unchosen], [allocation])
         bk.execute()
 
         assert sink.captured is not None
-        assert sink.captured.planned_allocations[0].assigned_entities == (chosen,)
+        assert sink.captured.assignments[0].assigned_entities == (chosen,)
 
 
 # --------------------------- pluggable pipeline -----------------------------
@@ -275,12 +275,12 @@ class _PassthroughStage(AssignPossibleEntitiesToAllocations[_Worker, _Request]):
 class TestPluggablePipeline:
     def test_user_supplied_stages_are_used(self) -> None:
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         sink = _CapturingOutput()
         custom_stage = _PassthroughStage()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             stages=[
                 custom_stage,
                 RunPreliminaryRules[_Worker, _Request](),
@@ -293,7 +293,7 @@ class TestPluggablePipeline:
 
         assert custom_stage.invoked is True
         assert sink.captured is not None
-        assert len(sink.captured.planned_allocations) == 1
+        assert len(sink.captured.assignments) == 1
 
     def test_default_pipeline_requires_algorithm(self) -> None:
         import pytest
@@ -321,12 +321,12 @@ class TestPluggablePipeline:
                 return state
 
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         sink = _CapturingOutput()
         post = _CapturePostStage()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             stages=[
                 AssignPossibleEntitiesToAllocations[_Worker, _Request](),
                 RunPreliminaryRules[_Worker, _Request](),
@@ -342,8 +342,8 @@ class TestPluggablePipeline:
         assert post.seen is not None
         assert sink.captured is not None
         assert post.seen is sink.captured
-        assert len(post.seen.planned_allocations) == 1
-        assert post.seen.planned_allocations[0].assigned_entities == (worker,)
+        assert len(post.seen.assignments) == 1
+        assert post.seen.assignments[0].assigned_entities == (worker,)
 
     def test_algorithm_result_defaults_to_none(self) -> None:
         """A pipeline that omits the algorithm stage leaves ``algorithm_result``
@@ -384,26 +384,26 @@ class TestAlgorithmChain:
     def test_single_algorithm_works_unchanged(self) -> None:
         """Passing a bare algorithm (not a list) is the common path."""
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         sink = _CapturingOutput()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
             output_adapters=[sink],
         ).execute()
 
         assert sink.captured is not None
-        assert len(sink.captured.planned_allocations) == 1
+        assert len(sink.captured.assignments) == 1
 
     def test_chain_falls_through_failed_algorithms(self) -> None:
         """An always-failing algorithm at the head; load-balancing after it wins."""
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         sink = _CapturingOutput()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             algorithm=[
                 _AlwaysFails(),
                 LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
@@ -412,7 +412,7 @@ class TestAlgorithmChain:
         ).execute()
 
         assert sink.captured is not None
-        assert len(sink.captured.planned_allocations) == 1
+        assert len(sink.captured.assignments) == 1
 
     def test_chain_stops_at_first_success(self) -> None:
         """Load-balancing at the head succeeds; the trailing entries never run."""
@@ -422,11 +422,11 @@ class TestAlgorithmChain:
                 raise AssertionError("trailing algorithm ran when it shouldn't have")
 
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         sink = _CapturingOutput()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             algorithm=[
                 LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
                 _ShouldNeverRun(),
@@ -435,7 +435,7 @@ class TestAlgorithmChain:
         ).execute()
 
         assert sink.captured is not None
-        assert len(sink.captured.planned_allocations) == 1
+        assert len(sink.captured.assignments) == 1
 
     def test_all_algorithms_failing_propagates_last_error(self) -> None:
         """Every algorithm raises → the last error reaches the caller."""
@@ -477,26 +477,26 @@ class TestAlgorithmChain:
 class TestOutputAdapterDispatch:
     def test_multiple_output_adapters_all_receive_state(self) -> None:
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
         first = _CapturingOutput()
         second = _CapturingOutput()
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
             output_adapters=[first, second],
         ).execute()
 
         assert first.captured is not None
         assert second.captured is not None
-        assert first.captured.planned_allocations == second.captured.planned_allocations
+        assert first.captured.assignments == second.captured.assignments
 
     def test_no_output_adapters_does_not_raise(self) -> None:
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
+        allocation = _request(1, 2)
 
         BeeKeeper[_Worker, _Request](
-            input_adapter=_adapter([worker], [request]),
+            input_adapter=_adapter([worker], [allocation]),
             algorithm=LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
         ).execute()  # no output_adapters; just shouldn't blow up
 
@@ -504,19 +504,19 @@ class TestOutputAdapterDispatch:
 # --------------------------- planned allocation shape -----------------------
 
 
-class TestPlannedAllocationShape:
-    def test_planned_allocation_carries_request_and_entities(self) -> None:
+class TestAssignmentShape:
+    def test_assignment_carries_request_and_entities(self) -> None:
         worker = _Worker(name="W", unavailabilities=[])
-        request = _request(1, 2)
-        bk, sink = _bk([worker], [request])
+        allocation = _request(1, 2)
+        bk, sink = _bk([worker], [allocation])
         bk.execute()
 
         assert sink.captured is not None
-        planned = sink.captured.planned_allocations[0]
-        assert isinstance(planned, PlannedAllocation)
-        assert planned.request is request
+        planned = sink.captured.assignments[0]
+        assert isinstance(planned, Assignment)
+        assert planned.allocation is allocation
         assert planned.assigned_entities == (worker,)
-        # Composition (not inheritance): can't access request fields off the planned
+        # Composition (not inheritance): can't access allocation fields off the planned
         # allocation directly anymore.
-        assert hasattr(planned.request, "allocation_type")
+        assert hasattr(planned.allocation, "allocation_type")
         assert not hasattr(planned, "allocation_type")

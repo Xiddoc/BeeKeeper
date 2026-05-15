@@ -6,7 +6,7 @@ from beekeeper.algorithm.algorithm import Algorithm
 from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
 from beekeeper.rules.stateful_rule import StatefulRule
@@ -123,10 +123,10 @@ class BacktrackingAssignmentAlgorithm[
 
         for combo in combinations(pool, allocation.required_count):
             if all(rule.evaluate(entity, allocation, state).compatible for entity in combo for rule in rules):
-                planned = PlannedAllocation(request=allocation, assigned_entities=tuple(combo))
-                state.add_allocation(planned)
+                planned = Assignment(allocation=allocation, assigned_entities=tuple(combo))
+                state.add_assignment(planned)
                 if self._search(allocations, index + 1, ranked, rules, state, budget):
                     return True
-                state.remove_allocation(planned)
+                state.remove_assignment(planned)
 
         return False

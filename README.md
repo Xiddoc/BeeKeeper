@@ -81,7 +81,7 @@ uv run mkdocs build --strict    # docs
 uv run pre-commit install       # one-time
 ```
 
-CI runs all of these on every push and pull request.
+CI runs all of these on every push and pull allocation.
 
 ## License
 

@@ -11,10 +11,10 @@ class MaxThreeShiftsPerWeek(HardStatefulRule[MyWorker, MyRequest]):
         allocation: MyRequest,
         state: AssignmentState[MyWorker, MyRequest],
     ) -> bool:
-        return len(state.get_allocations_done_by(entity)) < 3
+        return len(state.get_assignments_done_by(entity)) < 3
 ```
 
-`HardStatefulRule[TEntity, TAllocReq]` requires `check(entity, allocation, state) -> bool`. The `state` is the algorithm's in-progress assignment record — already-planned allocations are queryable via `state.get_allocations_done_by(entity)` or `state.planned_allocations`.
+`HardStatefulRule[TEntity, TAllocReq]` requires `check(entity, allocation, state) -> bool`. The `state` is the algorithm's in-progress assignment record — already-planned allocations are queryable via `state.get_assignments_done_by(entity)` or `state.assignments`.
 
 The algorithm is responsible for consulting stateful rules during assignment. The framework doesn't run them for you — they're available to your algorithm (typically one of the bundled implementations like `LoadBalancingAssignmentAlgorithm` or `BacktrackingAssignmentAlgorithm`) via the `rules` argument to `Algorithm.run`.
 

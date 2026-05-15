@@ -27,13 +27,13 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
 
 ## What you must return
 
-A `AssignmentState[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_allocation(PlannedAllocation(request=..., assigned_entities=(...)))` to record an assignment. The state's `planned_allocations` property is what output adapters read.
+A `AssignmentState[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_assignment(Assignment(allocation=..., assigned_entities=(...)))` to record an assignment. The state's `assignments` property is what output adapters read.
 
 ## What you must guarantee
 
 - **Honor the candidate map.** Don't assign an entity that's not in the candidate list for an allocation. The map represents the framework's pre-pruning of incompatibilities; bypassing it skips your domain's preliminary rules.
 - **Honor `required_count`.** If an allocation needs N entities, assign exactly N or skip the allocation entirely. Don't half-fill.
-- **Consult stateful rules.** Before adding a `PlannedAllocation`, every stateful rule must evaluate `compatible=True`. The framework does not double-check.
+- **Consult stateful rules.** Before adding a `Assignment`, every stateful rule must evaluate `compatible=True`. The framework does not double-check.
 
 ## Failing explicitly
 
@@ -56,8 +56,8 @@ if not solution_complete:
 
 - **Use the score.** `Candidate.score` is the geometric mean of the soft rules' verdicts. Highest-scored is the algorithm's hint of "best candidate." A simple algorithm picks the top-scored. A constraint solver might use it as a heuristic.
 - **Iterate allocations in any order.** Input order is one option. Most-constrained-first, by-date, by-priority — your call.
-- **Skip allocations.** Allocations that can't be filled (empty candidate list, all candidates fail stateful rules) just don't get a `PlannedAllocation`. The output adapter can compute the diff if needed.
-- **Use `state.get_allocations_done_by(entity)`** to look up an entity's existing assignments while deciding the next one — this is what stateful rules typically do.
+- **Skip allocations.** Allocations that can't be filled (empty candidate list, all candidates fail stateful rules) just don't get a `Assignment`. The output adapter can compute the diff if needed.
+- **Use `state.get_assignments_done_by(entity)`** to look up an entity's existing assignments while deciding the next one — this is what stateful rules typically do.
 
 ## A reference implementation
 

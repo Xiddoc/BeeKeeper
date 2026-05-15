@@ -12,7 +12,7 @@ from beekeeper.algorithm.algorithm_state import AssignmentState
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.allocations.allocation_type import AllocationType
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.beekeeper import BeeKeeper
 from beekeeper.rules.preliminary_rule import HardPreliminaryRule, PreliminaryRule, SoftPreliminaryRule
@@ -26,6 +26,7 @@ __all__ = [
     "AllocationInputAdapter",
     "AllocationRequest",
     "AllocationType",
+    "Assignment",
     "AssignmentState",
     "BeeKeeper",
     "CompositeInputAdapter",
@@ -39,7 +40,6 @@ __all__ = [
     "JsonAllocationInputAdapter",
     "JsonEntityInputAdapter",
     "OutputAdapter",
-    "PlannedAllocation",
     "PreliminaryRule",
     "RuleVerdict",
     "SoftPreliminaryRule",

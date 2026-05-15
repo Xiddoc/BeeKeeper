@@ -17,7 +17,7 @@ class JsonAllocationInputAdapter[TAllocationRequest: AllocationRequest[Any, Any]
 
     The file must contain a JSON array of objects matching
     ``allocation_type``'s schema. Validation is strict: any field not
-    declared on the target request (or its nested types) will raise. This
+    declared on the target allocation (or its nested types) will raise. This
     is enforced at the framework level — the framework's
     ``AllocationRequest`` base class sets
     ``model_config = ConfigDict(extra="forbid")``, which subclasses inherit

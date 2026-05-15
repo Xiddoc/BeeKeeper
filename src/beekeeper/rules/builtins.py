@@ -45,7 +45,7 @@ class RequestedEntityRule[TEntity: Entity[Any], TAllocationRequest: AllocationRe
     Membership is checked by **identity** (``is``), not structural
     equality. Pydantic's auto-generated ``__eq__`` walks fields, so two
     ``Entity`` instances with identical names / unavailabilities /
-    domain attributes would compare equal — and a request "I want
+    domain attributes would compare equal — and a allocation "I want
     *this* worker" would then accept "any worker that happens to look
     like this one". The contract is "this specific object", so identity
     is the right relation.

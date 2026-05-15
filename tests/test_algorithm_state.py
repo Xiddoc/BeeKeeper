@@ -17,7 +17,7 @@ from beekeeper import (
     Unavailability,
 )
 from beekeeper.algorithm.algorithm_state import AssignmentState
-from beekeeper.allocations.planned_allocation import PlannedAllocation
+from beekeeper.allocations.assignment import Assignment
 
 
 class _Task(AllocationType):
@@ -44,94 +44,94 @@ def _request(start_day: int) -> _Request:
 
 def test_empty_state_has_no_allocations() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
-    assert state.planned_allocations == []
+    assert state.assignments == []
     worker = _Worker(name="W", unavailabilities=[])
-    assert state.get_allocations_done_by(worker) == []
+    assert state.get_assignments_done_by(worker) == []
 
 
-def test_add_allocation_appears_in_planned_and_in_lookup() -> None:
+def test_add_assignment_appears_in_planned_and_in_lookup() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
     req = _request(1)
-    planned = PlannedAllocation(request=req, assigned_entities=(worker,))
+    planned = Assignment(allocation=req, assigned_entities=(worker,))
 
-    state.add_allocation(planned)
+    state.add_assignment(planned)
 
-    assert state.planned_allocations == [planned]
-    assert state.get_allocations_done_by(worker) == [planned]
+    assert state.assignments == [planned]
+    assert state.get_assignments_done_by(worker) == [planned]
 
 
-def test_remove_allocation_clears_both_views() -> None:
+def test_remove_assignment_clears_both_views() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
-    planned = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
+    planned = Assignment(allocation=_request(1), assigned_entities=(worker,))
 
-    state.add_allocation(planned)
-    state.remove_allocation(planned)
+    state.add_assignment(planned)
+    state.remove_assignment(planned)
 
-    assert state.planned_allocations == []
-    assert state.get_allocations_done_by(worker) == []
+    assert state.assignments == []
+    assert state.get_assignments_done_by(worker) == []
 
 
 def test_multi_entity_allocation_indexed_under_each_entity() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     a = _Worker(name="A", unavailabilities=[])
     b = _Worker(name="B", unavailabilities=[])
-    planned = PlannedAllocation(request=_request(1), assigned_entities=(a, b))
+    planned = Assignment(allocation=_request(1), assigned_entities=(a, b))
 
-    state.add_allocation(planned)
+    state.add_assignment(planned)
 
-    assert state.get_allocations_done_by(a) == [planned]
-    assert state.get_allocations_done_by(b) == [planned]
+    assert state.get_assignments_done_by(a) == [planned]
+    assert state.get_assignments_done_by(b) == [planned]
 
 
 def test_lookup_isolated_per_entity() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     a = _Worker(name="A", unavailabilities=[])
     b = _Worker(name="B", unavailabilities=[])
-    plan_a = PlannedAllocation(request=_request(1), assigned_entities=(a,))
-    plan_b = PlannedAllocation(request=_request(5), assigned_entities=(b,))
+    plan_a = Assignment(allocation=_request(1), assigned_entities=(a,))
+    plan_b = Assignment(allocation=_request(5), assigned_entities=(b,))
 
-    state.add_allocation(plan_a)
-    state.add_allocation(plan_b)
+    state.add_assignment(plan_a)
+    state.add_assignment(plan_b)
 
-    assert state.get_allocations_done_by(a) == [plan_a]
-    assert state.get_allocations_done_by(b) == [plan_b]
+    assert state.get_assignments_done_by(a) == [plan_a]
+    assert state.get_assignments_done_by(b) == [plan_b]
 
 
 def test_lookup_returns_a_copy_not_internal_list() -> None:
     """Mutating the returned list must not corrupt internal state."""
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
-    planned = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
-    state.add_allocation(planned)
+    planned = Assignment(allocation=_request(1), assigned_entities=(worker,))
+    state.add_assignment(planned)
 
-    returned = state.get_allocations_done_by(worker)
+    returned = state.get_assignments_done_by(worker)
     returned.clear()
 
-    assert state.get_allocations_done_by(worker) == [planned]
+    assert state.get_assignments_done_by(worker) == [planned]
 
 
 def test_remove_then_add_lookup_stays_correct() -> None:
     """Sanity check for the backtracking-style add/remove churn pattern."""
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
-    plan_one = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
-    plan_two = PlannedAllocation(request=_request(5), assigned_entities=(worker,))
+    plan_one = Assignment(allocation=_request(1), assigned_entities=(worker,))
+    plan_two = Assignment(allocation=_request(5), assigned_entities=(worker,))
 
-    state.add_allocation(plan_one)
-    state.remove_allocation(plan_one)
-    state.add_allocation(plan_two)
+    state.add_assignment(plan_one)
+    state.remove_assignment(plan_one)
+    state.add_assignment(plan_two)
 
-    assert state.get_allocations_done_by(worker) == [plan_two]
-    assert state.planned_allocations == [plan_two]
+    assert state.get_assignments_done_by(worker) == [plan_two]
+    assert state.assignments == [plan_two]
 
 
 def test_remove_uses_identity_not_equality() -> None:
-    """Two structurally-equal ``PlannedAllocation`` objects must not be confused.
+    """Two structurally-equal ``Assignment`` objects must not be confused.
 
-    ``PlannedAllocation`` is a frozen dataclass, so distinct instances built
-    from the same request and entities compare ``==``. ``list.remove`` matches
+    ``Assignment`` is a frozen dataclass, so distinct instances built
+    from the same allocation and entities compare ``==``. ``list.remove`` matches
     by equality; if we used that, removing one would silently pop the other and
     desync the flat list from the per-entity index. Backtracking-style search
     churn creates exactly this scenario.
@@ -139,22 +139,22 @@ def test_remove_uses_identity_not_equality() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
     req = _request(1)
-    first = PlannedAllocation(request=req, assigned_entities=(worker,))
-    second = PlannedAllocation(request=req, assigned_entities=(worker,))
+    first = Assignment(allocation=req, assigned_entities=(worker,))
+    second = Assignment(allocation=req, assigned_entities=(worker,))
 
     # Pre-condition: the two instances are structurally equal but distinct.
     assert first == second
     assert first is not second
 
-    state.add_allocation(first)
-    state.add_allocation(second)
+    state.add_assignment(first)
+    state.add_assignment(second)
 
-    state.remove_allocation(first)
+    state.remove_assignment(first)
 
     # ``second`` survives in both views — identity-based remove pulled only ``first``.
-    assert state.planned_allocations == [second]
-    assert state.planned_allocations[0] is second
-    done = state.get_allocations_done_by(worker)
+    assert state.assignments == [second]
+    assert state.assignments[0] is second
+    done = state.get_assignments_done_by(worker)
     assert done == [second]
     assert done[0] is second
 
@@ -163,10 +163,10 @@ def test_remove_missing_allocation_raises_value_error() -> None:
     """Removing an allocation that was never added is a misuse — surface it loudly."""
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
-    stray = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
+    stray = Assignment(allocation=_request(1), assigned_entities=(worker,))
 
     with pytest.raises(ValueError, match="not present"):
-        state.remove_allocation(stray)
+        state.remove_assignment(stray)
 
 
 def test_remove_missing_allocation_with_known_entity_raises_value_error() -> None:
@@ -176,17 +176,17 @@ def test_remove_missing_allocation_with_known_entity_raises_value_error() -> Non
     worker = _Worker(name="W", unavailabilities=[])
     other_worker = _Worker(name="O", unavailabilities=[])
 
-    added = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
-    state.add_allocation(added)
+    added = Assignment(allocation=_request(1), assigned_entities=(worker,))
+    state.add_assignment(added)
 
     # An allocation whose flat-list lookup succeeds but whose entity bucket does
     # not contain it. We trip this by hand-constructing the corruption: add an
     # allocation referencing an entity that was never indexed.
-    not_in_index = PlannedAllocation(request=_request(5), assigned_entities=(other_worker,))
+    not_in_index = Assignment(allocation=_request(5), assigned_entities=(other_worker,))
     state._allocations.append(not_in_index)  # hand-corrupt the flat list to hit the missing-bucket branch
 
     with pytest.raises(ValueError, match="not present"):
-        state.remove_allocation(not_in_index)
+        state.remove_assignment(not_in_index)
 
 
 def test_remove_inconsistent_entity_bucket_raises_value_error() -> None:
@@ -195,11 +195,11 @@ def test_remove_inconsistent_entity_bucket_raises_value_error() -> None:
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
 
-    real = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
-    state.add_allocation(real)
+    real = Assignment(allocation=_request(1), assigned_entities=(worker,))
+    state.add_assignment(real)
 
-    phantom = PlannedAllocation(request=_request(5), assigned_entities=(worker,))
+    phantom = Assignment(allocation=_request(5), assigned_entities=(worker,))
     state._allocations.append(phantom)  # hand-corrupt the flat list, leaving the entity bucket without it
 
     with pytest.raises(ValueError, match="not present"):
-        state.remove_allocation(phantom)
+        state.remove_assignment(phantom)

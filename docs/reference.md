@@ -29,7 +29,7 @@ Auto-generated from the source. Click any class to see its full signature, gener
 ::: beekeeper.time_constructs.date_range
 ::: beekeeper.allocations.allocation_type
 ::: beekeeper.allocations.allocation_request
-::: beekeeper.allocations.planned_allocation
+::: beekeeper.allocations.assignment
 
 ## Rules
 

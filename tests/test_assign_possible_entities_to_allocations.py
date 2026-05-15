@@ -47,59 +47,59 @@ def _inav(start: datetime, end: datetime, reason: str = "out") -> Unavailability
 
 def test_entity_with_no_unavailability_is_a_candidate() -> None:
     worker = _Worker(unavailabilities=[])
-    request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
-    state = _state([worker], [request])
+    allocation = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
+    state = _state([worker], [allocation])
 
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
-    assert len(state.candidate_map[id(request)]) == 1
-    assert state.candidate_map[id(request)][0].entity is worker
+    assert len(state.candidate_map[id(allocation)]) == 1
+    assert state.candidate_map[id(allocation)][0].entity is worker
 
 
 def test_unavailability_fully_covering_allocation_excludes_entity() -> None:
     worker = _Worker(
         unavailabilities=[_inav(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))],
     )
-    request = _request(datetime(2025, 1, 2, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))
-    state = _state([worker], [request])
+    allocation = _request(datetime(2025, 1, 2, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))
+    state = _state([worker], [allocation])
 
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
-    assert state.candidate_map[id(request)] == []
+    assert state.candidate_map[id(allocation)] == []
 
 
 def test_partial_overlap_does_not_exclude_entity() -> None:
     worker = _Worker(
         unavailabilities=[_inav(datetime(2025, 1, 3, tzinfo=UTC), datetime(2025, 1, 4, tzinfo=UTC))],
     )
-    request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))
-    state = _state([worker], [request])
+    allocation = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 5, tzinfo=UTC))
+    state = _state([worker], [allocation])
 
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
-    assert len(state.candidate_map[id(request)]) == 1
+    assert len(state.candidate_map[id(allocation)]) == 1
 
 
 def test_requested_entities_restricts_candidates() -> None:
     chosen = _Worker(name="chosen", unavailabilities=[])
     other = _Worker(name="other", unavailabilities=[])
-    request = _request(
+    allocation = _request(
         datetime(2025, 1, 1, tzinfo=UTC),
         datetime(2025, 1, 2, tzinfo=UTC),
         requested_entities=(chosen,),
     )
-    state = _state([chosen, other], [request])
+    state = _state([chosen, other], [allocation])
 
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
-    assert [c.entity for c in state.candidate_map[id(request)]] == [chosen]
+    assert [c.entity for c in state.candidate_map[id(allocation)]] == [chosen]
 
 
 def test_candidates_start_with_neutral_score() -> None:
     worker = _Worker(unavailabilities=[])
-    request = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
-    state = _state([worker], [request])
+    allocation = _request(datetime(2025, 1, 1, tzinfo=UTC), datetime(2025, 1, 2, tzinfo=UTC))
+    state = _state([worker], [allocation])
 
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
-    assert state.candidate_map[id(request)][0].score == 1.0
+    assert state.candidate_map[id(allocation)][0].score == 1.0

@@ -20,12 +20,12 @@ class McRankRule(HardPreliminaryRule[McWorker, McRequest]):
 bk = BeeKeeper[McWorker, McRequest](...)
 ```
 
-Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Inside a custom algorithm, `state.add_allocation(...)` requires a `PlannedAllocation[McRequest, McWorker]`. Inside a `ConsoleOutputAdapter[McWorker, McRequest]`, the planned allocations you iterate carry the right types. **mypy strict** verifies the whole chain.
+Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Inside a custom algorithm, `state.add_assignment(...)` requires a `Assignment[McRequest, McWorker]`. Inside a `ConsoleOutputAdapter[McWorker, McRequest]`, the planned allocations you iterate carry the right types. **mypy strict** verifies the whole chain.
 
 ## Why two TypeVars and not one or three
 
-- **One** (`TEntity` only) wouldn't carry the request shape — rules and algorithms wouldn't know what fields the AllocationRequest subclass has.
-- **Three** (`TEntity`, `TAllocationType`, `TAllocationRequest`) is what the framework looked like mid-refactor. `TAllocationType` is recoverable from `TAllocationRequest` (it's the enum the request carries), so making it a separate parameter just added verbosity without type fidelity.
+- **One** (`TEntity` only) wouldn't carry the allocation shape — rules and algorithms wouldn't know what fields the AllocationRequest subclass has.
+- **Three** (`TEntity`, `TAllocationType`, `TAllocationRequest`) is what the framework looked like mid-refactor. `TAllocationType` is recoverable from `TAllocationRequest` (it's the enum the allocation carries), so making it a separate parameter just added verbosity without type fidelity.
 
 ## The `[Any]` slot in bounds
 
@@ -41,6 +41,6 @@ This is purely a syntactic accommodation. At call sites you parameterize concret
 
 BeeKeeper uses **pydantic `BaseModel`** for *data*: `Entity`, `AllocationRequest`, `Unavailability`, `DateRange`. These travel across IO boundaries (JSON adapters), get validated, get serialized.
 
-It uses **plain `@dataclass`** for *services and runtime state*: `CompositeInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `PlannedAllocation`. These hold dependencies or in-flight state, not data. Pydantic doesn't earn its keep here, and its runtime introspection actively conflicts with ABC-typed fields and PEP 695 type parameter resolution.
+It uses **plain `@dataclass`** for *services and runtime state*: `CompositeInputAdapter`, `BeeKeeperFlowState`, `Candidate`, `Assignment`. These hold dependencies or in-flight state, not data. Pydantic doesn't earn its keep here, and its runtime introspection actively conflicts with ABC-typed fields and PEP 695 type parameter resolution.
 
 If you're authoring framework primitives — a custom flow stage, a custom adapter base — follow the same rule. If you're authoring domain data, use `BaseModel`.

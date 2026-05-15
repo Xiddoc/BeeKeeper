@@ -29,7 +29,7 @@ EXPECTED_EXPORTS = frozenset(
         "JsonEntityInputAdapter",
         "CompositeInputAdapter",
         "OutputAdapter",
-        "PlannedAllocation",
+        "Assignment",
         "PreliminaryRule",
         "RuleVerdict",
         "SoftPreliminaryRule",
