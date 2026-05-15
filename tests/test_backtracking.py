@@ -151,8 +151,8 @@ class TestBacktrackingRaisesOnIncomplete:
 class TestBacktrackingIterationBudget:
     def test_exhausted_budget_raises_incomplete_solution_error(self) -> None:
         """When the iteration budget hits zero before the search finishes, backtracking gives up."""
-        worker_a = _Worker(name="A", inavailabilities=[])
-        worker_b = _Worker(name="B", inavailabilities=[])
+        worker_a = _Worker(name="A", unavailabilities=[])
+        worker_b = _Worker(name="B", unavailabilities=[])
         # Two non-trivial allocations so the search has to recurse at least once.
         alloc_first = _request(1, 2)
         alloc_second = _request(3, 4)

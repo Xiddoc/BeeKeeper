@@ -123,8 +123,8 @@ def test_constructor_raises_when_cp_model_is_missing(monkeypatch: pytest.MonkeyP
 
 def test_skips_candidate_whose_entity_is_not_in_entities_list() -> None:
     """A candidate whose entity wasn't passed in ``entities`` is silently dropped from the model."""
-    in_list = _Worker(name="in_list", inavailabilities=[])
-    orphan = _Worker(name="orphan", inavailabilities=[])
+    in_list = _Worker(name="in_list", unavailabilities=[])
+    orphan = _Worker(name="orphan", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=orphan, score=0.9), Candidate(entity=in_list, score=0.5)]}
 
@@ -143,7 +143,7 @@ def test_skips_candidate_whose_entity_is_not_in_entities_list() -> None:
 
 def test_allocation_with_no_eligible_candidates_is_skipped() -> None:
     """Allocations with an empty candidate list don't break model construction."""
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     fillable = _request(1, 2)
     no_candidates = _request(3, 4)
     candidates = {
@@ -165,7 +165,7 @@ def test_allocation_with_no_eligible_candidates_is_skipped() -> None:
 
 def test_empty_candidate_map_produces_empty_state() -> None:
     """No candidates anywhere: the objective term list is empty, the solver still runs."""
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     request = _request(1, 2)
     # Candidate map is empty: no x variables, no objective terms.
     result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
@@ -196,7 +196,7 @@ def test_raises_incomplete_solution_when_solver_returns_non_success(
 
     monkeypatch.setattr(or_tools_module.cp_model, "CpSolver", _StubSolver)
 
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=worker)]}
 
@@ -219,7 +219,7 @@ def test_tiny_score_does_not_collapse_to_empty_assignment() -> None:
     fillable allocation. The fix floors such candidates at scaled-1 so they
     still contribute to the objective.
     """
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=worker, score=0.0001)]}
 
@@ -240,7 +240,7 @@ def test_zero_score_remains_zero() -> None:
     The fix only floors positive scores; a true 0 is preserved so the
     objective is unaffected by indifferent candidates.
     """
-    worker = _Worker(name="solo", inavailabilities=[])
+    worker = _Worker(name="solo", unavailabilities=[])
     request = _request(1, 2)
     candidates = {id(request): [Candidate(entity=worker, score=0.0)]}
 

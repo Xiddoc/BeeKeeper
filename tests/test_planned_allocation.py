@@ -11,14 +11,14 @@ from enum import auto
 
 import pytest
 
-from beekeeper import AllocationRequest, AllocationType, DateRange, Entity, Inavailability, PlannedAllocation
+from beekeeper import AllocationRequest, AllocationType, DateRange, Entity, PlannedAllocation, Unavailability
 
 
 class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -44,7 +44,7 @@ def test_hash_raises_type_error() -> None:
     ``__hash__`` it can't actually deliver, so the failure surfaces
     here — at the hash call — rather than later inside a set or dict.
     """
-    planned = PlannedAllocation(request=_request(), assigned_entities=(_Worker(name="W", inavailabilities=[]),))
+    planned = PlannedAllocation(request=_request(), assigned_entities=(_Worker(name="W", unavailabilities=[]),))
     with pytest.raises(TypeError, match="unhashable"):
         hash(planned)
 
@@ -57,7 +57,7 @@ def test_field_equality_preserved() -> None:
     pydantic's ``__eq__`` does the right thing on the request).
     """
     request = _request()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     a = PlannedAllocation(request=request, assigned_entities=(worker,))
     b = PlannedAllocation(request=request, assigned_entities=(worker,))
     assert a == b
@@ -65,6 +65,6 @@ def test_field_equality_preserved() -> None:
 
 def test_unhashable_in_set() -> None:
     """The unhashability is enforced when inserting into a set, too."""
-    planned = PlannedAllocation(request=_request(), assigned_entities=(_Worker(name="W", inavailabilities=[]),))
+    planned = PlannedAllocation(request=_request(), assigned_entities=(_Worker(name="W", unavailabilities=[]),))
     with pytest.raises(TypeError, match="unhashable"):
         {planned}  # noqa: B018 — constructing the set is the operation under test

@@ -137,7 +137,7 @@ def test_remove_uses_identity_not_equality() -> None:
     churn creates exactly this scenario.
     """
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     req = _request(1)
     first = PlannedAllocation(request=req, assigned_entities=(worker,))
     second = PlannedAllocation(request=req, assigned_entities=(worker,))
@@ -162,7 +162,7 @@ def test_remove_uses_identity_not_equality() -> None:
 def test_remove_missing_allocation_raises_value_error() -> None:
     """Removing an allocation that was never added is a misuse — surface it loudly."""
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     stray = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
 
     with pytest.raises(ValueError, match="not present"):
@@ -173,8 +173,8 @@ def test_remove_missing_allocation_with_known_entity_raises_value_error() -> Non
     """Even if a different planned allocation for the same entity was added,
     removing one that wasn't added must raise (not silently corrupt state)."""
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
-    other_worker = _Worker(name="O", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
+    other_worker = _Worker(name="O", unavailabilities=[])
 
     added = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
     state.add_allocation(added)
@@ -193,7 +193,7 @@ def test_remove_inconsistent_entity_bucket_raises_value_error() -> None:
     """If the per-entity bucket exists but doesn't contain the allocation,
     we still raise ValueError rather than letting list.remove emit its own."""
     state: State[_Worker, _Request] = State()
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
 
     real = PlannedAllocation(request=_request(1), assigned_entities=(worker,))
     state.add_allocation(real)

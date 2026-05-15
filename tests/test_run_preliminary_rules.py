@@ -123,7 +123,7 @@ def test_zero_score_short_circuits_geometric_mean_to_zero() -> None:
         def score(self, entity: _Worker, allocation: _Request) -> float:
             return 0.0
 
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     request = _request()
     state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
         entities=[worker],

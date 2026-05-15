@@ -14,9 +14,9 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
-    Inavailability,
     SoftStatefulRule,
     State,
+    Unavailability,
 )
 
 
@@ -24,7 +24,7 @@ class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
@@ -51,7 +51,7 @@ class _LoadAdjustedScore(SoftStatefulRule[_Worker, _Request]):
 
 def test_soft_stateful_rule_evaluate_returns_compatible_with_score() -> None:
     """``SoftStatefulRule.evaluate`` wraps ``score`` and never vetoes a candidate."""
-    worker = _Worker(name="W", inavailabilities=[])
+    worker = _Worker(name="W", unavailabilities=[])
     state: State[_Worker, _Request] = State()
     rule = _LoadAdjustedScore()
 

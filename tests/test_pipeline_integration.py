@@ -320,7 +320,7 @@ class TestPluggablePipeline:
                 self.seen = state.algorithm_result
                 return state
 
-        worker = _Worker(name="W", inavailabilities=[])
+        worker = _Worker(name="W", unavailabilities=[])
         request = _request(1, 2)
         sink = _CapturingOutput()
         post = _CapturePostStage()

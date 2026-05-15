@@ -88,13 +88,13 @@ class TestRequestedEntityRule:
         """A look-alike entity (same field values, different object) is rejected.
 
         Pydantic's auto-generated ``__eq__`` compares fields, so two
-        ``_Worker(name="A", inavailabilities=[])`` instances are
+        ``_Worker(name="A", unavailabilities=[])`` instances are
         structurally equal. The rule's contract is "the specific
         entity the caller put in the request", so identity is the
         relevant relation.
         """
-        chosen = _Worker(name="A", inavailabilities=[])
-        lookalike = _Worker(name="A", inavailabilities=[])
+        chosen = _Worker(name="A", unavailabilities=[])
+        lookalike = _Worker(name="A", unavailabilities=[])
         # Sanity check: the two instances are equal-but-distinct.
         assert chosen == lookalike
         assert chosen is not lookalike

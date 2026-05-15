@@ -126,8 +126,8 @@ def test_rejected_candidate_falls_through_to_next() -> None:
         def check(self, entity: _Worker, allocation: _Request, state: State[_Worker, _Request]) -> bool:
             return entity.name != self._banned
 
-    a = _Worker(name="banned", inavailabilities=[])
-    b = _Worker(name="ok", inavailabilities=[])
+    a = _Worker(name="banned", unavailabilities=[])
+    b = _Worker(name="ok", unavailabilities=[])
     request = _request(1, 2)
     # `a` is higher-ranked but the rule will veto, so the loop must try `b`.
     candidates = {id(request): [Candidate(entity=a, score=0.9), Candidate(entity=b, score=0.1)]}

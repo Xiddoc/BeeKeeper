@@ -13,14 +13,14 @@ from enum import auto
 import pytest
 from pydantic import ValidationError
 
-from beekeeper import AllocationRequest, AllocationType, DateRange, Entity, Inavailability
+from beekeeper import AllocationRequest, AllocationType, DateRange, Entity, Unavailability
 
 
 class _Task(AllocationType):
     SHIFT = auto()
 
 
-class _Worker(Entity[Inavailability]):
+class _Worker(Entity[Unavailability]):
     name: str
 
 
