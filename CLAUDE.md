@@ -61,12 +61,15 @@ BeeKeeper is a **framework**: callers bring data (via input adapters), constrain
 `src/beekeeper/__init__.py` re-exports everything in `__all__`. Anything not in `__all__` is internal. Today's exports:
 
 - **Orchestrator**: `BeeKeeper`, `IncompleteSolutionError`
-- **Adapters**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `OutputAdapter`
-- **Domain models**: `Entity`, `AllocationRequest`, `Assignment`, `Unavailability`, `DateRange`, `AllocationType`
-- **Rules**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
+- **Adapters (abstract)**: `InputAdapter`, `EntityInputAdapter`, `AllocationInputAdapter`, `OutputAdapter`
+- **Adapters (concrete)**: `CompositeInputAdapter`, `JsonEntityInputAdapter`, `JsonAllocationInputAdapter`, `ConsoleOutputAdapter`
+- **Domain models**: `Entity`, `AllocationRequest`, `Assignment`, `Unavailability`, `DateRange`, `AllocationType`, `AbstractEnum`
+- **Rules (abstract)**: `PreliminaryRule`, `HardPreliminaryRule`, `SoftPreliminaryRule`, `StatefulRule`, `HardStatefulRule`, `SoftStatefulRule`, `RuleVerdict`
+- **Rules (concrete)**: `AvailabilityRule`, `RequestedEntityRule`
 - **Algorithm primitives**: `Algorithm`, `AssignmentState`
+- **Algorithm implementations**: `LoadBalancingAssignmentAlgorithm`, `BacktrackingAssignmentAlgorithm`, `OrToolsAssignmentAlgorithm`
 
-Concrete algorithm implementations and the built-in rules / output adapter live in submodules (not re-exported from the top-level), under `beekeeper.algorithm.implementations.*`, `beekeeper.rules.builtins`, and `beekeeper.adapters.outputs.*`.
+The bundled concrete implementations are still importable from their submodules (`beekeeper.algorithm.implementations.*`, `beekeeper.rules.builtins`, `beekeeper.adapters.outputs.*`) — those paths are kept for stability. The top-level re-exports are the recommended user-facing path.
 
 ### Pydantic vs. plain classes — the convention
 
@@ -97,7 +100,7 @@ Without the `[Any]`, mypy's `[type-arg]` rule fires on the bound (because `Entit
 - **`DateRange[T: date = datetime]`** — pydantic `BaseModel` with `start_date: T`, `end_date: T`. Validators reject `end < start` and require tz-consistency on datetimes. Two day-count properties: `inclusive_day_count` (same-day → 1, the "active days on duty" reading) and `days` (matches stdlib `(end - start).days`, exclusive).
 - **`AllocationType`** — empty `AbstractEnum` subclass; consumers extend with their domain's vocabulary (e.g. `class McAllocType(AllocationType): COOKING = "COOKING"`). String-valued enums recommended over `auto()` so JSON fixtures stay human-readable.
 - **`AllocationRequest[TAllocationType: AllocationType, TEntity: Entity[Any]]`** — pydantic `BaseModel`. Fields: `allocation_type: TAllocationType`, `date_range: DateRange[datetime]`, `required_count: int = 1`, `requested_entities: tuple[TEntity, ...] = ()`.
-- **`Assignment[TAllocationRequest, TEntity]`** — frozen `@dataclass` (composition, not inheritance). Fields: `allocation: TAllocationRequest`, `assigned_entities: tuple[TEntity, ...]`. Callers access `planned.allocation.allocation_type`, not `planned.allocation_type`.
+- **`Assignment[TAllocationRequest, TEntity]`** — frozen `@dataclass` (composition, not inheritance). Fields: `allocation: TAllocationRequest`, `assigned_entities: tuple[TEntity, ...]`. Callers access `assignment.allocation.allocation_type` — wordy but unambiguous, and matches the user's mental model ("the allocation that's been assigned").
 
 ### `AbstractEnum` pattern (`src/beekeeper/data_structures/abstract_enum.py`)
 
