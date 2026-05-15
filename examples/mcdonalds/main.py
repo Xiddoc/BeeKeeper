@@ -5,12 +5,16 @@ from mcdonalds.entities.mcdonalds_employee import McWorker
 from mcdonalds.rules.mc_rank_rule import McRankRule
 from pydantic import BaseModel, FilePath
 
-from beekeeper import BeeKeeper, CompositeInputAdapter
-from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
-from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
-from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
-from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
+from beekeeper import (
+    AvailabilityRule,
+    BeeKeeper,
+    CompositeInputAdapter,
+    ConsoleOutputAdapter,
+    JsonAllocationInputAdapter,
+    JsonEntityInputAdapter,
+    LoadBalancingAssignmentAlgorithm,
+    RequestedEntityRule,
+)
 
 
 class McDonaldsBeeKeeperInputs(BaseModel):
