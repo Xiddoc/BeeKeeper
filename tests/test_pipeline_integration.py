@@ -304,6 +304,69 @@ class TestPluggablePipeline:
                 # no algorithm, no stages
             )
 
+    def test_custom_post_stage_sees_algorithm_result(self) -> None:
+        """A custom stage chained after the algorithm stage must see the
+        produced ``State`` on ``state.algorithm_result``. Without that field,
+        the pluggable-pipeline contract is hollow: downstream stages can only
+        consume the result by re-implementing dispatch."""
+        from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
+        from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
+
+        class _CapturePostStage(BaseBeeKeeperFlowStage[_Worker, _Request]):
+            def __init__(self) -> None:
+                self.seen: State[_Worker, _Request] | None = None
+
+            def run_stage(self, state: BeeKeeperFlowState[_Worker, _Request]) -> BeeKeeperFlowState[_Worker, _Request]:
+                self.seen = state.algorithm_result
+                return state
+
+        worker = _Worker(name="W", inavailabilities=[])
+        request = _request(1, 2)
+        sink = _CapturingOutput()
+        post = _CapturePostStage()
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [request]),
+            stages=[
+                AssignPossibleEntitiesToAllocations[_Worker, _Request](),
+                RunPreliminaryRules[_Worker, _Request](),
+                RunAlgorithmAndDispatchResults(
+                    algorithms=[LoadBalancingAssignmentAlgorithm[_Worker, _Request]()],
+                    output_adapters=[sink],
+                ),
+                post,
+            ],
+        ).execute()
+
+        # The post stage observed the same State the output adapter received.
+        assert post.seen is not None
+        assert sink.captured is not None
+        assert post.seen is sink.captured
+        assert len(post.seen.planned_allocations) == 1
+        assert post.seen.planned_allocations[0].assigned_entities == (worker,)
+
+    def test_algorithm_result_defaults_to_none(self) -> None:
+        """A pipeline that omits the algorithm stage leaves ``algorithm_result``
+        as ``None`` so callers can detect "no algorithm ran yet"."""
+        from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
+        from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
+
+        class _Inspect(BaseBeeKeeperFlowStage[_Worker, _Request]):
+            def __init__(self) -> None:
+                self.observed_result: State[_Worker, _Request] | None = "sentinel"  # type: ignore[assignment]
+
+            def run_stage(self, state: BeeKeeperFlowState[_Worker, _Request]) -> BeeKeeperFlowState[_Worker, _Request]:
+                self.observed_result = state.algorithm_result
+                return state
+
+        inspect = _Inspect()
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([], []),
+            stages=[inspect],
+        ).execute()
+
+        assert inspect.observed_result is None
+
 
 # --------------------------- algorithm chain --------------------------------
 

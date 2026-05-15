@@ -45,6 +45,11 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     ) -> BeeKeeperFlowState[TEntity, TAllocationRequest]:
         output_state = self._run_chain(state)
 
+        # Expose the algorithm's result on the flow state *before* dispatching
+        # to output adapters so any user-supplied stage chained after this one
+        # can inspect the planned allocations.
+        state.algorithm_result = output_state
+
         for output_adapter in self._output_adapters:
             output_adapter.handle_output(output_state)
 

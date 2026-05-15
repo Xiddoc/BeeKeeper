@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
 
+from beekeeper.algorithm.algorithm_state import State
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.candidate import Candidate
@@ -18,12 +19,18 @@ class BeeKeeperFlowState[TEntity: Entity[Any], TAllocationRequest: AllocationReq
     ``candidate_map`` with the entities that could plausibly take each
     allocation; stage 2 prunes that map and decorates each remaining
     candidate with a score; the algorithm in stage 3 consumes the pruned,
-    scored map alongside the raw allocations and entities.
+    scored map alongside the raw allocations and entities and exposes its
+    result via ``algorithm_result`` for any custom downstream stage.
 
     ``candidate_map`` is keyed by ``id(allocation)`` because allocation
     requests aren't required to be hashable in general — using object
     identity sidesteps the requirement and stays stable for the lifetime
     of one ``BeeKeeper.execute()`` call.
+
+    ``algorithm_result`` is populated by ``RunAlgorithmAndDispatchResults``
+    *before* it dispatches to output adapters, so user-supplied stages
+    chained after it can inspect the planned allocations. It defaults to
+    ``None`` for callers who replace the algorithm stage entirely.
     """
 
     entities: list[TEntity]
@@ -31,3 +38,4 @@ class BeeKeeperFlowState[TEntity: Entity[Any], TAllocationRequest: AllocationReq
     preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]]
     stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]]
     candidate_map: dict[int, list[Candidate[TEntity]]] = field(default_factory=dict)
+    algorithm_result: State[TEntity, TAllocationRequest] | None = None
