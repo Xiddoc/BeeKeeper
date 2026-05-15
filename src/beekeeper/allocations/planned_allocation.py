@@ -30,3 +30,16 @@ class PlannedAllocation[TAllocationRequest: AllocationRequest[Any, Any], TEntity
 
     request: TAllocationRequest
     assigned_entities: tuple[TEntity, ...]
+
+    # ``frozen=True`` would normally synthesize a ``__hash__`` from the
+    # field tuple, but ``request`` is a pydantic ``BaseModel`` and pydantic
+    # models are deliberately unhashable by default. The synthesized hash
+    # would raise ``TypeError`` at the moment of hashing rather than at
+    # construction — advertising hashability the class can't actually
+    # deliver. Explicitly setting ``__hash__ = None`` makes the class
+    # honest: ``hash(planned)`` fails immediately with a clear
+    # ``unhashable type`` message, while the dataclass-generated
+    # field-based ``__eq__`` is preserved (two planned allocations with
+    # the same request identity and the same assigned-entity tuple still
+    # compare equal).
+    __hash__ = None  # type: ignore[assignment]
