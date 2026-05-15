@@ -31,7 +31,7 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         ) = None,
         preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
         stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
-        output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]] = (),
+        output_adapters: Sequence[OutputAdapter[TEntity, TAllocationRequest]] = (),
         stages: Sequence[BaseBeeKeeperFlowStage[TEntity, TAllocationRequest]] | None = None,
     ) -> None:
         if stages is None:

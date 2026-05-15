@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
@@ -32,7 +32,7 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     def __init__(
         self,
         algorithms: Sequence[Algorithm[TEntity, TAllocationRequest]],
-        output_adapters: Iterable[OutputAdapter[TEntity, TAllocationRequest]],
+        output_adapters: Sequence[OutputAdapter[TEntity, TAllocationRequest]],
     ) -> None:
         if not algorithms:
             msg = "RunAlgorithmAndDispatchResults requires at least one algorithm"
