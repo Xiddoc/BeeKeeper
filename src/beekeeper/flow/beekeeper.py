@@ -1,9 +1,10 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
 from beekeeper.algorithm.algorithm import Algorithm
+from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.allocations.allocation_request import AllocationRequest
 from beekeeper.entities.entity import Entity
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
@@ -33,6 +34,10 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
         stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
         output_adapters: Sequence[OutputAdapter[TEntity, TAllocationRequest]] = (),
         stages: Sequence[BaseBeeKeeperFlowStage[TEntity, TAllocationRequest]] | None = None,
+        on_incomplete_solution: Callable[
+            [Algorithm[TEntity, TAllocationRequest], IncompleteSolutionError[TEntity, TAllocationRequest]], None
+        ]
+        | None = None,
     ) -> None:
         if stages is None:
             if algorithm is None:
@@ -43,7 +48,11 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
             stages = [
                 AssignPossibleEntitiesToAllocations(),
                 RunPreliminaryRules(),
-                RunAlgorithmAndDispatchResults(algorithms=algorithms_chain, output_adapters=output_adapters),
+                RunAlgorithmAndDispatchResults(
+                    algorithms=algorithms_chain,
+                    output_adapters=output_adapters,
+                    on_incomplete_solution=on_incomplete_solution,
+                ),
             ]
 
         self._preliminary_rules = preliminary_rules

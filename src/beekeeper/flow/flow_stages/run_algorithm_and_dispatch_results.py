@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
@@ -27,18 +27,30 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     Putting an always-completing algorithm last in the chain
     (``LoadBalancingAssignmentAlgorithm`` is the one bundled built-in that
     never raises) guarantees the chain produces a result.
+
+    Pass an ``on_incomplete_solution`` callback to observe fall-through
+    events: it receives the algorithm that raised and the exception,
+    fires once per failed algorithm in the chain, and exists so production
+    pipelines can log/alert when a primary algorithm silently degrades to
+    its fallback. The callback's return value is ignored; raising from
+    inside it propagates and aborts the chain.
     """
 
     def __init__(
         self,
         algorithms: Sequence[Algorithm[TEntity, TAllocationRequest]],
         output_adapters: Sequence[OutputAdapter[TEntity, TAllocationRequest]],
+        on_incomplete_solution: Callable[
+            [Algorithm[TEntity, TAllocationRequest], IncompleteSolutionError[TEntity, TAllocationRequest]], None
+        ]
+        | None = None,
     ) -> None:
         if not algorithms:
             msg = "RunAlgorithmAndDispatchResults requires at least one algorithm"
             raise ValueError(msg)
         self._algorithms = list(algorithms)
         self._output_adapters = output_adapters
+        self._on_incomplete_solution = on_incomplete_solution
 
     def run_stage(
         self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]
@@ -69,6 +81,8 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
                 )
             except IncompleteSolutionError as exc:
                 last_error = exc
+                if self._on_incomplete_solution is not None:
+                    self._on_incomplete_solution(algorithm, exc)
 
         # Every algorithm in the chain raised. Re-raise the last one so the
         # caller can see why the framework couldn't produce a schedule.

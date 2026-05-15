@@ -449,6 +449,31 @@ class TestAlgorithmChain:
                 algorithm=[_AlwaysFails(), _AlwaysFails()],
             ).execute()
 
+    def test_on_incomplete_solution_callback_fires_per_failure(self) -> None:
+        """The observability hook receives one (algorithm, exception) call per fallback step."""
+        from beekeeper.algorithm.errors import IncompleteSolutionError
+
+        worker = _Worker(name="W", unavailabilities=[])
+        allocation = _request(1, 2)
+        sink = _CapturingOutput()
+        first = _AlwaysFails()
+        second = _AlwaysFails()
+        load_balancing = LoadBalancingAssignmentAlgorithm[_Worker, _Request]()
+        observed: list[tuple[object, IncompleteSolutionError[_Worker, _Request]]] = []
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [allocation]),
+            algorithm=[first, second, load_balancing],
+            output_adapters=[sink],
+            on_incomplete_solution=lambda algo, exc: observed.append((algo, exc)),
+        ).execute()
+
+        # Two failures (first, second); load-balancing succeeds and isn't reported.
+        assert [a for a, _ in observed] == [first, second]
+        assert all(isinstance(e, IncompleteSolutionError) for _, e in observed)
+        assert sink.captured is not None
+        assert len(sink.captured.assignments) == 1
+
     def test_empty_chain_rejected(self) -> None:
         import pytest
 
