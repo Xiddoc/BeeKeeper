@@ -21,6 +21,20 @@ def test_inclusive_day_count_for_full_span() -> None:
     assert span.inclusive_day_count == 5
 
 
+def test_inclusive_day_count_counts_every_calendar_day_for_midnight_straddle() -> None:
+    """A datetime range that crosses midnight by minutes still counts the calendar days it touches.
+
+    Regression: ``timedelta.days`` on a ``datetime`` subtraction truncates
+    the sub-day remainder, so ``Jan 5 23:59 → Jan 7 00:01`` used to return
+    2. The on-duty reading is 3 (Jan 5, 6, 7).
+    """
+    span = DateRange(
+        start_date=datetime(2025, 1, 5, 23, 59, tzinfo=UTC),
+        end_date=datetime(2025, 1, 7, 0, 1, tzinfo=UTC),
+    )
+    assert span.inclusive_day_count == 3
+
+
 def test_days_uses_stdlib_semantics() -> None:
     same_day = DateRange(
         start_date=datetime(2025, 1, 1, tzinfo=UTC),

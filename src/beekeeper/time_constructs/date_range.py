@@ -42,8 +42,16 @@ class DateRange[T: date = datetime](BaseModel):
 
         A same-day range yields 1 (the entity works that day). A range
         from Jan 5 to Jan 10 yields 6 (Jan 5, 6, 7, 8, 9, 10).
+
+        Computed on the calendar-day component so that datetime ranges
+        which straddle midnight count every calendar day they touch.
+        For example, ``2025-01-05 23:59`` → ``2025-01-07 00:01`` yields
+        3 (Jan 5, 6, 7), not 2 (which is what ``timedelta.days`` would
+        truncate to after subtracting the sub-day remainder).
         """
-        return (self.end_date - self.start_date).days + 1
+        start = self.start_date.date() if isinstance(self.start_date, datetime) else self.start_date
+        end = self.end_date.date() if isinstance(self.end_date, datetime) else self.end_date
+        return (end - start).days + 1
 
     @property
     def days(self) -> int:
