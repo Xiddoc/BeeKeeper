@@ -1,5 +1,5 @@
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any
+from typing import Any, overload
 
 from beekeeper.adapters.inputs.input_adapter import InputAdapter
 from beekeeper.adapters.outputs.output_adapter import OutputAdapter
@@ -22,6 +22,41 @@ class BeeKeeper[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
                             🐝 ~ ~ ~
                                         Don't mind me...
     """
+
+    # Two valid constructor shapes, expressed via @overload so mypy enforces
+    # the contract at the call site (the previous single-signature version
+    # type-checked ``BeeKeeper(input_adapter=...)`` cleanly and then raised
+    # at runtime):
+    #
+    #   1. Default pipeline — ``algorithm=`` is required, ``stages=`` is
+    #      forbidden.
+    #   2. Custom stages — ``stages=`` is required, the algorithm-chain
+    #      kwargs (algorithm, output_adapters, on_incomplete_solution) are
+    #      forbidden (the user owns wiring those into their own stages).
+    @overload
+    def __init__(
+        self,
+        *,
+        input_adapter: InputAdapter[TEntity, TAllocationRequest],
+        algorithm: Algorithm[TEntity, TAllocationRequest] | Sequence[Algorithm[TEntity, TAllocationRequest]],
+        preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
+        stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
+        output_adapters: Sequence[OutputAdapter[TEntity, TAllocationRequest]] = (),
+        on_incomplete_solution: Callable[
+            [Algorithm[TEntity, TAllocationRequest], IncompleteSolutionError[TEntity, TAllocationRequest]], None
+        ]
+        | None = None,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        *,
+        input_adapter: InputAdapter[TEntity, TAllocationRequest],
+        stages: Sequence[BaseBeeKeeperFlowStage[TEntity, TAllocationRequest]],
+        preliminary_rules: Iterable[PreliminaryRule[TEntity, TAllocationRequest]] = (),
+        stateful_rules: Iterable[StatefulRule[TEntity, TAllocationRequest]] = (),
+    ) -> None: ...
 
     def __init__(
         self,
