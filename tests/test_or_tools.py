@@ -10,11 +10,13 @@ from beekeeper import (
     Entity,
     Inavailability,
 )
+from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.flow.candidate import Candidate
 
 # Skip the whole module if ortools isn't installed (the dep is optional).
 pytest.importorskip("ortools.sat.python.cp_model")
 
+from beekeeper.algorithm.implementations import or_tools as or_tools_module
 from beekeeper.algorithm.implementations.or_tools import OrToolsAssignmentAlgorithm
 
 
@@ -110,6 +112,101 @@ def test_skips_allocation_with_insufficient_candidates() -> None:
     )
 
     assert result.planned_allocations == []
+
+
+def test_constructor_raises_when_cp_model_is_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Without the ortools extra installed, the constructor raises a clear ImportError."""
+    monkeypatch.setattr(or_tools_module, "cp_model", None)
+    with pytest.raises(ImportError, match="OR-Tools is required"):
+        OrToolsAssignmentAlgorithm[_Worker, _Request]()
+
+
+def test_skips_candidate_whose_entity_is_not_in_entities_list() -> None:
+    """A candidate whose entity wasn't passed in ``entities`` is silently dropped from the model."""
+    in_list = _Worker(name="in_list", inavailabilities=[])
+    orphan = _Worker(name="orphan", inavailabilities=[])
+    request = _request(1, 2)
+    candidates = {id(request): [Candidate(entity=orphan, score=0.9), Candidate(entity=in_list, score=0.5)]}
+
+    # `orphan` is omitted from `entities` — the orphan candidate hits the `j is None` branch.
+    result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[request],
+        entities=[in_list],
+        candidates=candidates,
+        rules=[],
+    )
+
+    # Only in_list could fill the slot.
+    assert len(result.planned_allocations) == 1
+    assert result.planned_allocations[0].assigned_entities == (in_list,)
+
+
+def test_allocation_with_no_eligible_candidates_is_skipped() -> None:
+    """Allocations with an empty candidate list don't break model construction."""
+    worker = _Worker(name="solo", inavailabilities=[])
+    fillable = _request(1, 2)
+    no_candidates = _request(3, 4)
+    candidates = {
+        id(fillable): [Candidate(entity=worker)],
+        id(no_candidates): [],  # no slot_vars for this allocation; objective_terms still non-empty
+    }
+
+    result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[fillable, no_candidates],
+        entities=[worker],
+        candidates=candidates,
+        rules=[],
+    )
+
+    # Only the fillable allocation produces a planned assignment.
+    assert len(result.planned_allocations) == 1
+    assert result.planned_allocations[0].request is fillable
+
+
+def test_empty_candidate_map_produces_empty_state() -> None:
+    """No candidates anywhere: the objective term list is empty, the solver still runs."""
+    worker = _Worker(name="solo", inavailabilities=[])
+    request = _request(1, 2)
+    # Candidate map is empty: no x variables, no objective terms.
+    result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[request],
+        entities=[worker],
+        candidates={},
+        rules=[],
+    )
+
+    assert result.planned_allocations == []
+
+
+def test_raises_incomplete_solution_when_solver_returns_non_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """If CP-SAT reports MODEL_INVALID/INFEASIBLE/UNKNOWN, the algorithm raises IncompleteSolutionError."""
+    from ortools.sat.python import cp_model
+
+    class _StubSolver:
+        def __init__(self) -> None:
+            self.parameters = type("P", (), {"max_time_in_seconds": 0.0})()
+
+        def solve(self, _model: object) -> int:
+            return cp_model.INFEASIBLE
+
+        def status_name(self, _status: int) -> str:
+            return "INFEASIBLE"
+
+    monkeypatch.setattr(or_tools_module.cp_model, "CpSolver", _StubSolver)
+
+    worker = _Worker(name="solo", inavailabilities=[])
+    request = _request(1, 2)
+    candidates = {id(request): [Candidate(entity=worker)]}
+
+    with pytest.raises(IncompleteSolutionError, match="INFEASIBLE"):
+        OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+            allocations=[request],
+            entities=[worker],
+            candidates=candidates,
+            rules=[],
+        )
 
 
 def test_fills_multi_entity_allocation() -> None:

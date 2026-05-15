@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Xiddoc/BeeKeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/BeeKeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI"></a>
+  <a href="https://github.com/Xiddoc/BeeKeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/coverage-100%25-brightgreen?style=for-the-badge&logo=pytest&logoColor=white" alt="Coverage 100%"></a>
   <img src="https://img.shields.io/badge/python-3.13+-blue?style=for-the-badge&logo=python" alt="Python 3.13+">
   <a href="https://xiddoc.github.io/BeeKeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3.0-green?style=for-the-badge" alt="License: GPL3.0"></a>

@@ -38,6 +38,7 @@ Issues = "https://github.com/Xiddoc/BeeKeeper/issues"
 
 [dependency-groups]
 dev = [
+    "coverage>=7.6",
     "mkdocs>=1.6.0",
     "mkdocs-material>=9.5.0",
     "mkdocstrings[python]>=0.26.0",
@@ -49,6 +50,7 @@ dev = [
     "pre-commit>=4.2.0",
     "pytest>=8.0",
     "pytest-benchmark>=4.0",
+    "pytest-cov>=5.0",
     "ruff>=0.11.12",
 ]
 
@@ -69,6 +71,33 @@ beekeeper = ["py.typed"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config", "--benchmark-skip"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/beekeeper"]
+# Benchmarks are timed harnesses that re-run library code paths already
+# exercised by the unit/integration tests — measuring coverage from them
+# duplicates work and slows the run. Exclude them entirely.
+omit = ["tests/benchmarks/*"]
+
+[tool.coverage.report]
+# Project policy: 100% line + branch coverage. CI enforces this via
+# `coverage report --fail-under=100`.
+fail_under = 100
+show_missing = true
+skip_covered = false
+exclude_also = [
+    # Defensive re-raises that document an invariant the type system can't
+    # prove. Already marked with `# pragma: no cover` inline, but list the
+    # idiom here for clarity.
+    "raise NotImplementedError",
+    # `@abstractmethod` bodies are stub implementations (`pass` / `...` /
+    # docstring-only). Subclasses provide the real implementation; the body
+    # is unreachable by definition.
+    "@(abc\\.)?abstractmethod",
+    # `if TYPE_CHECKING:` imports run only under type-checkers, never at runtime.
+    "if TYPE_CHECKING:",
+]
 
 [tool.mypy]
 strict = true

@@ -395,6 +395,18 @@ class TestAlgorithmChain:
                 algorithm=[],
             )
 
+    def test_stage_rejects_empty_algorithms_directly(self) -> None:
+        """Constructing the stage with an empty algorithm sequence raises ValueError.
+
+        ``BeeKeeper`` normalizes algorithm input before this stage sees it, so the
+        guard here is a defense-in-depth check for callers that wire stages
+        manually. This test exercises it directly.
+        """
+        import pytest
+
+        with pytest.raises(ValueError, match="at least one algorithm"):
+            RunAlgorithmAndDispatchResults[_Worker, _Request](algorithms=[], output_adapters=[])
+
 
 # --------------------------- output adapter handling ------------------------
 

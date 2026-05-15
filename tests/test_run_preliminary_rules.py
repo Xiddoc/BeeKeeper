@@ -116,6 +116,28 @@ def test_geometric_mean_combines_multiple_soft_rules() -> None:
     assert abs(survivor_score - 0.6) < 1e-9
 
 
+def test_zero_score_short_circuits_geometric_mean_to_zero() -> None:
+    """A soft rule that scores 0 collapses the aggregate to 0 without invoking log(0)."""
+
+    class _ZeroScore(SoftPreliminaryRule[_Worker, _Request]):
+        def score(self, entity: _Worker, allocation: _Request) -> float:
+            return 0.0
+
+    worker = _Worker(name="W", inavailabilities=[])
+    request = _request()
+    state: BeeKeeperFlowState[_Worker, _Request] = BeeKeeperFlowState(
+        entities=[worker],
+        allocations=[request],
+        preliminary_rules=[_ZeroScore()],
+        stateful_rules=[],
+        candidate_map={id(request): [Candidate(entity=worker)]},
+    )
+
+    RunPreliminaryRules[_Worker, _Request]().run_stage(state)
+
+    assert state.candidate_map[id(request)][0].score == 0.0
+
+
 def test_no_rules_leaves_score_neutral() -> None:
     worker = _Worker(name="W", inavailabilities=[])
     request = _request()

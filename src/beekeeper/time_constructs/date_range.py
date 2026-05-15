@@ -20,12 +20,16 @@ class DateRange[T: date = datetime](BaseModel):
 
     @model_validator(mode="after")
     def _validate(self) -> Self:
-        if isinstance(self.start_date, datetime) and isinstance(self.end_date, datetime):
-            start_aware = self.start_date.tzinfo is not None
-            end_aware = self.end_date.tzinfo is not None
-            if start_aware != end_aware:
-                msg = "start_date and end_date must both be timezone-naive or both timezone-aware"
-                raise ValueError(msg)
+        # `tzinfo` is the marker for "is this aware?". Plain `date` objects don't
+        # have the attribute at all (getattr returns None), so they read as naive
+        # — which is the right answer: a `date` carries no tz information.
+        # This shape lets us collapse the "both datetimes?" + "tz-consistent?"
+        # checks into a single comparison without a dead AND-branch.
+        start_aware = getattr(self.start_date, "tzinfo", None) is not None
+        end_aware = getattr(self.end_date, "tzinfo", None) is not None
+        if start_aware != end_aware:
+            msg = "start_date and end_date must both be timezone-naive or both timezone-aware"
+            raise ValueError(msg)
 
         if self.end_date < self.start_date:
             msg = f"end_date ({self.end_date}) must be on or after start_date ({self.start_date})"

@@ -37,8 +37,14 @@ jobs:
       - name: Mypy
         run: uv run mypy src
 
-      - name: Pytest
-        run: uv run pytest
+      - name: Pytest (with coverage)
+        # `coverage run` drives pytest; `coverage report` fails the build if
+        # total coverage drops below the `fail_under` threshold in
+        # `[tool.coverage.report]` (currently 100%).
+        run: |
+          uv run coverage run -m pytest
+          uv run coverage report
+          uv run coverage xml
 
       - name: Pytest (benchmarks)
         run: uv run pytest --benchmark-only --benchmark-columns=min,mean,stddev,max,outliers

@@ -26,7 +26,7 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 try:
     from ortools.sat.python import cp_model
-except ImportError:
+except ImportError:  # pragma: no cover — CI installs the ortools extra; this guard only fires for end-users without it
     cp_model = None  # type: ignore[assignment]
 
 # CP-SAT works in integers; we scale float scores to ints with this factor.

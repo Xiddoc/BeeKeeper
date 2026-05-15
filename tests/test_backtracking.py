@@ -148,6 +148,31 @@ class TestBacktrackingRaisesOnIncomplete:
             )
 
 
+class TestBacktrackingIterationBudget:
+    def test_exhausted_budget_raises_incomplete_solution_error(self) -> None:
+        """When the iteration budget hits zero before the search finishes, backtracking gives up."""
+        worker_a = _Worker(name="A", inavailabilities=[])
+        worker_b = _Worker(name="B", inavailabilities=[])
+        # Two non-trivial allocations so the search has to recurse at least once.
+        alloc_first = _request(1, 2)
+        alloc_second = _request(3, 4)
+        candidates = {
+            id(alloc_first): [Candidate(entity=worker_a), Candidate(entity=worker_b)],
+            id(alloc_second): [Candidate(entity=worker_a), Candidate(entity=worker_b)],
+        }
+
+        # max_iterations=0 forces the budget check to trip on the very first recursive call.
+        algo = BacktrackingAssignmentAlgorithm[_Worker, _Request](max_iterations=0)
+
+        with pytest.raises(IncompleteSolutionError):
+            algo.run(
+                allocations=[alloc_first, alloc_second],
+                entities=[worker_a, worker_b],
+                candidates=candidates,
+                rules=[],
+            )
+
+
 class TestBacktrackingTopKCap:
     def test_top_k_limits_branching(self) -> None:
         """The top_k_candidates parameter controls the search width."""

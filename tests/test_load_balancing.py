@@ -6,7 +6,9 @@ from beekeeper import (
     AllocationType,
     DateRange,
     Entity,
+    HardStatefulRule,
     Inavailability,
+    State,
 )
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.flow.candidate import Candidate
@@ -112,6 +114,32 @@ def test_load_penalty_picks_fresh_entity_at_close_scores() -> None:
     )
 
     assert result.planned_allocations[1].assigned_entities == (fresh,)
+
+
+def test_rejected_candidate_falls_through_to_next() -> None:
+    """A stateful rule that rejects the top-ranked candidate forces the loop to try the next one."""
+
+    class _RejectByName(HardStatefulRule[_Worker, _Request]):
+        def __init__(self, banned: str) -> None:
+            self._banned = banned
+
+        def check(self, entity: _Worker, allocation: _Request, state: State[_Worker, _Request]) -> bool:
+            return entity.name != self._banned
+
+    a = _Worker(name="banned", inavailabilities=[])
+    b = _Worker(name="ok", inavailabilities=[])
+    request = _request(1, 2)
+    # `a` is higher-ranked but the rule will veto, so the loop must try `b`.
+    candidates = {id(request): [Candidate(entity=a, score=0.9), Candidate(entity=b, score=0.1)]}
+
+    result = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[request],
+        entities=[a, b],
+        candidates=candidates,
+        rules=[_RejectByName("banned")],
+    )
+
+    assert result.planned_allocations[0].assigned_entities == (b,)
 
 
 def test_unloaded_picks_highest_scored() -> None:
