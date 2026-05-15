@@ -33,7 +33,7 @@ class Algorithm[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any,
                 with ``compatible=False`` from any preliminary rule have
                 already been pruned; what's left passed every binary check.
             rules: The stateful rules that must hold given the in-progress
-                AssignmentState — consult them before adding a Assignment.
+                AssignmentState — consult them before adding an Assignment.
 
         Returns:
             The final state of the algorithm, where the chosen allocations

@@ -27,7 +27,7 @@ class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
 
 ## What you must return
 
-A `AssignmentState[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_assignment(Assignment(allocation=..., assigned_entities=(...)))` to record an assignment. The state's `assignments` property is what output adapters read.
+An `AssignmentState[TEntity, TAllocReq]` carrying every successful assignment. Use `state.add_assignment(Assignment(allocation=..., assigned_entities=(...)))` to record an assignment. The state's `assignments` property is what output adapters read.
 
 ## What you must guarantee
 

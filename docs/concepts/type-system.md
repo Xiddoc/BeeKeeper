@@ -24,8 +24,8 @@ Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Insid
 
 ## Why two TypeVars and not one or three
 
-- **One** (`TEntity` only) wouldn't carry the allocation shape — rules and algorithms wouldn't know what fields the AllocationRequest subclass has.
-- **Three** (`TEntity`, `TAllocationType`, `TAllocationRequest`) is what the framework looked like mid-refactor. `TAllocationType` is recoverable from `TAllocationRequest` (it's the enum the allocation carries), so making it a separate parameter just added verbosity without type fidelity.
+- **One** (`TEntity` only) wouldn't carry the request shape — rules and algorithms wouldn't know what fields the AllocationRequest subclass has.
+- **Three** (`TEntity`, `TAllocationType`, `TAllocationRequest`) is what the framework looked like mid-refactor. `TAllocationType` is recoverable from `TAllocationRequest` (it's the enum the request carries), so making it a separate parameter just added verbosity without type fidelity.
 
 ## The `[Any]` slot in bounds
 

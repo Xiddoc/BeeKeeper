@@ -7,25 +7,24 @@ from beekeeper.entities.entity import Entity
 
 @dataclass(frozen=True)
 class Assignment[TAllocationRequest: AllocationRequest[Any, Any], TEntity: Entity[Any]]:
-    """The result of assigning one or more entities to an allocation allocation.
+    """The result of assigning one or more entities to an allocation request.
 
-    Composition rather than inheritance: a planned allocation *has* a allocation
-    and *has* its assigned entities. Treating it as an ``AllocationRequest``
+    Composition rather than inheritance: an assignment *has* a request and
+    *has* its assigned entities. Treating it as an ``AllocationRequest``
     subclass blurred those concerns and made it harder to add fields like
-    assignment confidence or audit trail without polluting the allocation schema.
+    assignment confidence or audit trail without polluting the request schema.
 
-    Plain ``@dataclass`` rather than a pydantic ``BaseModel``: planned
-    allocations are framework-constructed result objects, not crossings of an
-    IO boundary. They never need validation (the allocation and the entities
-    were already validated when they entered the pipeline) and they never
-    need to be parsed from JSON. Skipping pydantic also sidesteps the bound
-    + ``extra="forbid"`` interaction that would reject domain-specific fields
-    on the assigned entities when ``Assignment`` is constructed
-    without explicit parameterization.
+    Plain ``@dataclass`` rather than a pydantic ``BaseModel``: assignments
+    are framework-constructed result objects, not crossings of an IO
+    boundary. They never need validation (the request and the entities were
+    already validated when they entered the pipeline) and they never need to
+    be parsed from JSON. Skipping pydantic also sidesteps the bound +
+    ``extra="forbid"`` interaction that would reject domain-specific fields
+    on the assigned entities when ``Assignment`` is constructed without
+    explicit parameterization.
 
-    If you need to serialize a planned allocation to JSON, use
-    ``dataclasses.asdict`` or write your own serializer in your output
-    adapter.
+    If you need to serialize an assignment to JSON, use ``dataclasses.asdict``
+    or write your own serializer in your output adapter.
     """
 
     allocation: TAllocationRequest
@@ -37,9 +36,9 @@ class Assignment[TAllocationRequest: AllocationRequest[Any, Any], TEntity: Entit
     # would raise ``TypeError`` at the moment of hashing rather than at
     # construction — advertising hashability the class can't actually
     # deliver. Explicitly setting ``__hash__ = None`` makes the class
-    # honest: ``hash(planned)`` fails immediately with a clear
+    # honest: ``hash(assignment)`` fails immediately with a clear
     # ``unhashable type`` message, while the dataclass-generated
-    # field-based ``__eq__`` is preserved (two planned allocations with
-    # the same allocation identity and the same assigned-entity tuple still
+    # field-based ``__eq__`` is preserved (two assignments with
+    # the same request identity and the same assigned-entity tuple still
     # compare equal).
     __hash__ = None  # type: ignore[assignment]
