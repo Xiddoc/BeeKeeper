@@ -1,7 +1,15 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from beekeeper.allocations.allocation_request import AnyRequest
+from beekeeper.entities.entity import AnyEntity
+
+if TYPE_CHECKING:
+    from beekeeper.algorithm.algorithm_state import AssignmentState
 
 
-class IncompleteSolutionError(Exception):
+class IncompleteSolutionError[TEntity: AnyEntity, TAllocationRequest: AnyRequest](Exception):
     """Raised by an algorithm that couldn't produce a result it considers complete.
 
     What "complete" means is the algorithm's call:
@@ -24,9 +32,18 @@ class IncompleteSolutionError(Exception):
     when it gave up. It's primarily for inspection/debugging — the chain
     runner doesn't pass it forward to the next algorithm. May be ``None``
     if the algorithm had nothing meaningful to return.
+
+    Parameterized over the same TypeVars as the algorithm that raises it
+    so callers who catch and inspect ``partial_state`` get type-checked
+    field access rather than ``Any``.
     """
 
-    def __init__(self, reason: str, *, partial_state: Any = None) -> None:  # noqa: ANN401 — the AssignmentState is generic, error stays type-erased
+    def __init__(
+        self,
+        reason: str,
+        *,
+        partial_state: AssignmentState[TEntity, TAllocationRequest] | None = None,
+    ) -> None:
         super().__init__(reason)
         self.reason = reason
-        self.partial_state = partial_state
+        self.partial_state: AssignmentState[TEntity, TAllocationRequest] | None = partial_state

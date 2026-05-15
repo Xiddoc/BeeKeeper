@@ -58,7 +58,7 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     def _run_chain(
         self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]
     ) -> AssignmentState[TEntity, TAllocationRequest]:
-        last_error: IncompleteSolutionError | None = None
+        last_error: IncompleteSolutionError[TEntity, TAllocationRequest] | None = None
         for algorithm in self._algorithms:
             try:
                 return algorithm.run(
