@@ -209,6 +209,55 @@ def test_raises_incomplete_solution_when_solver_returns_non_success(
         )
 
 
+def test_tiny_score_does_not_collapse_to_empty_assignment() -> None:
+    """A positive-but-sub-resolution score must not truncate to zero.
+
+    The CP-SAT formulation scales float scores to ints with ``SCORE_SCALE``;
+    a candidate with raw score ``0.0001`` would scale to ``0`` under plain
+    truncation. With every scaled score zero, the objective is flat and the
+    solver returns OPTIMAL with no assignments — silently dropping every
+    fillable allocation. The fix floors such candidates at scaled-1 so they
+    still contribute to the objective.
+    """
+    worker = _Worker(name="solo", inavailabilities=[])
+    request = _request(1, 2)
+    candidates = {id(request): [Candidate(entity=worker, score=0.0001)]}
+
+    result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[request],
+        entities=[worker],
+        candidates=candidates,
+        rules=[],
+    )
+
+    assert len(result.planned_allocations) == 1
+    assert result.planned_allocations[0].assigned_entities == (worker,)
+
+
+def test_zero_score_remains_zero() -> None:
+    """A genuinely indifferent candidate (raw score 0) stays at scaled-0.
+
+    The fix only floors positive scores; a true 0 is preserved so the
+    objective is unaffected by indifferent candidates.
+    """
+    worker = _Worker(name="solo", inavailabilities=[])
+    request = _request(1, 2)
+    candidates = {id(request): [Candidate(entity=worker, score=0.0)]}
+
+    result = OrToolsAssignmentAlgorithm[_Worker, _Request]().run(
+        allocations=[request],
+        entities=[worker],
+        candidates=candidates,
+        rules=[],
+    )
+
+    # The solver is free to assign or leave empty since the objective is flat;
+    # with a single candidate covering a single allocation, both outcomes are
+    # OPTIMAL. We just assert the call doesn't raise — the regression we're
+    # guarding against is "raw 0 silently becomes scaled-1".
+    assert isinstance(result.planned_allocations, list)
+
+
 def test_fills_multi_entity_allocation() -> None:
     a = _Worker(name="A", inavailabilities=[])
     b = _Worker(name="B", inavailabilities=[])

@@ -43,6 +43,22 @@ SCORE_SCALE = 1000
 DEFAULT_SOLVER_TIME_LIMIT_SECONDS = 0.5
 
 
+def _scale_score(raw: float) -> int:
+    """Scale a float candidate score to a non-negative CP-SAT integer weight.
+
+    Plain ``int(raw * SCORE_SCALE)`` truncates anything below ``1 / SCORE_SCALE``
+    to zero. With every scaled score zeroed out the objective is flat and
+    CP-SAT returns the trivial OPTIMAL-but-empty solution, dropping every
+    fillable allocation. Floor a positive-but-tiny score at ``1`` so it still
+    contributes; round (rather than truncate) elsewhere to avoid biasing
+    scores downwards. A genuine ``0`` stays at ``0``.
+    """
+    scaled = round(raw * SCORE_SCALE)
+    if scaled == 0 and raw > 0:
+        return 1
+    return scaled
+
+
 class OrToolsAssignmentAlgorithm[
     TEntity: Entity[Any],
     TAllocationRequest: AllocationRequest[Any, Any],
@@ -120,7 +136,7 @@ class OrToolsAssignmentAlgorithm[
                 if j is None:
                     continue
                 x[(i, j)] = model.new_bool_var(f"x_{i}_{j}")
-                score_for[(i, j)] = int(cand.score * SCORE_SCALE)
+                score_for[(i, j)] = _scale_score(cand.score)
 
         # Each allocation: sum of assignments is 0 or required_count.
         for i, alloc in enumerate(allocations_list):
