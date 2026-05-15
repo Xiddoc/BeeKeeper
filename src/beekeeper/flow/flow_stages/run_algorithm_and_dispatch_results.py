@@ -25,8 +25,8 @@ class RunAlgorithmAndDispatchResults[TEntity: Entity[Any], TAllocationRequest: A
     algorithm raises, the last error propagates to the caller.
 
     Putting an always-completing algorithm last in the chain
-    (``LoadBalancingAssignmentAlgorithm`` or ``LoadBalancingAssignmentAlgorithm``)
-    guarantees the chain produces a result.
+    (``LoadBalancingAssignmentAlgorithm`` is the one bundled built-in that
+    never raises) guarantees the chain produces a result.
     """
 
     def __init__(
