@@ -4,13 +4,13 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from beekeeper.allocations.allocation_type import AllocationType
-from beekeeper.entities.entity import Entity
+from beekeeper.entities.entity import AnyEntity
 from beekeeper.time_constructs.date_range import DateRange
 
 
 class AllocationRequest[
     TAllocationType: AllocationType,
-    TEntity: Entity[Any],
+    TEntity: AnyEntity,
     TDate: date = datetime,
 ](BaseModel):
     """A request for entities to be assigned over a date range.
