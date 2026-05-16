@@ -34,6 +34,7 @@ from mcdonalds.rules.mc_rank_rule import McRankRule  # noqa: E402
 from beekeeper import AssignmentState, BeeKeeper, CompositeInputAdapter, OutputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter  # noqa: E402
 from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter  # noqa: E402
+from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm  # noqa: E402
 from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm  # noqa: E402
 from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule  # noqa: E402
 
@@ -171,3 +172,46 @@ def test_busiest_worker_within_multiplier_of_mean(
         f"On {suffix}, busiest worker has {busiest} allocations against mean {mean:.1f} "
         f"(ratio {busiest / mean:.2f}, ceiling {MAX_LOAD_MULTIPLIER})."
     )
+
+
+# ---- Backtracking completeness on oversubscribed fixtures -------------------
+#
+# Distribution properties aren't backtracking's contract — it just searches for
+# *a* complete assignment. The interesting regression target is "does the
+# backtracking solver still find a complete solution on these large,
+# rank-constrained fixtures within its default iteration budget?". A change to
+# the search ordering or top-K cap could easily exhaust the budget on the 500-
+# allocation case, and `IncompleteSolutionError` would propagate to callers
+# wiring backtracking without a load-balancing fallback. Pin it down.
+
+
+@pytest.mark.parametrize(
+    ("suffix", "expected_total"),
+    [("oversub_3x", 150), ("oversub_6x", 300), ("oversub_10x", 500)],
+)
+def test_backtracking_finds_complete_solution_on_oversubscribed_fixtures(
+    suffix: str, expected_total: int
+) -> None:
+    sink = _CapturingOutput()
+    BeeKeeper[McWorker, McDonaldsAllocationRequest](
+        input_adapter=CompositeInputAdapter(
+            entity_adapter=JsonEntityInputAdapter(
+                file=FIXTURES_DIR / f"workers_{suffix}.json",
+                entity_type=McWorker,
+            ),
+            allocation_adapter=JsonAllocationInputAdapter(
+                file=FIXTURES_DIR / f"allocations_{suffix}.json",
+                allocation_type=McDonaldsAllocationRequest,
+            ),
+        ),
+        algorithm=BacktrackingAssignmentAlgorithm[McWorker, McDonaldsAllocationRequest](),
+        preliminary_rules=[
+            McRankRule(),
+            AvailabilityRule[McWorker, McDonaldsAllocationRequest](),
+            RequestedEntityRule[McWorker, McDonaldsAllocationRequest](),
+        ],
+        output_adapters=[sink],
+    ).execute()
+
+    assert sink.captured is not None
+    assert len(sink.captured.assignments) == expected_total
