@@ -20,12 +20,12 @@ bk = BeeKeeper[MyWorker, MyRequest](
         AssignPossibleEntitiesToAllocations[MyWorker, MyRequest](),
         LogCandidatesStage(),  # custom stage you wrote
         RunPreliminaryRules[MyWorker, MyRequest](),
-        RunAlgorithmAndDispatchResults(algorithm=..., output_adapters=[...]),
+        RunAlgorithmAndDispatchResults(algorithms=[...], output_adapters=[...]),
     ],
 )
 ```
 
-When you supply `stages=`, you own the wiring entirely. The `algorithm` and `output_adapters` kwargs become optional — if your custom stages already hold their own dependencies (as in the `RunAlgorithmAndDispatchResults` constructor above), you don't need to pass them at the `BeeKeeper` level.
+When you supply `stages=`, you own the wiring entirely. The `algorithm` and `output_adapters` kwargs at the `BeeKeeper` level become unavailable on the `stages=` overload — `RunAlgorithmAndDispatchResults` takes its `algorithms=` chain and `output_adapters=` directly in its own constructor, as in the snippet above.
 
 ## Writing a custom stage
 
