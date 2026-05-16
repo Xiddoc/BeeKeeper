@@ -103,3 +103,33 @@ def test_candidates_start_with_neutral_score() -> None:
     AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
 
     assert state.candidate_map[id(allocation)][0].score == 1.0
+
+
+def test_requested_entities_uses_identity_not_structural_equality() -> None:
+    """A look-alike entity (same fields, different object) must NOT be admitted.
+
+    Pydantic's auto-generated ``__eq__`` walks fields, so two
+    ``_Worker(name="A", unavailabilities=[])`` instances compare equal.
+    Stage 1's requested-entities filter has to be identity-based to match
+    ``RequestedEntityRule``'s contract (and its docstring claim that "stage 1
+    already enforces this"). A structural ``in`` check would admit the
+    look-alike and silently widen the requested set.
+    """
+    chosen = _Worker(name="A", unavailabilities=[])
+    lookalike = _Worker(name="A", unavailabilities=[])
+    # Sanity check: the two instances are equal-but-distinct.
+    assert chosen == lookalike
+    assert chosen is not lookalike
+
+    allocation = _request(
+        datetime(2025, 1, 1, tzinfo=UTC),
+        datetime(2025, 1, 2, tzinfo=UTC),
+        requested_entities=(chosen,),
+    )
+    state = _state([chosen, lookalike], [allocation])
+
+    AssignPossibleEntitiesToAllocations[_Worker, _Request]().run_stage(state)
+
+    candidates = [c.entity for c in state.candidate_map[id(allocation)]]
+    assert len(candidates) == 1
+    assert candidates[0] is chosen

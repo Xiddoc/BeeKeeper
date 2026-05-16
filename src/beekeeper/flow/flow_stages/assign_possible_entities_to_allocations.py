@@ -17,6 +17,13 @@ class AssignPossibleEntitiesToAllocations[TEntity: AnyEntity, TAllocationRequest
     allocation's date range. Partial overlaps pass through — preliminary
     rules and the algorithm get the final say on partial-day semantics.
 
+    Membership in ``requested_entities`` is checked by **identity** (``is``),
+    matching ``RequestedEntityRule`` in ``beekeeper.rules.builtins``. Pydantic's
+    auto-generated ``__eq__`` walks fields, so two ``Entity`` instances with
+    identical attribute values compare equal — and a structural ``in`` check
+    would admit a look-alike entity the caller never named. The contract is
+    "these specific objects", so identity is the right relation.
+
     All candidates start with a neutral score (``1.0``); the preliminary-rule
     stage multiplies in soft-rule scores and prunes hard-rule failures.
     """
@@ -27,7 +34,7 @@ class AssignPossibleEntitiesToAllocations[TEntity: AnyEntity, TAllocationRequest
         for allocation in state.allocations:
             candidates: list[Candidate[TEntity]] = []
             for entity in state.entities:
-                if allocation.requested_entities and entity not in allocation.requested_entities:
+                if allocation.requested_entities and not any(e is entity for e in allocation.requested_entities):
                     continue
                 if self._is_blocked_by_unavailability(entity, allocation):
                     continue
