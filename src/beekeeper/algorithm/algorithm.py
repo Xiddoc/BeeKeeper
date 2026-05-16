@@ -9,6 +9,18 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 
 class Algorithm[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
+    """Abstract base for assignment algorithms.
+
+    Subclass and override :meth:`run` to bring a custom strategy. The bundled
+    implementations — ``LoadBalancingAssignmentAlgorithm``,
+    ``BacktrackingAssignmentAlgorithm``, ``OrToolsAssignmentAlgorithm`` —
+    are concrete subclasses re-exported from the top-level package.
+
+    Algorithms signal "couldn't produce a complete solution" by raising
+    :class:`IncompleteSolutionError`; the framework's chain runner catches
+    that and falls through to the next algorithm in the sequence.
+    """
+
     @abstractmethod
     def run(
         self,

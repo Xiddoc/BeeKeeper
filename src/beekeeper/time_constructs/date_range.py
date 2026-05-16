@@ -5,8 +5,6 @@ from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class DateRange[T: date = datetime](BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
     """A date or datetime range, inclusive on both ends.
 
     Generic over `T: date`, which admits both `date` (whole-day shifts)
@@ -14,6 +12,8 @@ class DateRange[T: date = datetime](BaseModel):
     subclass. Domain code that wants to be explicit can subclass with a
     concrete parameter, e.g. `class Shift(DateRange[date]): ...`.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     start_date: T
     end_date: T

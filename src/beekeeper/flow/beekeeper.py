@@ -17,7 +17,13 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 
 class BeeKeeper[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
-    """
+    """The framework's orchestrator. Wires inputs, rules, an algorithm, and outputs into a runnable pipeline.
+
+    Construct with either ``algorithm=`` (uses the default 3-stage pipeline)
+    or ``stages=`` (you own the wiring). Call :meth:`execute` to run it.
+    Type parameters flow through every layer so ``BeeKeeper[McWorker,
+    McRequest]`` gives you static-checked domain types end-to-end.
+
     Just buzzing along...
                             🐝 ~ ~ ~
                                         Don't mind me...
