@@ -13,8 +13,7 @@ from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFl
 class RunAlgorithmAndDispatchResults[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocationRequest],
 ):
-    """
-    Runs the core algorithm chain and dispatches results to the output adapters.
+    """Run the algorithm chain and dispatch the result to every output adapter.
 
     Accepts a sequence of algorithms — typically just one, but providing
     several lets a primary algorithm fall back to a simpler one if it can't

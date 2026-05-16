@@ -4,11 +4,10 @@ from beekeeper.entities.entity import AnyEntity
 
 
 class AssignmentState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
-    """
-    This class represents the state of the algorithm, almost like the "memory"
-    of the work that the algorithm has already completed.
+    """The algorithm's working memory — the schedule built up so far.
 
-    This class must be blazing fast, as it is one of the most commonly accessed objects.
+    Hot path: stateful rules and the load-balancing algorithm consult it
+    on every candidate, so lookups must stay cheap.
 
     Two parallel views of the same data are maintained:
 
