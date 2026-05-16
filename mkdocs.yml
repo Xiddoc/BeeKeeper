@@ -76,7 +76,6 @@ nav:
       - explanations/soft-rules-aggregation.md
   - Reference: reference.md
   - Contributing: contributing.md
-  - Changelog: changelog.md
 
 plugins:
   - search

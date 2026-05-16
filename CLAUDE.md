@@ -189,7 +189,7 @@ OR-Tools is order-of-magnitude slower because of its model-build + solver-init c
 
 ### Documentation site
 
-`docs/` contains the source for an mkdocs-material site at https://xiddoc.github.io/BeeKeeper/. Layout: `concepts/`, `how-to/`, `examples/`, `explanations/`, plus `index.md`, `reference.md` (mkdocstrings auto-generated from class docstrings), `contributing.md`, `changelog.md`. Build with `uv run mkdocs build --strict`; serve locally with `uv run mkdocs serve`. The docs deploy on every push to master via `.github/workflows/docs.yml`.
+`docs/` contains the source for an mkdocs-material site at https://xiddoc.github.io/BeeKeeper/. Layout: `concepts/`, `how-to/`, `examples/`, `explanations/`, plus `index.md`, `reference.md` (mkdocstrings auto-generated from class docstrings), `contributing.md`. Build with `uv run mkdocs build --strict`; serve locally with `uv run mkdocs serve`. The docs deploy on every push to master via `.github/workflows/docs.yml`.
 
 When you add a public class, write at minimum a one-line docstring — `reference.md` is auto-built from those, so a missing docstring shows up as an empty section.
 
