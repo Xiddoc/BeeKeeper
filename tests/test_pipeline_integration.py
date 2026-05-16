@@ -438,16 +438,33 @@ class TestAlgorithmChain:
         assert len(sink.captured.assignments) == 1
 
     def test_all_algorithms_failing_propagates_last_error(self) -> None:
-        """Every algorithm raises → the last error reaches the caller."""
+        """Every algorithm raises → the *last* error reaches the caller (not the first).
+
+        The chain runs every algorithm in order and keeps the most recent
+        ``IncompleteSolutionError`` so a custom fallback's diagnostics, not
+        the head's, surface to the caller. Verify by tagging each failure with
+        a distinct message and asserting the exception identity matches the
+        tail of the chain.
+        """
         import pytest
 
         from beekeeper.algorithm.errors import IncompleteSolutionError
 
-        with pytest.raises(IncompleteSolutionError):
+        class _TaggedFailure(_AlwaysFails):
+            def __init__(self, tag: str) -> None:
+                self._tag = tag
+
+            def run(self, allocations, entities, candidates, rules):  # type: ignore[no-untyped-def]
+                raise IncompleteSolutionError(self._tag)
+
+        with pytest.raises(IncompleteSolutionError, match="last") as exc_info:
             BeeKeeper[_Worker, _Request](
                 input_adapter=_adapter([_Worker(name="W", unavailabilities=[])], [_request(1, 2)]),
-                algorithm=[_AlwaysFails(), _AlwaysFails()],
+                algorithm=[_TaggedFailure("first"), _TaggedFailure("middle"), _TaggedFailure("last")],
             ).execute()
+
+        assert "first" not in str(exc_info.value)
+        assert "middle" not in str(exc_info.value)
 
     def test_on_incomplete_solution_callback_fires_per_failure(self) -> None:
         """The observability hook receives one (algorithm, exception) call per fallback step."""
