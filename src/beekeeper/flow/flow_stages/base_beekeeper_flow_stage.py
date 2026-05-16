@@ -6,12 +6,22 @@ from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 
 
 class BaseBeeKeeperFlowStage[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
+    """Abstract base for a single step in ``BeeKeeper.execute()``'s pipeline.
+
+    Subclass and override :meth:`run_stage` to add a custom step. Stages
+    are composed into a list and each is handed the shared
+    ``BeeKeeperFlowState``; the stage mutates and returns it (or returns a
+    replacement of the same type) so the next stage sees the cumulative
+    pipeline so far.
+
+    The bundled stages — ``AssignPossibleEntitiesToAllocations``,
+    ``RunPreliminaryRules``, ``RunAlgorithmAndDispatchResults`` — are
+    concrete subclasses. Replace the default 3-stage list by passing
+    ``stages=`` to ``BeeKeeper``.
+    """
+
     @abstractmethod
     def run_stage(
         self, state: BeeKeeperFlowState[TEntity, TAllocationRequest]
     ) -> BeeKeeperFlowState[TEntity, TAllocationRequest]:
-        """
-        Handles a single "stage" of the happy flow.
-        These stages are split into individual operations on the data so we can add new stages if we'd like,
-        and in addition it cleans the code; as opposed to having one big class with several hundred lines of functions.
-        """
+        """Run this stage against ``state`` and return the (possibly updated) state."""
