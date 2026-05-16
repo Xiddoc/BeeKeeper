@@ -5,7 +5,7 @@ Your algorithm is the meaty part of your scheduler. BeeKeeper handles ingestion,
 ## The signature
 
 ```python
-class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
+class MyAlgorithm[TEntity: AnyEntity, TAllocReq: AnyRequest](
     Algorithm[TEntity, TAllocReq],
 ):
     def run(
@@ -56,7 +56,7 @@ if not solution_complete:
 
 - **Use the score.** `Candidate.score` is the geometric mean of the soft rules' verdicts. Highest-scored is the algorithm's hint of "best candidate." A simple algorithm picks the top-scored. A constraint solver might use it as a heuristic.
 - **Iterate allocations in any order.** Input order is one option. Most-constrained-first, by-date, by-priority — your call.
-- **Skip allocations.** Allocations that can't be filled (empty candidate list, all candidates fail stateful rules) just don't get a `Assignment`. The output adapter can compute the diff if needed.
+- **Skip allocations.** Allocations that can't be filled (empty candidate list, all candidates fail stateful rules) just don't get an `Assignment`. The output adapter can compute the diff if needed.
 - **Use `state.get_assignments_done_by(entity)`** to look up an entity's existing assignments while deciding the next one — this is what stateful rules typically do.
 
 ## A reference implementation

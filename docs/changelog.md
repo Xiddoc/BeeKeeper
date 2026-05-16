@@ -8,7 +8,7 @@ The 0.1.0 → 0.2.0 (forthcoming) refactor. Public API breaks called out at the 
 
 - **All framework classes are now PEP 695 generic.** `Entity[TUnavailability]`, `AllocationRequest[TAllocationType, TEntity]`, `Unavailability[T: date = datetime]`, `DateRange[T: date = datetime]`, plus every adapter, rule, algorithm, flow stage, and the `BeeKeeper` itself. Domain code parameterizes once at the call site (`BeeKeeper[McWorker, McRequest](...)`) and the types flow through the whole pipeline.
 - **Module-level `TEntity` / `TAllocationType` / `TAllocationRequest` TypeVars are removed.** Each generic class declares its own.
-- **Bound class:** `Entity[Any]` and `AllocationRequest[Any, Any]` are used as PEP 695 bounds (the inner `[Any]` accommodates mypy's `[type-arg]` rule on generic-class bounds). At call sites, parameterize concretely.
+- **Bound class:** `Entity[Any]` and `AllocationRequest[Any, Any, Any]` are used as PEP 695 bounds (the inner `[Any]` accommodates mypy's `[type-arg]` rule on generic-class bounds). The `AnyEntity` / `AnyRequest` aliases wrap these. At call sites, parameterize concretely.
 
 ### `Assignment` (breaking)
 
@@ -49,7 +49,7 @@ Switched from inheritance to **composition**: `Assignment` now has `allocation: 
 
 ### Built-ins
 
-New: `AvailabilityRule`, `RequestedEntityRule`, `GreedyAssignmentAlgorithm`, `ConsoleOutputAdapter`. Available under `beekeeper.rules.builtins`, `beekeeper.algorithm.implementations.greedy`, `beekeeper.adapters.outputs.console`.
+New: `AvailabilityRule`, `RequestedEntityRule`, `ConsoleOutputAdapter`. Available under `beekeeper.rules.builtins` and `beekeeper.adapters.outputs.console`, and re-exported from the top level.
 
 ### McDonald's example
 
@@ -63,11 +63,10 @@ A full mkdocs-material site under `docs/`, built locally via `uv run mkdocs serv
 
 ### Algorithm implementations
 
-The reference algorithms move under a new `beekeeper.algorithm.implementations.*` subpackage to make room for additional implementations and to keep the top-level `beekeeper.algorithm.` namespace for the abstract bases.
+The reference algorithms move under a new `beekeeper.algorithm.implementations.*` subpackage to make room for additional implementations and to keep the top-level `beekeeper.algorithm.` namespace for the abstract bases. All three are also re-exported from the top-level `beekeeper` package.
 
-* `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgorithm` — baseline (was previously at `beekeeper.algorithm.greedy`).
-* `beekeeper.algorithm.implementations.backtracking.BacktrackingAssignmentAlgorithm` — depth-first search that finds complete solutions where greedy gets stuck.
-* `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm` — greedy with a per-entity load penalty so work disperses across the pool.
+* `beekeeper.algorithm.implementations.backtracking.BacktrackingAssignmentAlgorithm` — depth-first search that finds complete solutions where simpler algorithms get stuck.
+* `beekeeper.algorithm.implementations.load_balancing.LoadBalancingAssignmentAlgorithm` — score-weighted picker with a per-entity load penalty so work disperses across the pool. The default reference; never raises.
 * `beekeeper.algorithm.implementations.or_tools.OrToolsAssignmentAlgorithm` — Google OR-Tools CP-SAT-backed global optimizer. Optional dep: `pip install 'beekeeper[ortools]'` or `uv sync --extra ortools`.
 
 ### AssignmentState indexing (perf, internal)
@@ -82,7 +81,7 @@ Three new fixtures under `examples/mcdonalds/` exercise the worker-scarce regime
 * `workers_oversub_6x.json` / `allocations_oversub_6x.json` — 50 workers, 300 allocations (6:1).
 * `workers_oversub_10x.json` / `allocations_oversub_10x.json` — 50 workers, 500 allocations (10:1).
 
-Benchmark suite parametrization extends to `4 algorithms × 6 fixture sizes = 24 cases`. The oversubscribed fixtures expose load-distribution behavior — under 10x oversubscription every worker who isn't rank-locked-out absorbs multiple allocations.
+Benchmark suite parametrization extends to `3 algorithms × 6 fixture sizes = 18 cases`. The oversubscribed fixtures expose load-distribution behavior — under 10x oversubscription every worker who isn't rank-locked-out absorbs multiple allocations.
 
 ### `GreedyAssignmentAlgorithm` removed (breaking)
 
@@ -98,12 +97,12 @@ Callers using `beekeeper.algorithm.implementations.greedy.GreedyAssignmentAlgori
 
 ```python
 BeeKeeper[McWorker, McRequest](
-    algorithm=[BacktrackingAssignmentAlgorithm(), GreedyAssignmentAlgorithm()],
+    algorithm=[BacktrackingAssignmentAlgorithm(), LoadBalancingAssignmentAlgorithm()],
     ...
 )
 ```
 
-`BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` raise `IncompleteSolutionError` instead of silently falling back / silently returning empty. Greedy and load-balancing never raise. Putting one of them last in the chain guarantees a result.
+`BacktrackingAssignmentAlgorithm` and `OrToolsAssignmentAlgorithm` raise `IncompleteSolutionError` instead of silently falling back / silently returning empty. `LoadBalancingAssignmentAlgorithm` never raises. Putting it last in the chain guarantees a result.
 
 The previously-bundled hardcoded backtracking → greedy fallback is removed in favor of the explicit chain.
 
@@ -156,3 +155,17 @@ A batch of additive type-system + observability tweaks. Nothing in this section 
 - **`output_adapters` is now `Sequence[OutputAdapter[...]]`** (was `Iterable[...]`). Tightens the type so mypy rejects singleton mistakes and one-shot iterators at the call site.
 - **Algorithm chain observability: `on_incomplete_solution=` callback.** Receives `(algorithm, exception)` once per fall-through event in the chain. Useful for production telemetry when a primary algorithm silently degrades to its fallback. Default `None` (no-op).
 - **`AllocationRequest` has a third TypeVar `TDate: date = datetime`.** The contained `date_range: DateRange[TDate]` follows. Existing call sites are unchanged thanks to the PEP 696 default; domains that want whole-day allocations can parameterize as `AllocationRequest[MyType, MyEntity, date]`.
+
+### Bug fixes
+
+User-observable validation tightenings and correctness fixes. Inputs that previously slipped through and crashed deep in the pipeline now fail fast at the IO boundary.
+
+- **`AllocationRequest.required_count`** is now constrained to `≥ 1` via pydantic `Field(ge=1)`. `required_count=0` was a no-op that wasted a candidate-evaluation pass; `required_count=-N` crashed in the algorithm layer (`itertools.combinations(pool, -N)`). Both now raise `ValidationError` at construction.
+- **`RuleVerdict.score`** rejects NaN, ±infinity, and negative values via `__post_init__`. The geometric-mean aggregator clamped non-positive scores to 0, but NaN poisoned the aggregation via `math.log`. The dataclass now refuses the bad input at construction so soft-rule bugs surface at the rule site, not on the candidate that catches the resulting NaN.
+- **`DateRange` tz-consistency** check now requires the two endpoints' `tzinfo` to compare equal (not merely both-aware). A `DateRange` mixing `America/New_York` and `Asia/Tokyo` previously slipped through with an ambiguous duration; it now raises `ValidationError`.
+- **`DateRange.inclusive_day_count`** counts every calendar day a datetime range touches. `2025-01-05 23:59` → `2025-01-07 00:01` previously returned 2 (the `timedelta.days` truncation) and now correctly returns 3.
+- **OR-Tools score scaling** floors tiny positive scores at 1 in the integer model. Scores below `1/SCORE_SCALE` previously truncated to 0, flattened the CP-SAT objective, and returned an empty `OPTIMAL` solution. A genuine `0.0` still scales to `0`.
+- **`AssignmentState.remove_assignment`** uses identity (`is`), not equality. Two structurally-equal `Assignment` objects produced by separate calls no longer desync the flat list from the per-entity index during backtracking unwinds.
+- **`AbstractEnum`** now actually enforces `@abstractmethod` on subclasses that declare members. Previously the `ABCMeta` check was bypassed by `EnumMeta`'s member-construction path; calling an abstract method silently returned `None`.
+- **`RequestedEntityRule`** matches by identity rather than pydantic structural equality. Two field-equal `Entity` instances no longer pass each other's check.
+- **`Assignment`** is now explicitly unhashable (`__hash__ = None`). The frozen dataclass previously advertised a synthesized hash, but the embedded pydantic `AllocationRequest` is unhashable by default, so `hash(assignment)` raised `TypeError` at the moment of hashing. The new behavior fails immediately with a clear error, while field-based `__eq__` is preserved.

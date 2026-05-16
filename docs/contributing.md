@@ -28,7 +28,7 @@ CI runs all of these on every push and pull request.
 ## House style
 
 - **Python 3.13+ only.** Use PEP 695 generics, PEP 696 defaults, `match` statements freely.
-- **mypy strict.** No `Any` returns, all public functions annotated. The `Entity[Any]` / `AllocationRequest[Any, Any]` bound pattern is acceptable as a TypeVar bound only — call sites parameterize concretely.
+- **mypy strict.** No `Any` returns, all public functions annotated. Use the `AnyEntity` / `AnyRequest` type aliases for TypeVar bounds (they wrap the verbose `Entity[Any]` / `AllocationRequest[Any, Any, Any]` form). Call sites parameterize concretely.
 - **Pydantic for data, dataclass for services.** See [Type system](concepts/type-system.md). Don't make a service class a `BaseModel` unless you have a *specific* reason.
 - **Submodule imports inside `src/`.** `from beekeeper.foo.bar import Baz`, never `from beekeeper import Baz` from another src/ file. Top-level package imports during package init create circular-load hazards.
 - **Commits in the imperative.** Match existing log style: `Make the package importable`, not `Made the package importable` or `Makes the package importable`.

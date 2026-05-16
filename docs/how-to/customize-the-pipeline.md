@@ -30,13 +30,12 @@ When you supply `stages=`, you own the wiring entirely. The `algorithm` and `out
 ## Writing a custom stage
 
 ```python
-from beekeeper.allocations.allocation_request import AllocationRequest
-from beekeeper.entities.entity import Entity
+from beekeeper import AnyEntity, AnyRequest
 from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
 
 
-class LogCandidatesStage[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
+class LogCandidatesStage[TEntity: AnyEntity, TAllocReq: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocReq],
 ):
     def run_stage(self, state: BeeKeeperFlowState[TEntity, TAllocReq]):

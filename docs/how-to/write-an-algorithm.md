@@ -3,13 +3,16 @@
 The bundled `LoadBalancingAssignmentAlgorithm` is a short reference. Copy it as a starting point for your own:
 
 ```python
-from collections.abc import Iterable, Mapping
-from typing import Any
-from beekeeper import Algorithm, Assignment, AssignmentState, StatefulRule
-from beekeeper.flow.candidate import Candidate
+from beekeeper import (
+    Algorithm,
+    AnyEntity,
+    AnyRequest,
+    Assignment,
+    AssignmentState,
+)
 
 
-class MyAlgorithm[TEntity: Entity[Any], TAllocReq: AllocationRequest[Any, Any]](
+class MyAlgorithm[TEntity: AnyEntity, TAllocReq: AnyRequest](
     Algorithm[TEntity, TAllocReq],
 ):
     def run(self, allocations, entities, candidates, rules):

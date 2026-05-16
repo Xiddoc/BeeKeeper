@@ -20,7 +20,7 @@ class McRankRule(HardPreliminaryRule[McWorker, McRequest]):
 bk = BeeKeeper[McWorker, McRequest](...)
 ```
 
-Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Inside a custom algorithm, `state.add_assignment(...)` requires a `Assignment[McRequest, McWorker]`. Inside a `ConsoleOutputAdapter[McWorker, McRequest]`, the planned allocations you iterate carry the right types. **mypy strict** verifies the whole chain.
+Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Inside a custom algorithm, `state.add_assignment(...)` requires an `Assignment[McRequest, McWorker]`. Inside a `ConsoleOutputAdapter[McWorker, McRequest]`, the planned allocations you iterate carry the right types. **mypy strict** verifies the whole chain.
 
 ## Why two TypeVars and not one or three
 
@@ -29,9 +29,11 @@ Inside `McRankRule.check`, `entity.rank` autocompletes as `McJobPosition`. Insid
 
 ## The `[Any]` slot in bounds
 
-You'll see a lot of `[TEntity: Entity[Any], TAllocationRequest: AllocationRequest[Any, Any]]` in the framework source. Why `[Any]`? Because `Entity` is itself generic over `TUnavailability`, and writing the bound as `[TEntity: Entity]` triggers mypy's `[type-arg]` warning ("missing parameters for generic type"). `Entity[Any]` tells mypy *any parameterization of Entity is acceptable as a bound*, which is what we want — `TEntity` can be `Entity[McUnavailability]`, `Entity[Unavailability]`, or anything else, regardless of which unavailability flavor it picks.
+You'll see this pattern in the framework source: `[TEntity: AnyEntity, TAllocationRequest: AnyRequest]`. `AnyEntity` and `AnyRequest` are PEP 695 type aliases (re-exported from `beekeeper`) for the long-form `Entity[Any]` and `AllocationRequest[Any, Any, Any]` bounds.
 
-This is purely a syntactic accommodation. At call sites you parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`) and the framework infers `TUnavailability=McUnavailability` from the chain.
+Why `[Any]` in the alias definition? Because `Entity` is itself generic over `TUnavailability`, and writing the bound as `[TEntity: Entity]` triggers mypy's `[type-arg]` warning ("missing parameters for generic type"). `Entity[Any]` tells mypy *any parameterization of Entity is acceptable as a bound*, which is what we want — `TEntity` can be `Entity[McUnavailability]`, `Entity[Unavailability]`, or anything else, regardless of which unavailability flavor it picks. Same logic for `AllocationRequest`'s three TypeVars.
+
+This is purely a syntactic accommodation in the bound position. At call sites you parameterize concretely (`BeeKeeper[McWorker, McRequest](...)`) and the framework infers `TUnavailability=McUnavailability` from the chain.
 
 ## PEP 696 defaults
 
