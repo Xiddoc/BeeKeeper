@@ -2,8 +2,7 @@
 
 ```python
 from pathlib import Path
-from beekeeper.adapters.inputs.json_entity_input_adapter import JsonEntityInputAdapter
-from beekeeper.adapters.inputs.json_allocation_input_adapter import JsonAllocationInputAdapter
+from beekeeper import JsonAllocationInputAdapter, JsonEntityInputAdapter
 
 entity_adapter = JsonEntityInputAdapter(file=Path("workers.json"), entity_type=MyWorker)
 allocation_adapter = JsonAllocationInputAdapter(file=Path("requests.json"), allocation_type=MyRequest)

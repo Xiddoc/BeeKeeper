@@ -31,10 +31,14 @@ See [Optional extras](https://xiddoc.github.io/BeeKeeper/#optional-extras) in th
 ## 30-line quickstart
 
 ```python
-from beekeeper import BeeKeeper, CompositeInputAdapter
-from beekeeper.adapters.outputs.console import ConsoleOutputAdapter
-from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
-from beekeeper.rules.builtins import AvailabilityRule, RequestedEntityRule
+from beekeeper import (
+    AvailabilityRule,
+    BeeKeeper,
+    CompositeInputAdapter,
+    ConsoleOutputAdapter,
+    LoadBalancingAssignmentAlgorithm,
+    RequestedEntityRule,
+)
 
 from my_app.adapters import ExcelEntityAdapter, ExcelAllocationAdapter
 from my_app.rules import MustHaveLicenseRule
