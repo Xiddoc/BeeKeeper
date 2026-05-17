@@ -189,9 +189,7 @@ def test_busiest_worker_within_multiplier_of_mean(
     ("suffix", "expected_total"),
     [("oversub_3x", 150), ("oversub_6x", 300), ("oversub_10x", 500)],
 )
-def test_backtracking_finds_complete_solution_on_oversubscribed_fixtures(
-    suffix: str, expected_total: int
-) -> None:
+def test_backtracking_finds_complete_solution_on_oversubscribed_fixtures(suffix: str, expected_total: int) -> None:
     sink = _CapturingOutput()
     BeeKeeper[McWorker, McDonaldsAllocationRequest](
         input_adapter=CompositeInputAdapter(
