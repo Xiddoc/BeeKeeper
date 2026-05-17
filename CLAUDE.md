@@ -179,9 +179,9 @@ The oversubscribed fixtures stress workload distribution: every worker who isn't
 
 | | large 65/25 | xlarge 100/40 | xxlarge 200/80 | oversub_3x 50/150 | oversub_6x 50/300 | oversub_10x 50/500 |
 | --- | --- | --- | --- | --- | --- | --- |
-| load_balancing | ~8 ms | ~19 ms | ~72 ms | ~39 ms | ~74 ms | ~120 ms |
-| backtracking | ~9 ms | ~19 ms | ~81 ms | ~36 ms | ~91 ms | ~120 ms |
-| or_tools | ~55 ms | ~470 ms (warn) | ~700 ms (warn) | ~190 ms | ~400 ms | ~670 ms (warn) |
+| load_balancing | ~10 ms | ~22 ms | ~75 ms | ~42 ms | ~87 ms | ~140 ms |
+| backtracking | ~9 ms | ~21 ms | ~80 ms | ~42 ms | ~84 ms | ~140 ms |
+| or_tools | ~55 ms | ~320 ms | ~630 ms (warn) | ~205 ms | ~420 ms | ~695 ms (warn) |
 
 OR-Tools is order-of-magnitude slower because of its model-build + solver-init costs. Warnings on the larger sizes are expected.
 
