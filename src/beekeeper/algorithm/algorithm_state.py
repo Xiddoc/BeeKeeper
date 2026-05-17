@@ -4,7 +4,8 @@ from beekeeper.entities.entity import AnyEntity
 
 
 class AssignmentState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
-    """The algorithm's working memory — the schedule built up so far.
+    """
+    The algorithm's working memory — the schedule built up so far.
 
     Hot path: stateful rules and the load-balancing algorithm consult it
     on every candidate, so lookups must stay cheap.
@@ -34,7 +35,8 @@ class AssignmentState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
             self._by_entity.setdefault(id(entity), []).append(allocation)
 
     def remove_assignment(self, allocation: Assignment[TAllocationRequest, TEntity]) -> None:
-        """Remove ``allocation`` from both views by **identity**, not equality.
+        """
+        Remove ``allocation`` from both views by **identity**, not equality.
 
         ``Assignment`` is a frozen dataclass and so compares structurally
         equal whenever two distinct instances share the same allocation and

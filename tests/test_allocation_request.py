@@ -1,4 +1,5 @@
-"""Validation tests for ``AllocationRequest``.
+"""
+Validation tests for ``AllocationRequest``.
 
 The pipeline assumes ``required_count`` is a positive integer. Negative
 values crash deep in the algorithm layer (``itertools.combinations``
@@ -56,7 +57,8 @@ def test_negative_required_count_rejected() -> None:
 
 
 def test_date_only_parameterization_uses_date_granularity() -> None:
-    """The third TypeVar lets domains parameterize the date_range over plain
+    """
+    The third TypeVar lets domains parameterize the date_range over plain
     ``date`` for whole-day allocations without subclassing or field overrides."""
 
     class _DateOnlyRequest(AllocationRequest[_Task, _Worker, date]):

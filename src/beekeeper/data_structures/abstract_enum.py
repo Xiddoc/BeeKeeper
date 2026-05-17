@@ -3,7 +3,8 @@ from enum import Enum, EnumMeta
 
 
 class _AbstractEnumMeta(EnumMeta, ABCMeta):
-    """Metaclass mixing ``EnumMeta`` and ``ABCMeta`` with real abstract enforcement.
+    """
+    Metaclass mixing ``EnumMeta`` and ``ABCMeta`` with real abstract enforcement.
 
     ``ABCMeta`` normally blocks instantiation of classes that still carry
     ``__abstractmethods__`` by hooking into ``object.__new__``. ``EnumMeta``
@@ -31,7 +32,8 @@ class _AbstractEnumMeta(EnumMeta, ABCMeta):
 
 
 class AbstractEnum(Enum, metaclass=_AbstractEnumMeta):
-    """``Enum`` base that honors ``@abstractmethod`` on its subclasses.
+    """
+    ``Enum`` base that honors ``@abstractmethod`` on its subclasses.
 
     Subclasses that declare abstract methods must implement them before
     adding members; otherwise class creation raises ``TypeError``. Empty

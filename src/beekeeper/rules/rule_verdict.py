@@ -4,7 +4,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class RuleVerdict:
-    """The outcome of evaluating a single rule against an (entity, allocation) pair.
+    """
+    The outcome of evaluating a single rule against an (entity, allocation) pair.
 
     A rule's evaluation answers two related questions:
 

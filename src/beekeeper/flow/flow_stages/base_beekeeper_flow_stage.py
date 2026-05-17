@@ -6,7 +6,8 @@ from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
 
 
 class BaseBeeKeeperFlowStage[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
-    """Abstract base for a single step in ``BeeKeeper.execute()``'s pipeline.
+    """
+    Abstract base for a single step in ``BeeKeeper.execute()``'s pipeline.
 
     Subclass and override :meth:`run_stage` to add a custom step. Stages
     are composed into a list and each is handed the shared

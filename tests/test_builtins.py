@@ -85,7 +85,8 @@ class TestRequestedEntityRule:
         assert rule.check(other, allocation) is False
 
     def test_identity_not_structural_equality(self) -> None:
-        """A look-alike entity (same field values, different object) is rejected.
+        """
+        A look-alike entity (same field values, different object) is rejected.
 
         Pydantic's auto-generated ``__eq__`` compares fields, so two
         ``_Worker(name="A", unavailabilities=[])`` instances are

@@ -10,7 +10,8 @@ from beekeeper.entities.entity import AnyEntity
 
 @dataclass
 class JsonEntityInputAdapter[TEntity: AnyEntity](EntityInputAdapter[TEntity]):
-    """Strict JSON-backed adapter that loads entities from a file.
+    """
+    Strict JSON-backed adapter that loads entities from a file.
 
     The file must contain a JSON array of objects matching ``entity_type``'s
     schema. Validation is strict: any field not declared on the target

@@ -1,4 +1,5 @@
-"""End-to-end smoke test for the McDonald's example.
+"""
+End-to-end smoke test for the McDonald's example.
 
 Imports mcdonalds via the conftest sys.path insertion (the example package is
 not installable on its own; it's expected to be run via PYTHONPATH=examples

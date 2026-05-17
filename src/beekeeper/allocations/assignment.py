@@ -6,7 +6,8 @@ from beekeeper.entities.entity import AnyEntity
 
 @dataclass(frozen=True)
 class Assignment[TAllocationRequest: AnyRequest, TEntity: AnyEntity]:
-    """The result of assigning one or more entities to an allocation request.
+    """
+    The result of assigning one or more entities to an allocation request.
 
     Composition rather than inheritance: an assignment *has* a request and
     *has* its assigned entities. Treating it as an ``AllocationRequest``

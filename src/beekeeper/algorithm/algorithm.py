@@ -9,7 +9,8 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 
 class Algorithm[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
-    """Abstract base for assignment algorithms.
+    """
+    Abstract base for assignment algorithms.
 
     Subclass and override :meth:`run` to bring a custom strategy. The bundled
     implementations — ``LoadBalancingAssignmentAlgorithm``,
@@ -29,7 +30,8 @@ class Algorithm[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
         candidates: Mapping[int, list[Candidate[TEntity]]],
         rules: Iterable[StatefulRule[TEntity, TAllocationRequest]],
     ) -> AssignmentState[TEntity, TAllocationRequest]:
-        """The entry point to your sorting and allocating algorithm.
+        """
+        The entry point to your sorting and allocating algorithm.
 
         You receive the full list of allocations to assign, the full list of
         entities, the per-allocation candidate map (already pruned by

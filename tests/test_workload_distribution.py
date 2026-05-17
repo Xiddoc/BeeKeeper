@@ -1,4 +1,5 @@
-"""Workload distribution tests on the oversubscribed fixtures.
+"""
+Workload distribution tests on the oversubscribed fixtures.
 
 Wall-clock benchmarks tell us how *fast* ``LoadBalancingAssignmentAlgorithm``
 runs. These tests pin down how *well* it spreads work — the entire reason
@@ -124,7 +125,8 @@ def test_every_allocation_filled(
     suffix: str,
     expected_total: int,
 ) -> None:
-    """With sparse unavailabilities and rank-eligible candidates everywhere, no
+    """
+    With sparse unavailabilities and rank-eligible candidates everywhere, no
     allocation should go unfilled."""
     assert len(oversub_states[suffix].assignments) == expected_total
 
@@ -134,7 +136,8 @@ def test_no_eligible_worker_idle(
     oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
-    """Under heavy oversubscription, load-balancing should never leave a worker
+    """
+    Under heavy oversubscription, load-balancing should never leave a worker
     idle. (Every worker in these fixtures has at least one rank-eligible
     allocation, so 'unused' indicates a distribution failure rather than a
     feasibility one.)"""
@@ -149,7 +152,8 @@ def test_gini_coefficient_below_ceiling(
     oversub_states: dict[str, AssignmentState[McWorker, McDonaldsAllocationRequest]],
     suffix: str,
 ) -> None:
-    """Gini coefficient is the canonical inequality metric. Near 0 means perfectly
+    """
+    Gini coefficient is the canonical inequality metric. Near 0 means perfectly
     even; near 1 means one worker has everything. Load-balancing typically hits
     ~0.13 on these fixtures; the 0.30 ceiling catches 2x+ degradation."""
     workers = _load_workers(suffix)

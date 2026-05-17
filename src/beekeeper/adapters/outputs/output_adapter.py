@@ -6,7 +6,8 @@ from beekeeper.entities.entity import AnyEntity
 
 
 class OutputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
-    """Receives the final ``AssignmentState`` after the algorithm chain runs.
+    """
+    Receives the final ``AssignmentState`` after the algorithm chain runs.
 
     Multiple output adapters can be wired into a single pipeline (a console
     printer + a database writer + a metrics sink); the framework calls

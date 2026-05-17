@@ -10,7 +10,8 @@ from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFl
 class RunPreliminaryRules[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocationRequest],
 ):
-    """Apply preliminary rules to the candidate map: prune incompatibilities, aggregate scores.
+    """
+    Apply preliminary rules to the candidate map: prune incompatibilities, aggregate scores.
 
     For every (allocation, candidate) pair populated by stage 1, every
     preliminary rule is evaluated. The combined verdict:

@@ -1,4 +1,5 @@
-"""Lock the public API surface.
+"""
+Lock the public API surface.
 
 These tests fail if the framework's exposed names change unintentionally.
 Adding a public class? Add it to ``EXPECTED_EXPORTS``. Removing one? Same.
@@ -91,7 +92,8 @@ def test_unavailability_extends_daterange() -> None:
 
 
 def test_beekeeper_init_signature_is_keyword_only() -> None:
-    """All BeeKeeper.__init__ args except self are keyword-only — protects against
+    """
+    All BeeKeeper.__init__ args except self are keyword-only — protects against
     positional-arg refactors that would silently break callers."""
     sig = inspect.signature(beekeeper.BeeKeeper.__init__)
     parameters = list(sig.parameters.values())
@@ -103,7 +105,8 @@ def test_beekeeper_init_signature_is_keyword_only() -> None:
 
 
 def test_beekeeper_required_kwargs() -> None:
-    """input_adapter is the only kwarg without a default; everything else
+    """
+    input_adapter is the only kwarg without a default; everything else
     is optional. This is the contract the docs promise."""
     sig = inspect.signature(beekeeper.BeeKeeper.__init__)
     required = {

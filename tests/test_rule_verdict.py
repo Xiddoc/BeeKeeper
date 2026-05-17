@@ -1,4 +1,5 @@
-"""Validation tests for ``RuleVerdict``.
+"""
+Validation tests for ``RuleVerdict``.
 
 The geometric-mean aggregator in ``RunPreliminaryRules`` takes
 ``math.log(score)``. NaN propagates through the log; inf and negative

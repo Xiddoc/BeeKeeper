@@ -1,4 +1,5 @@
-"""Tests for the algorithm AssignmentState and its per-entity index.
+"""
+Tests for the algorithm AssignmentState and its per-entity index.
 
 The index is an internal optimization, but the public observable behavior of
 add/remove/get must stay consistent with it. These tests pin that behavior down.
@@ -128,7 +129,8 @@ def test_remove_then_add_lookup_stays_correct() -> None:
 
 
 def test_remove_uses_identity_not_equality() -> None:
-    """Two structurally-equal ``Assignment`` objects must not be confused.
+    """
+    Two structurally-equal ``Assignment`` objects must not be confused.
 
     ``Assignment`` is a frozen dataclass, so distinct instances built
     from the same allocation and entities compare ``==``. ``list.remove`` matches
@@ -170,7 +172,8 @@ def test_remove_missing_allocation_raises_value_error() -> None:
 
 
 def test_remove_missing_allocation_with_known_entity_raises_value_error() -> None:
-    """Even if a different planned allocation for the same entity was added,
+    """
+    Even if a different planned allocation for the same entity was added,
     removing one that wasn't added must raise (not silently corrupt state)."""
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])
@@ -190,7 +193,8 @@ def test_remove_missing_allocation_with_known_entity_raises_value_error() -> Non
 
 
 def test_remove_inconsistent_entity_bucket_raises_value_error() -> None:
-    """If the per-entity bucket exists but doesn't contain the allocation,
+    """
+    If the per-entity bucket exists but doesn't contain the allocation,
     we still raise ValueError rather than letting list.remove emit its own."""
     state: AssignmentState[_Worker, _Request] = AssignmentState()
     worker = _Worker(name="W", unavailabilities=[])

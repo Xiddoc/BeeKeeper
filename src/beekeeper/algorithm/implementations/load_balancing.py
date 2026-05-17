@@ -15,7 +15,8 @@ class LoadBalancingAssignmentAlgorithm[
 ](
     Algorithm[TEntity, TAllocationRequest],
 ):
-    """Greedy with a load-balancing penalty so work disperses across the entity pool.
+    """
+    Greedy with a load-balancing penalty so work disperses across the entity pool.
 
     The vanilla greedy reference picks the highest-scored compatible candidate
     for each allocation. When several allocations have overlapping candidate

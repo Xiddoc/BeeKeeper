@@ -6,7 +6,8 @@ from beekeeper.rules.rule_verdict import RuleVerdict
 
 
 class PreliminaryRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
-    """A rule that can be evaluated without referring to the in-progress schedule.
+    """
+    A rule that can be evaluated without referring to the in-progress schedule.
 
     Preliminary rules answer "is this entity, on principle, capable of
     fulfilling this allocation?" — checks like rank eligibility, exemptions,
@@ -43,7 +44,8 @@ class SoftPreliminaryRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     PreliminaryRule[TEntity, TAllocationRequest],
     ABC,
 ):
-    """A preliminary rule that expresses preference rather than hard eligibility.
+    """
+    A preliminary rule that expresses preference rather than hard eligibility.
 
     Soft rules never veto an entity (``compatible`` is always ``True``); they
     only contribute to the entity's aggregate score so the algorithm can

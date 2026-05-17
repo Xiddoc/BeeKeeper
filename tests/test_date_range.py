@@ -23,7 +23,8 @@ def test_inclusive_day_count_for_full_span() -> None:
 
 
 def test_inclusive_day_count_counts_every_calendar_day_for_midnight_straddle() -> None:
-    """A datetime range that crosses midnight by minutes still counts the calendar days it touches.
+    """
+    A datetime range that crosses midnight by minutes still counts the calendar days it touches.
 
     Regression: ``timedelta.days`` on a ``datetime`` subtraction truncates
     the sub-day remainder, so ``Jan 5 23:59 → Jan 7 00:01`` used to return
@@ -66,7 +67,8 @@ def test_rejects_mixed_timezone_awareness() -> None:
 
 
 def test_rejects_mixed_aware_timezones() -> None:
-    """Two aware datetimes with different tzinfo objects are rejected.
+    """
+    Two aware datetimes with different tzinfo objects are rejected.
 
     Both endpoints being timezone-aware isn't enough — they must share
     the same tzinfo, otherwise the range's duration is ambiguous.

@@ -12,7 +12,8 @@ from beekeeper.entities.entity import AnyEntity
 class CompositeInputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     InputAdapter[TEntity, TAllocationRequest],
 ):
-    """Composes a separate entity adapter and allocation adapter into one ``InputAdapter``.
+    """
+    Composes a separate entity adapter and allocation adapter into one ``InputAdapter``.
 
     The two halves of the input contract — entities and allocations — often
     come from different sources (a workforce DB and a request queue, two

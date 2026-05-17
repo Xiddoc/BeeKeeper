@@ -11,7 +11,8 @@ class InputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     AllocationInputAdapter[TAllocationRequest],
     ABC,
 ):
-    """The contract ``BeeKeeper`` consumes: a single source for both entities and allocations.
+    """
+    The contract ``BeeKeeper`` consumes: a single source for both entities and allocations.
 
     Implement this directly when one source naturally yields both (a single
     database, a single JSON document), or use ``CompositeInputAdapter`` to

@@ -1,4 +1,5 @@
-"""Tests for ``AbstractEnum``'s ``@abstractmethod`` enforcement.
+"""
+Tests for ``AbstractEnum``'s ``@abstractmethod`` enforcement.
 
 ``ABCMeta``'s usual abstract-method check happens inside ``object.__new__``,
 which ``EnumMeta`` bypasses when it builds members at class-creation time.

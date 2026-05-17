@@ -210,7 +210,8 @@ def test_raises_incomplete_solution_when_solver_returns_non_success(
 
 
 def test_tiny_score_does_not_collapse_to_empty_assignment() -> None:
-    """A positive-but-sub-resolution score must not truncate to zero.
+    """
+    A positive-but-sub-resolution score must not truncate to zero.
 
     The CP-SAT formulation scales float scores to ints with ``SCORE_SCALE``;
     a candidate with raw score ``0.0001`` would scale to ``0`` under plain
@@ -235,7 +236,8 @@ def test_tiny_score_does_not_collapse_to_empty_assignment() -> None:
 
 
 def test_zero_score_remains_zero() -> None:
-    """A genuinely indifferent candidate (raw score 0) stays at scaled-0.
+    """
+    A genuinely indifferent candidate (raw score 0) stays at scaled-0.
 
     The fix only floors positive scores; a true 0 is preserved so the
     objective is unaffected by indifferent candidates.

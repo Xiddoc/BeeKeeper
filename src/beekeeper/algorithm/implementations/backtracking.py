@@ -20,7 +20,8 @@ class BacktrackingAssignmentAlgorithm[
 ](
     Algorithm[TEntity, TAllocationRequest],
 ):
-    """Depth-first backtracking solver.
+    """
+    Depth-first backtracking solver.
 
     For each feasible allocation in input order, tries combinations of candidate
     entities (top-K by score). When a combination satisfies every stateful rule,

@@ -17,7 +17,8 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 
 class BeeKeeper[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
-    """The framework's orchestrator. Wires inputs, rules, an algorithm, and outputs into a runnable pipeline.
+    """
+    The framework's orchestrator. Wires inputs, rules, an algorithm, and outputs into a runnable pipeline.
 
     Construct with either ``algorithm=`` (uses the default 3-stage pipeline)
     or ``stages=`` (you own the wiring). Call :meth:`execute` to run it.
@@ -105,7 +106,8 @@ class BeeKeeper[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
     def _normalize_algorithm_chain(
         algorithm: (Algorithm[TEntity, TAllocationRequest] | Sequence[Algorithm[TEntity, TAllocationRequest]]),
     ) -> list[Algorithm[TEntity, TAllocationRequest]]:
-        """Accept either a single algorithm or a sequence; always return a list.
+        """
+        Accept either a single algorithm or a sequence; always return a list.
 
         A user who passes one algorithm gets a one-element chain. A user who
         passes a sequence (list, tuple, etc.) gets that chain. An empty

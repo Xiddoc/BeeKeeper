@@ -1,4 +1,5 @@
-"""Behavioral tests for ``Assignment``'s hash + equality contract.
+"""
+Behavioral tests for ``Assignment``'s hash + equality contract.
 
 The dataclass is ``frozen=True`` but embeds a pydantic ``BaseModel``
 (``allocation``), and pydantic models are deliberately unhashable. Rather
@@ -37,7 +38,8 @@ def _request() -> _Request:
 
 
 def test_hash_raises_type_error() -> None:
-    """Hashing a planned allocation fails fast and obviously.
+    """
+    Hashing a planned allocation fails fast and obviously.
 
     The embedded ``allocation`` is a pydantic ``BaseModel`` which is
     unhashable by design. The dataclass refuses to advertise a
@@ -50,7 +52,8 @@ def test_hash_raises_type_error() -> None:
 
 
 def test_field_equality_preserved() -> None:
-    """Setting ``__hash__ = None`` doesn't disturb the dataclass-generated ``__eq__``.
+    """
+    Setting ``__hash__ = None`` doesn't disturb the dataclass-generated ``__eq__``.
 
     Two planned allocations built from the same allocation and the same
     entity tuple still compare equal (the dataclass walks fields and

@@ -1,4 +1,5 @@
-"""Domain-agnostic rules every scheduler probably wants.
+"""
+Domain-agnostic rules every scheduler probably wants.
 
 These rules are imported via ``from beekeeper.rules.builtins import ...``.
 They're deliberately not re-exported from ``beekeeper`` itself — they're
@@ -14,7 +15,8 @@ from beekeeper.rules.preliminary_rule import HardPreliminaryRule
 class AvailabilityRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     HardPreliminaryRule[TEntity, TAllocationRequest],
 ):
-    """Reject an entity whose unavailabilities overlap the allocation's date range at all.
+    """
+    Reject an entity whose unavailabilities overlap the allocation's date range at all.
 
     Stricter than the stage-1 candidate filter (which only blocks on *full*
     coverage). Use this rule when "any conflict at all" should disqualify —
@@ -34,7 +36,8 @@ class AvailabilityRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
 class RequestedEntityRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     HardPreliminaryRule[TEntity, TAllocationRequest],
 ):
-    """If the allocation explicitly requests entities, only those entities are eligible.
+    """
+    If the allocation explicitly requests entities, only those entities are eligible.
 
     Stage 1 already enforces this when the default pipeline is used, but
     the rule is available for domains that supply custom flow stages and

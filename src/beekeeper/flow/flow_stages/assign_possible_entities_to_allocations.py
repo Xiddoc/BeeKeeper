@@ -8,7 +8,8 @@ from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFl
 class AssignPossibleEntitiesToAllocations[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     BaseBeeKeeperFlowStage[TEntity, TAllocationRequest],
 ):
-    """Build the per-allocation candidate set the rule pipeline and algorithm consume.
+    """
+    Build the per-allocation candidate set the rule pipeline and algorithm consume.
 
     For each allocation, walks the entity list and includes the entity as a
     candidate unless it's *definitively* unavailable: either because the

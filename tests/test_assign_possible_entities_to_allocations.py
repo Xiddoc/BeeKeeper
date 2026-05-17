@@ -106,7 +106,8 @@ def test_candidates_start_with_neutral_score() -> None:
 
 
 def test_requested_entities_uses_identity_not_structural_equality() -> None:
-    """A look-alike entity (same fields, different object) must NOT be admitted.
+    """
+    A look-alike entity (same fields, different object) must NOT be admitted.
 
     Pydantic's auto-generated ``__eq__`` walks fields, so two
     ``_Worker(name="A", unavailabilities=[])`` instances compare equal.

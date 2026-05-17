@@ -11,7 +11,8 @@ from beekeeper.rules.stateful_rule import StatefulRule
 
 @dataclass
 class BeeKeeperFlowState[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
-    """In-flight state passed between flow stages.
+    """
+    In-flight state passed between flow stages.
 
     The pipeline materializes the input adapter's iterables into lists at
     construction time so every stage can iterate them freely. Stage 1 fills

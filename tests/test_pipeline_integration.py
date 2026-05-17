@@ -1,4 +1,5 @@
-"""Integration tests for the full BeeKeeper pipeline.
+"""
+Integration tests for the full BeeKeeper pipeline.
 
 Each test sets up a complete (entity, allocation, rule, algorithm, output)
 graph and exercises ``BeeKeeper.execute()`` end-to-end. The tests are
@@ -305,7 +306,8 @@ class TestPluggablePipeline:
             )
 
     def test_custom_post_stage_sees_algorithm_result(self) -> None:
-        """A custom stage chained after the algorithm stage must see the
+        """
+        A custom stage chained after the algorithm stage must see the
         produced ``AssignmentState`` on ``state.algorithm_result``. Without that field,
         the pluggable-pipeline contract is hollow: downstream stages can only
         consume the result by re-implementing dispatch."""
@@ -346,7 +348,8 @@ class TestPluggablePipeline:
         assert post.seen.assignments[0].assigned_entities == (worker,)
 
     def test_algorithm_result_defaults_to_none(self) -> None:
-        """A pipeline that omits the algorithm stage leaves ``algorithm_result``
+        """
+        A pipeline that omits the algorithm stage leaves ``algorithm_result``
         as ``None`` so callers can detect "no algorithm ran yet"."""
         from beekeeper.flow.beekeeper_flow_state import BeeKeeperFlowState
         from beekeeper.flow.flow_stages.base_beekeeper_flow_stage import BaseBeeKeeperFlowStage
@@ -438,7 +441,8 @@ class TestAlgorithmChain:
         assert len(sink.captured.assignments) == 1
 
     def test_all_algorithms_failing_propagates_last_error(self) -> None:
-        """Every algorithm raises → the *last* error reaches the caller (not the first).
+        """
+        Every algorithm raises → the *last* error reaches the caller (not the first).
 
         The chain runs every algorithm in order and keeps the most recent
         ``IncompleteSolutionError`` so a custom fallback's diagnostics, not
@@ -501,7 +505,8 @@ class TestAlgorithmChain:
             )
 
     def test_stage_rejects_empty_algorithms_directly(self) -> None:
-        """Constructing the stage with an empty algorithm sequence raises ValueError.
+        """
+        Constructing the stage with an empty algorithm sequence raises ValueError.
 
         ``BeeKeeper`` normalizes algorithm input before this stage sees it, so the
         guard here is a defense-in-depth check for callers that wire stages

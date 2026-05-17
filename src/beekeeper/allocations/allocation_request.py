@@ -13,7 +13,8 @@ class AllocationRequest[
     TEntity: AnyEntity,
     TDate: date = datetime,
 ](BaseModel):
-    """A request for entities to be assigned over a date range.
+    """
+    A request for entities to be assigned over a date range.
 
     The third type parameter ``TDate`` controls the granularity of the
     contained ``date_range``. It defaults to ``datetime`` (the common

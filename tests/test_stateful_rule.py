@@ -1,4 +1,5 @@
-"""Behavior tests for the stateful-rule convenience classes.
+"""
+Behavior tests for the stateful-rule convenience classes.
 
 ``StatefulRule`` itself is an ABC tested implicitly via algorithm tests.
 ``HardStatefulRule`` is exercised by every algorithm test (the no-double-booking

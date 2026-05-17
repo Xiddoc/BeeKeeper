@@ -1,4 +1,5 @@
-"""Benchmarks for the bundled algorithm implementations against the McDonald's fixtures.
+"""
+Benchmarks for the bundled algorithm implementations against the McDonald's fixtures.
 
 Skipped during normal `pytest` runs (the `--benchmark-skip` default in
 pyproject's pytest config); run explicitly with::

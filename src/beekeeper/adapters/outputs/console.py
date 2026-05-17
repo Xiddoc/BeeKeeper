@@ -7,7 +7,8 @@ from beekeeper.entities.entity import AnyEntity
 class ConsoleOutputAdapter[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     OutputAdapter[TEntity, TAllocationRequest],
 ):
-    """Prints planned allocations to stdout.
+    """
+    Prints planned allocations to stdout.
 
     Useful for examples, smoke testing, and manual inspection. Production
     code should ship a domain-specific output adapter (database write, API

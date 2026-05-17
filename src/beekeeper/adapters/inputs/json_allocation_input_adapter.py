@@ -12,7 +12,8 @@ from beekeeper.allocations.allocation_request import AnyRequest
 class JsonAllocationInputAdapter[TAllocationRequest: AnyRequest](
     AllocationInputAdapter[TAllocationRequest],
 ):
-    """Strict JSON-backed adapter that loads allocation requests from a file.
+    """
+    Strict JSON-backed adapter that loads allocation requests from a file.
 
     The file must contain a JSON array of objects matching
     ``allocation_type``'s schema. Validation is strict: any field not

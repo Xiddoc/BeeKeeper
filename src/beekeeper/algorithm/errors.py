@@ -10,7 +10,8 @@ if TYPE_CHECKING:
 
 
 class IncompleteSolutionError[TEntity: AnyEntity, TAllocationRequest: AnyRequest](Exception):
-    """Raised by an algorithm that couldn't produce a result it considers complete.
+    """
+    Raised by an algorithm that couldn't produce a result it considers complete.
 
     What "complete" means is the algorithm's call:
 

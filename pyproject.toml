@@ -149,7 +149,11 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["ALL"]
+# `D` switches off pydocstyle wholesale; `D213` is then specifically re-enabled
+# below (longest-prefix wins) so multi-line docstrings must place the summary
+# on the line after the opening triple-quote rather than abutting it (D212).
 ignore = ["D", "COM812", "S311", "T201", "PLR2004", "INP001", "S105", "EM102", "TRY003", "EM101", "TD003", "FIX002", "TD002", "RUF002", "RUF003"]
+extend-select = ["D213"]
 fixable = ["ALL"]
 unfixable = []
 

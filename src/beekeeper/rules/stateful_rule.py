@@ -7,7 +7,8 @@ from beekeeper.rules.rule_verdict import RuleVerdict
 
 
 class StatefulRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](ABC):
-    """A rule whose verdict depends on the in-progress assignment state.
+    """
+    A rule whose verdict depends on the in-progress assignment state.
 
     Stateful rules answer "given what's already been planned, can this entity
     take this allocation?" — checks like consecutive-shift limits, weekly
@@ -56,7 +57,8 @@ class SoftStatefulRule[TEntity: AnyEntity, TAllocationRequest: AnyRequest](
     StatefulRule[TEntity, TAllocationRequest],
     ABC,
 ):
-    """A stateful rule that expresses preference rather than hard eligibility.
+    """
+    A stateful rule that expresses preference rather than hard eligibility.
 
     Soft rules never veto an entity (``compatible`` is always ``True``); they
     only contribute to the entity's aggregate score given the current state.

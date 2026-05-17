@@ -1,4 +1,5 @@
-"""OR-Tools CP-SAT-backed assignment algorithm.
+"""
+OR-Tools CP-SAT-backed assignment algorithm.
 
 Optional. Requires the ``ortools`` extra::
 
@@ -44,7 +45,8 @@ DEFAULT_SOLVER_TIME_LIMIT_SECONDS = 0.5
 
 
 def _scale_score(raw: float) -> int:
-    """Scale a float candidate score to a non-negative CP-SAT integer weight.
+    """
+    Scale a float candidate score to a non-negative CP-SAT integer weight.
 
     Plain ``int(raw * SCORE_SCALE)`` truncates anything below ``1 / SCORE_SCALE``
     to zero. With every scaled score zeroed out the objective is flat and
@@ -65,7 +67,8 @@ class OrToolsAssignmentAlgorithm[
 ](
     Algorithm[TEntity, TAllocationRequest],
 ):
-    """Constraint-programming solver via Google OR-Tools' CP-SAT backend.
+    """
+    Constraint-programming solver via Google OR-Tools' CP-SAT backend.
 
     Formulates the assignment as an integer program:
 

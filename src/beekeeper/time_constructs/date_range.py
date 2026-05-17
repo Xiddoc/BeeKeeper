@@ -5,7 +5,8 @@ from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class DateRange[T: date = datetime](BaseModel):
-    """A date or datetime range, inclusive on both ends.
+    """
+    A date or datetime range, inclusive on both ends.
 
     Generic over `T: date`, which admits both `date` (whole-day shifts)
     and `datetime` (time-of-day granularity) since `datetime` is a `date`
@@ -38,7 +39,8 @@ class DateRange[T: date = datetime](BaseModel):
 
     @property
     def inclusive_day_count(self) -> int:
-        """Number of days the entity is on duty, inclusive on both ends.
+        """
+        Number of days the entity is on duty, inclusive on both ends.
 
         A same-day range yields 1 (the entity works that day). A range
         from Jan 5 to Jan 10 yields 6 (Jan 5, 6, 7, 8, 9, 10).
@@ -55,7 +57,8 @@ class DateRange[T: date = datetime](BaseModel):
 
     @property
     def days(self) -> int:
-        """Elapsed days between start and end, matching stdlib semantics.
+        """
+        Elapsed days between start and end, matching stdlib semantics.
 
         A same-day range yields 0; consecutive days yield 1; Jan 5 to
         Jan 10 yields 5. For the count of *on-duty* days, use
