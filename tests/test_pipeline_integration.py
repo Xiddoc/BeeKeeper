@@ -21,6 +21,7 @@ from beekeeper import (
     Entity,
     EntityInputAdapter,
     HardPreliminaryRule,
+    HardStatefulRule,
     InputAdapter,
     OutputAdapter,
     SoftPreliminaryRule,
@@ -383,6 +384,19 @@ class _AlwaysFails(LoadBalancingAssignmentAlgorithm[_Worker, _Request]):
         raise IncompleteSolutionError("test double — always fails")
 
 
+class _ConsumesRulesThenFails(_AlwaysFails):
+    """Test double: exhaust rules before reporting failure."""
+
+    def run(self, allocations, entities, candidates, rules):  # type: ignore[no-untyped-def]
+        list(rules)
+        return super().run(allocations, entities, candidates, rules)
+
+
+class _RejectAllStatefulRule(HardStatefulRule[_Worker, _Request]):
+    def check(self, entity, allocation, state):  # type: ignore[no-untyped-def]
+        return False
+
+
 class TestAlgorithmChain:
     def test_single_algorithm_works_unchanged(self) -> None:
         """Passing a bare algorithm (not a list) is the common path."""
@@ -416,6 +430,25 @@ class TestAlgorithmChain:
 
         assert sink.captured is not None
         assert len(sink.captured.assignments) == 1
+
+    def test_stateful_rules_generator_survives_algorithm_fallback(self) -> None:
+        """A fallback algorithm still sees stateful rules after a failed head algorithm."""
+        worker = _Worker(name="W", unavailabilities=[])
+        allocation = _request(1, 2)
+        sink = _CapturingOutput()
+
+        BeeKeeper[_Worker, _Request](
+            input_adapter=_adapter([worker], [allocation]),
+            algorithm=[
+                _ConsumesRulesThenFails(),
+                LoadBalancingAssignmentAlgorithm[_Worker, _Request](),
+            ],
+            stateful_rules=(rule for rule in [_RejectAllStatefulRule()]),
+            output_adapters=[sink],
+        ).execute()
+
+        assert sink.captured is not None
+        assert sink.captured.assignments == []
 
     def test_chain_stops_at_first_success(self) -> None:
         """Load-balancing at the head succeeds; the trailing entries never run."""
