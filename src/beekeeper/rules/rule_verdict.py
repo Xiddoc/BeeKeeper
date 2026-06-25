@@ -14,8 +14,11 @@ class RuleVerdict:
     * **score**: how *well* does the entity satisfy this rule, on an arbitrary
       non-negative finite scale? Higher is better. A ``score`` of ``1.0``
       means the rule is fully satisfied without preference; lower scores
-      express soft preference; ``0.0`` is treated as a drop (the geometric-
-      mean aggregator collapses to zero, pruning the candidate). The
+      express soft preference. A ``score`` of ``0.0`` collapses the
+      geometric-mean aggregate to zero, ranking the candidate last, but does
+      *not* exclude it: a zero-scored candidate is still recorded and remains
+      assignable when no better candidate exists. To exclude a candidate
+      outright, return ``compatible=False`` rather than a zero score. The
       framework aggregates scores across rules using the geometric mean —
       see ``docs/explanations/soft-rules-aggregation.md``.
 
