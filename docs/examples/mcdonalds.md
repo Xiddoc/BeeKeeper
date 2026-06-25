@@ -1,6 +1,6 @@
 # McDonald's Walkthrough
 
-A complete worked example lives at [`examples/mcdonalds/`](https://github.com/Xiddoc/BeeKeeper/tree/master/examples/mcdonalds). Three workers, three allocations, all rules wired, runs end-to-end.
+A complete worked example lives at [`examples/mcdonalds/`](https://github.com/Xiddoc/BeeKeeper/tree/master/examples/mcdonalds). Five workers, three allocations, all rules wired, runs end-to-end.
 
 ## What's defined
 
@@ -30,7 +30,7 @@ Expected output (one `ConsoleOutputAdapter` line per planned allocation):
 
 ```text
 CLEANING [2025-06-01 00:00:00 -> 2025-06-03 00:00:00]: McWorker(...name='Alice', rank=<McJobPosition.CASHIER: 'CASHIER'>)
-SERVING_FOOD [2025-06-10 00:00:00 -> 2025-06-10 00:00:00]: McWorker(...name='Alice'...)
+SERVING_FOOD [2025-06-10 00:00:00 -> 2025-06-10 00:00:00]: McWorker(...name='Bob'...)
 COOKING [2025-06-15 00:00:00 -> 2025-06-15 00:00:00]: McWorker(...name='Carol'...), McWorker(...name='Eve'...)
 ```
 
