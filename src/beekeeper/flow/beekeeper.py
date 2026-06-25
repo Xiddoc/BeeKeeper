@@ -98,7 +98,7 @@ class BeeKeeper[TEntity: AnyEntity, TAllocationRequest: AnyRequest]:
             ]
 
         self._preliminary_rules = preliminary_rules
-        self._stateful_rules = stateful_rules
+        self._stateful_rules = tuple(stateful_rules)
         self._input_adapter = input_adapter
         self._stages: Sequence[BaseBeeKeeperFlowStage[TEntity, TAllocationRequest]] = stages
 
