@@ -37,13 +37,15 @@ class BacktrackingAssignmentAlgorithm[
 
     Three guards keep the worst-case search tractable:
 
-    * **Feasibility filter.** Allocations whose candidate pool is smaller than
-      their ``required_count`` are unfulfillable by definition and are skipped
-      before the search starts. Letting them through would cause the search
-      to exhaustively try every combination of every *earlier* allocation
-      before giving up.
-    * **Top-K candidate cap.** Only the ``top_k_candidates`` highest-scored
-      candidates per allocation enter the search. Default 30.
+    * **Feasibility filter.** Allocations whose eligible candidate pool is
+      smaller than their ``required_count`` are unfulfillable by definition
+      and are skipped before the search starts. Letting them through would
+      cause the search to exhaustively try every combination of every
+      *earlier* allocation before giving up.
+    * **Top-K candidate cap.** Only the highest-scored candidates per
+      allocation enter the search: ``top_k_candidates`` of them, or
+      ``required_count`` when that is larger, so the count-based feasibility
+      filter is never tripped by the cap alone. Default 30.
     * **Iteration cap.** A hard ``max_iterations`` budget on recursive calls
       so even pathological inputs don't run forever.
 
@@ -96,7 +98,7 @@ class BacktrackingAssignmentAlgorithm[
             id(alloc): [
                 c.entity
                 for c in sorted(candidates.get(id(alloc), []), key=lambda c: c.score, reverse=True)[
-                    : self._top_k_candidates
+                    : max(self._top_k_candidates, alloc.required_count)
                 ]
             ]
             for alloc in allocations

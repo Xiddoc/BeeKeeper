@@ -14,6 +14,7 @@ from beekeeper import (
 )
 from beekeeper.algorithm.errors import IncompleteSolutionError
 from beekeeper.algorithm.implementations.backtracking import BacktrackingAssignmentAlgorithm
+from beekeeper.algorithm.implementations.load_balancing import LoadBalancingAssignmentAlgorithm
 from beekeeper.flow.candidate import Candidate
 
 
@@ -193,3 +194,49 @@ class TestBacktrackingTopKCap:
         assigned = result.assignments[0].assigned_entities
         assert len(assigned) == 1
         assert assigned[0] in workers[:cap]
+
+    def test_fills_allocation_when_required_count_exceeds_top_k(self) -> None:
+        """An allocation whose required_count exceeds the cap is still filled."""
+        workers = [_Worker(name=f"W{i}", unavailabilities=[]) for i in range(5)]
+        allocation = _request(1, 2, required_count=4)
+        candidates_list = [Candidate(entity=w, score=1.0 - i / 100) for i, w in enumerate(workers)]
+        # The cap (3) is below required_count (4). Measuring feasibility against
+        # the truncated pool used to drop this allocation even though five
+        # genuine candidates can fill it.
+        algo = BacktrackingAssignmentAlgorithm[_Worker, _Request](top_k_candidates=3)
+
+        result = algo.run(
+            allocations=[allocation],
+            entities=workers,
+            candidates={id(allocation): candidates_list},
+            rules=[],
+        )
+
+        assert len(result.assignments) == 1
+        assigned = result.assignments[0].assigned_entities
+        assert len(assigned) == 4
+        # The cap widens only as far as required_count, so the four
+        # highest-scored candidates fill the slot and the lowest-scored stays out.
+        assert {w.name for w in assigned} == {w.name for w in workers[:4]}
+
+    def test_agrees_with_load_balancing_when_pool_exceeds_cap(self) -> None:
+        """Backtracking and load balancing agree on feasibility above the cap."""
+        workers = [_Worker(name=f"W{i}", unavailabilities=[]) for i in range(5)]
+        allocation = _request(1, 2, required_count=4)
+        candidates_list = [Candidate(entity=w, score=1.0 - i / 100) for i, w in enumerate(workers)]
+        candidate_map = {id(allocation): candidates_list}
+
+        backtracking = BacktrackingAssignmentAlgorithm[_Worker, _Request](top_k_candidates=3).run(
+            allocations=[allocation],
+            entities=workers,
+            candidates=candidate_map,
+            rules=[],
+        )
+        load_balancing = LoadBalancingAssignmentAlgorithm[_Worker, _Request]().run(
+            allocations=[allocation],
+            entities=workers,
+            candidates=candidate_map,
+            rules=[],
+        )
+
+        assert len(backtracking.assignments) == len(load_balancing.assignments) == 1
