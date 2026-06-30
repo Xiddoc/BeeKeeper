@@ -65,7 +65,7 @@ A complete worked example lives at [`examples/mcdonalds/`](examples/mcdonalds), 
 
 ## Documentation
 
-Full docs at **[xiddoc.github.io/BeeKeeper](https://xiddoc.github.io/BeeKeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
+Full docs at **[iliketo.party/BeeKeeper](https://iliketo.party/BeeKeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
 
 Or build locally:
 

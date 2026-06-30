@@ -32,7 +32,7 @@ ortools = ["ortools>=9.10"]
 
 [project.urls]
 Homepage = "https://github.com/Xiddoc/BeeKeeper"
-Documentation = "https://xiddoc.github.io/BeeKeeper/"
+Documentation = "https://iliketo.party/BeeKeeper/"
 Repository = "https://github.com/Xiddoc/BeeKeeper"
 Issues = "https://github.com/Xiddoc/BeeKeeper/issues"
 
