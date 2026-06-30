@@ -6,7 +6,7 @@
   <a href="https://github.com/Xiddoc/BeeKeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Xiddoc/BeeKeeper/ci.yml?branch=master&style=for-the-badge&logo=githubactions&label=CI" alt="CI"></a>
   <a href="https://github.com/Xiddoc/BeeKeeper/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/coverage-100%25-brightgreen?style=for-the-badge&logo=pytest&logoColor=white" alt="Coverage 100%"></a>
   <img src="https://img.shields.io/badge/python-3.13+-blue?style=for-the-badge&logo=python" alt="Python 3.13+">
-  <a href="https://xiddoc.github.io/BeeKeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
+  <a href="https://iliketo.party/BeeKeeper/"><img src="https://img.shields.io/badge/docs-mkdocs--material-blue?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3.0-green?style=for-the-badge" alt="License: GPL3.0"></a>
 </p>
 
@@ -26,7 +26,7 @@ For the OR-Tools-backed assignment algorithm, add the optional extra:
 uv sync --extra ortools
 ```
 
-See [Optional extras](https://xiddoc.github.io/BeeKeeper/#optional-extras) in the docs for the full set of install paths.
+See [Optional extras](https://iliketo.party/BeeKeeper/#optional-extras) in the docs for the full set of install paths.
 
 ## 30-line quickstart
 
@@ -65,7 +65,7 @@ A complete worked example lives at [`examples/mcdonalds/`](examples/mcdonalds), 
 
 ## Documentation
 
-Full docs at **[xiddoc.github.io/BeeKeeper](https://xiddoc.github.io/BeeKeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
+Full docs at **[iliketo.party/BeeKeeper](https://iliketo.party/BeeKeeper/)** — concepts, how-to recipes, the McDonald's walkthrough, and an auto-generated API reference.
 
 Or build locally:
 
