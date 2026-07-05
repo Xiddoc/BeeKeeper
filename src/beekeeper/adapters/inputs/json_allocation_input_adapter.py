@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 
 from beekeeper.adapters.inputs.allocation_input_adapter import AllocationInputAdapter
 from beekeeper.allocations.allocation_request import AnyRequest
@@ -33,4 +33,7 @@ class JsonAllocationInputAdapter[TAllocationRequest: AnyRequest](
 
     def get_allocations(self) -> Iterable[TAllocationRequest]:
         adapter: TypeAdapter[list[TAllocationRequest]] = TypeAdapter(list[self.allocation_type])  # type: ignore[name-defined]
-        return adapter.validate_json(self.file.read_text())
+        try:
+            return adapter.validate_json(self.file.read_text())
+        except ValidationError as exc:
+            raise ValueError(f"Failed to parse {self.file}: {exc}") from exc

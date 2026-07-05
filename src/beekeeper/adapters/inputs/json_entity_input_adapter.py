@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 
 from beekeeper.adapters.inputs.entity_input_adapter import EntityInputAdapter
 from beekeeper.entities.entity import AnyEntity
@@ -30,4 +30,7 @@ class JsonEntityInputAdapter[TEntity: AnyEntity](EntityInputAdapter[TEntity]):
 
     def get_entities(self) -> Iterable[TEntity]:
         adapter: TypeAdapter[list[TEntity]] = TypeAdapter(list[self.entity_type])  # type: ignore[name-defined]
-        return adapter.validate_json(self.file.read_text())
+        try:
+            return adapter.validate_json(self.file.read_text())
+        except ValidationError as exc:
+            raise ValueError(f"Failed to parse {self.file}: {exc}") from exc
